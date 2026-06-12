@@ -1,0 +1,20 @@
+{
+  "name": "marmitaria",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "shared/*"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest",
+    "turbo": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint"
+  }
+}
