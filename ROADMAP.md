@@ -1,0 +1,117 @@
+# Roadmap
+
+Mapa de progresso do desenvolvimento. Para instruções de como implementar cada item, consultar `docs/WORKFLOWS.md`, `apps/backend/docs/SERVICES.md` e os nós do `obsidian/`.
+
+---
+
+## Fase 1 — Setup do Monorepo
+
+- [ ] Inicializar repositório no GitHub
+- [ ] `bun init` na raiz
+- [ ] Configurar `turbo.json`
+- [ ] Configurar workspaces no `package.json` da raiz
+- [ ] Criar estrutura de pastas: `apps/frontend`, `apps/backend`, `shared/schemas`
+- [ ] Copiar docs, obsidian, CLAUDE.md e skills para o projeto
+- [ ] Commit inicial
+
+---
+
+## Fase 2 — Shared (Schemas Zod)
+
+- [ ] Configurar `shared/` como workspace
+- [ ] Criar `enums.ts`
+
+**Cadastros base:**
+- [ ] Grupo — Base, Input, Response
+- [ ] Cliente — Base, Input, Response
+- [ ] Ingrediente — Base, Input, Response
+- [ ] Receita — Base, Input, Response
+
+**Operação:**
+- [ ] TipoPreco — Base, Input, Response
+- [ ] Semana — Base, Input, Response
+- [ ] Cardápio — Base, Input, Response
+- [ ] Pedido — Base, Input, MarcarPagoInput, Response
+- [ ] Compra — Base, Input, Response
+- [ ] CustoGeral — Base, Input, Response
+- [ ] Financeiro — PeriodoFinanceiro, RelatorioFinanceiroResponse
+
+---
+
+## Fase 3 — Backend
+
+**Setup:**
+- [ ] Inicializar projeto Bun + Elysia em `apps/backend`
+- [ ] Configurar Prisma + conexão Neon
+- [ ] Rodar migration inicial com o schema completo
+- [ ] Configurar `lib/prisma.ts` singleton
+- [ ] Exportar tipo `App` para Eden Treaty
+
+**Cadastros base:**
+- [ ] Grupos — interface, repository, service, controller, route
+- [ ] Clientes — interface, repository, service, controller, route
+- [ ] Ingredientes — interface, repository, service, controller, route
+- [ ] Receitas — interface, repository, service, controller, route
+  - [ ] Proteção de edição com pedidos ativos
+  - [ ] Delete físico de ingredientes (substituição da lista)
+  - [ ] Campo `ultimaVezNoCardapio` no response
+
+**Operação semanal:**
+- [ ] Semana — criação automática via week picker, route
+- [ ] TiposPrecos — CRUD completo, route
+- [ ] Cardápio — adicionar/remover prato, validação de receita vinculada, route
+- [ ] Pedidos — CRUD, transições de status, snapshot de preço, route
+  - [ ] `marcarProduzido`
+  - [ ] `marcarPago` (com método Pix/Swile)
+  - [ ] `reverterParaPendente`
+- [ ] Compras — upsert por semana, snapshot valorUnitario, gás automático, route
+- [ ] CustosGerais — CRUD manual, proteção do gás, route
+- [ ] Financeiro — cálculo por semana/mês/período, métrica "a receber", route
+
+---
+
+## Fase 4 — Frontend
+
+**Setup:**
+- [ ] Inicializar Next.js em `apps/frontend`
+- [ ] Configurar Tailwind + shadcn/ui
+- [ ] Configurar Eden Treaty em `lib/api.ts`
+- [ ] Configurar TanStack Query em `lib/queryClient.ts`
+- [ ] Criar `SemanaContext`
+- [ ] Criar `constants/` — unidades, status, métodos de pagamento
+- [ ] Criar `formatters/` — moeda, semana, unidade
+
+**Componentes base:**
+- [ ] Layout — Sidebar, BottomNav, Header, PageWrapper
+- [ ] Shared — WeekPicker, IngredienteSelector, StatusBadge
+
+**Módulos — por tela:**
+- [ ] Home — cards de totais, grade de pratos, lista de clientes, accordion, checkbox produzido, dropdown pago
+- [ ] Pedidos — lista com status, drawer novo pedido, modal cliente inline, empty state
+- [ ] Cardápio — cards de prato, modal de adicionar com busca
+- [ ] Receitas — lista com última vez no cardápio, criar/editar com IngredienteSelector
+- [ ] Ingredientes — CRUD simples
+- [ ] Clientes — lista, modal cliente com chips de grupo, modal grupos empilhado
+- [ ] Tipos & Preços — CRUD com dual pricing Pix/Swile
+- [ ] Compras & Custos — abas, IngredienteSelector, valor unitário calculado, custos inline, gás read-only, painel consolidado
+- [ ] Financeiro — toggle modos, gráfico barras, pratos com drill-down, Pix vs Swile
+
+---
+
+## Fase 5 — Deploy
+
+- [ ] Deploy do backend no Render
+- [ ] Configurar variável `DATABASE_URL` no Render
+- [ ] Configurar Uptime Robot (ping a cada 5 min)
+- [ ] Deploy do frontend no Vercel
+- [ ] Configurar variável `NEXT_PUBLIC_API_URL` no Vercel
+- [ ] Testar fluxo completo em produção
+
+---
+
+## Fase 6 — Ajustes e polimento
+
+- [ ] Testes de usabilidade com a dona
+- [ ] Ajustes de UX baseados no feedback
+- [ ] Preencher `docs/TESTING.md` e escrever testes
+- [ ] Revisão geral de performance

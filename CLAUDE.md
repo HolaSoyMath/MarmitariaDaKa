@@ -9,10 +9,11 @@ Sistema de gestão interno para uma marmitaria familiar. Ferramenta da mãe — 
 **Leia sempre nesta ordem:**
 
 1. Este arquivo — visão geral e estrutura
-2. `obsidian/` — contexto de negócio, regras e decisões por módulo
-3. `apps/frontend/CLAUDE.md` — se a conversa for sobre o frontend
-4. `apps/backend/CLAUDE.md` — se a conversa for sobre o backend
-5. `docs/` — detalhes técnicos quando necessário
+2. `ROADMAP.md` — onde o projeto está e o que falta fazer
+3. `obsidian/` — contexto de negócio, regras e decisões por módulo
+4. `apps/frontend/CLAUDE.md` — se a conversa for sobre o frontend
+5. `apps/backend/CLAUDE.md` — se a conversa for sobre o backend
+6. `docs/` — detalhes técnicos quando necessário
 
 ---
 
@@ -34,6 +35,7 @@ Ciclo semanal:
 ```
 marmitaria/
 ├── CLAUDE.md                    ← você está aqui
+├── ROADMAP.md                   # progresso do desenvolvimento
 ├── docs/
 │   ├── ARCHITECTURE.md          # padrões técnicos do backend
 │   ├── DATABASE.md              # schema Prisma + regras de banco
