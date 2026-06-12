@@ -83,11 +83,34 @@ Componentes em `components/` recebem dados via props e disparam callbacks — se
 | Responsabilidade | Onde fica |
 |---|---|
 | Buscar dados | `services/` |
-| Transformar dados | `mappers/` |
-| Formatar para exibição | `formatters/` |
-| Validar formulário | `validators/` |
+| Transformar dados | `ComponentName/mapper.ts` ou `mappers/` se compartilhado |
+| Formatar para exibição | `ComponentName/formatter.ts` ou `formatters/` se compartilhado |
+| Validar formulário | `ComponentName/validator.ts` ou `validators/` se compartilhado |
 | Estado global | `contexts/` |
 | Renderizar | `components/` |
+
+---
+
+## Co-localização de lógica específica
+
+Quando um mapper, formatter ou validator é **exclusivo de um componente**, ele fica dentro da pasta do componente:
+
+```
+components/modules/pedidos/
+├── PedidoDrawer.tsx
+├── mapper.ts      ← transforma PedidoResponse para o formato do drawer
+├── formatter.ts   ← formatação exclusiva da UI do drawer
+└── validator.ts   ← validação cruzada dos campos do formulário
+```
+
+Nomes fixos: `mapper.ts`, `formatter.ts`, `validator.ts` — sem prefixo de módulo.
+
+Quando a lógica é **usada por mais de um componente**, vai para as pastas compartilhadas:
+
+| Lógica | Local |
+|---|---|
+| Exclusiva de um componente | `ComponentName/mapper.ts` etc. |
+| Usada em vários contextos | `mappers/`, `formatters/`, `validators/` |
 
 ---
 

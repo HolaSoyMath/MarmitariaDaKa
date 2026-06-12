@@ -32,6 +32,9 @@ apps/frontend/src/
 │   │   └── PageWrapper.tsx
 │   └── modules/                # Componentes específicos por módulo
 │       ├── pedidos/
+│       │   ├── PedidoDrawer.tsx
+│       │   ├── mapper.ts       # exclusivo do módulo — co-localizado
+│       │   └── validator.ts    # exclusivo do módulo — co-localizado
 │       ├── cardapio/
 │       ├── receitas/
 │       ├── clientes/
@@ -47,17 +50,16 @@ apps/frontend/src/
 │   ├── clientes.service.ts
 │   └── ...
 │
-├── mappers/                    # Transforma Response → formato que a UI consome
-│   ├── pedido.mapper.ts
-│   └── ...
+├── mappers/                    # Transformações compartilhadas entre módulos
+│   └── (apenas se usado por mais de um componente)
 │
-├── formatters/                 # Formatação de valores para exibição
+├── formatters/                 # Formatação de valores para exibição — sempre compartilhado
 │   ├── moeda.formatter.ts      # R$ 14,00 / R$ 0,028
 │   ├── semana.formatter.ts     # "Semana 23 · Jun 2025"
 │   └── unidade.formatter.ts   # casas decimais por unidade
 │
-├── validators/                 # Validações de formulário além do Zod
-│   └── pedido.validator.ts
+├── validators/                 # Validações compartilhadas entre módulos
+│   └── (apenas se usado por mais de um componente)
 │
 ├── contexts/                   # Estado global do app
 │   └── SemanaContext.tsx       # Semana selecionada — persiste entre páginas
@@ -110,19 +112,20 @@ apps/frontend/src/
 - Retornam dados já tipados via `z.infer<>`
 - Único lugar onde `api.ts` é chamado
 
-### `mappers/` — Transformação de dados
-- Convertem `[entidade]Response` para o formato que a UI precisa
-- Exemplo: agrupar `PedidoItem` por prato para exibir na Home
+### `mappers/` / `formatters/` / `validators/` — Lógica fora dos componentes
 
-### `formatters/` — Formatação de exibição
-- Convertem valores brutos em strings formatadas
-- `moeda.formatter.ts`: aplica as regras de casas decimais por unidade
-- `semana.formatter.ts`: "Semana 23 · Jun 2025"
-- Nunca alteram o dado — só formatam para exibição
+Regra de localização:
 
-### `validators/` — Validação de formulário
-- Validações que vão além do schema Zod compartilhado
-- Exemplo: validações cruzadas entre campos de um formulário
+| Escopo | Local |
+|---|---|
+| Exclusivo de um componente | `ComponentName/mapper.ts`, `formatter.ts`, `validator.ts` |
+| Usado por mais de um componente | `mappers/`, `formatters/`, `validators/` (top-level) |
+
+**`mappers/`** — convertem `[entidade]Response` para o formato que a UI precisa. Se a transformação é específica de um módulo, vai dentro da pasta do componente.
+
+**`formatters/`** — convertem valores brutos em strings formatadas. `moeda.formatter.ts`, `semana.formatter.ts` e `unidade.formatter.ts` são sempre compartilhados (top-level). Nunca alteram o dado.
+
+**`validators/`** — validações que vão além do schema Zod compartilhado (ex: validações cruzadas entre campos). Se exclusivo de um formulário, vai co-localizado com o componente.
 
 ### `contexts/` — Estado global
 - `SemanaContext` — semana selecionada persiste ao navegar entre páginas

@@ -42,7 +42,7 @@ Fluxos de desenvolvimento passo a passo. Seguir esta ordem ao criar qualquer fun
 
 9. **Componentes** (`apps/frontend/src/components/modules/[modulo]/`)
    - Criar componentes de UI
-   - Usar mappers/formatters — sem lógica inline
+   - Lógica exclusiva do componente fica co-localizada (`ComponentName/mapper.ts` etc.) — sem lógica inline
 
 10. **Página** (`apps/frontend/src/app/[rota]/page.tsx`)
     - Compor os componentes
