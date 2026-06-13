@@ -48,9 +48,9 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 - [x] Exportar tipo `App` para Eden Treaty
 
 **Cadastros base:**
-- [ ] Grupos — interface, repository, service, controller, route
-- [ ] Clientes — interface, repository, service, controller, route
-- [ ] Ingredientes — interface, repository, service, controller, route
+- [x] Grupos — interface, repository, service, controller, route
+- [x] Clientes — interface, repository, service, controller, route
+- [x] Ingredientes — interface, repository, service, controller, route
 - [ ] Receitas — interface, repository, service, controller, route
   - [ ] Proteção de edição com pedidos ativos
   - [ ] Delete físico de ingredientes (substituição da lista)
