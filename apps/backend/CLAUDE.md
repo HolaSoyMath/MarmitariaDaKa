@@ -114,17 +114,17 @@ Aplica-se a: cascade soft delete, criação de Pedido + itens, edição de Recei
 
 ## Regras de negócio críticas
 
-**Snapshot de preço:** ao criar `PedidoItem`, copiar `valorPix` e `valorSwile` do `TipoPreco` para `valorPixSnapshot` e `valorSwileSnapshot`. Nunca recalcular depois.
+**Snapshot de preço:** ao criar `OrderItem`, copiar `valorPix` e `valorSwile` do `PriceType` para `snapshotValorPix` e `snapshotValorSwile`. Nunca recalcular depois.
 
-**Gás:** ao salvar qualquer alteração em `CompraItem` da semana, recalcular o `CustoGeral` de tipo `percentual_gas` como 5% da soma dos `valorTotal` dos `CompraItem` ativos daquela semana.
+**Gás:** ao salvar qualquer alteração em `PurchaseItem` da semana, recalcular o `GeneralCost` de tipo `percentual_gas` como 5% da soma dos `valorTotal` dos `PurchaseItem` ativos daquela semana.
 
-**Snapshot de valorUnitario:** ao salvar `CompraItem`, calcular `valorUnitario = valorTotal / quantidade` e persistir. Nunca recalcular depois.
+**Snapshot de valorUnitario:** ao salvar `PurchaseItem`, calcular `valorUnitario = valorTotal / quantidade` e persistir. Nunca recalcular depois.
 
 **Status de pedido:** a transição é sempre `pendente → produzido → pago`. Pago é irreversível. Produzido pode voltar para pendente.
 
-**Proteção de receita:** antes de editar ou excluir uma `Receita`, verificar se existe `PedidoItem → CardapioItem → Receita` com pedido de status `pendente` ou `produzido`. Se existir, rejeitar com erro.
+**Proteção de receita:** antes de editar ou excluir uma `Recipe`, verificar se existe `OrderItem → MenuItem → Recipe` com order de status `pendente` ou `produzido`. Se existir, rejeitar com erro.
 
-**Compra única por semana:** cada `Semana` tem no máximo uma `Compra` (`@unique` no `semanaId`). A dona edita a lista de itens da compra existente.
+**Purchase única por semana:** cada `Week` tem no máximo uma `Purchase` (`@unique` no `semanaId`). A dona edita a lista de itens da purchase existente.
 
 ---
 

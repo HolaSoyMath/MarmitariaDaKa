@@ -136,16 +136,16 @@ export const pedidosService = {
 
 ```typescript
 // repositories/clientes.repository.ts
-export const clientesRepository: IClientesRepository = {
-  async listar() {
-    return prisma.cliente.findMany({
+export const clientsRepository: IClientsRepository = {
+  async findAll() {
+    return prisma.client.findMany({
       where: { deletedAt: null },
       orderBy: { nome: 'asc' },
-      include: { grupo: true },
+      include: { group: true },
     })
   },
   async softDelete(id: string) {
-    return prisma.cliente.update({
+    return prisma.client.update({
       where: { id },
       data: { deletedAt: new Date() },
     })
@@ -159,13 +159,13 @@ export const clientesRepository: IClientesRepository = {
 - Facilitam testes com mocks
 
 ```typescript
-// interfaces/IClientesRepository.ts
-export interface IClientesRepository {
-  listar(): Promise<Cliente[]>
-  buscarPorId(id: string): Promise<Cliente | null>
-  criar(data: ClienteInput): Promise<Cliente>
-  atualizar(id: string, data: Partial<ClienteInput>): Promise<Cliente>
-  softDelete(id: string): Promise<Cliente>
+// interfaces/IClientsRepository.ts
+export interface IClientsRepository {
+  findAll(): Promise<Client[]>
+  findById(id: string): Promise<Client | null>
+  create(data: ClientInput): Promise<Client>
+  update(id: string, data: Partial<ClientInput>): Promise<Client>
+  softDelete(id: string): Promise<Client>
 }
 ```
 

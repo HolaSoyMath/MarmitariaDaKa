@@ -18,178 +18,164 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─── GRUPOS E CLIENTES ───────────────────────────────────────
-
-model Grupo {
+model Group {
   id        String    @id @default(cuid())
   nome      String    @unique
-  clientes  Cliente[]
+  clients   Client[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
 
-model Cliente {
-  id        String    @id @default(cuid())
+model Client {
+  id        String   @id @default(cuid())
   nome      String
   grupoId   String
-  grupo     Grupo     @relation(fields: [grupoId], references: [id])
-  pedidos   Pedido[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  group     Group    @relation(fields: [grupoId], references: [id])
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   deletedAt DateTime?
 }
 
-// ─── INGREDIENTES E RECEITAS ─────────────────────────────────
+model Ingredient {
+  id            String             @id @default(cuid())
+  nome          String             @unique
+  unidade       String
+  recipes       RecipeIngredient[]
+  purchaseItems PurchaseItem[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  deletedAt     DateTime?
+}
 
-model Ingrediente {
-  id          String               @id @default(cuid())
-  nome        String               @unique
-  unidade     String               // 'g' | 'kg' | 'ml' | 'L' | 'un'
-  receitas    ReceitaIngrediente[]
-  compraItens CompraItem[]
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+model Recipe {
+  id          String             @id @default(cuid())
+  nome        String             @unique
+  ingredients RecipeIngredient[]
+  menuItems   MenuItem[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
   deletedAt   DateTime?
 }
 
-model Receita {
-  id           String               @id @default(cuid())
-  nome         String               @unique
-  ingredientes ReceitaIngrediente[]
-  cardapio     CardapioItem[]
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
-  deletedAt    DateTime?
-}
-
-model ReceitaIngrediente {
+model RecipeIngredient {
   // DELETE FÍSICO — sem deletedAt
   // Ao editar receita: substituir lista inteira (delete + insert)
-  // Seguro pois pedidos não referenciam ReceitaIngrediente diretamente
-  id            String      @id @default(cuid())
+  // Seguro pois pedidos não referenciam RecipeIngredient diretamente
+  id            String     @id @default(cuid())
   receitaId     String
   ingredienteId String
   quantidade    Float
-  receita       Receita     @relation(fields: [receitaId], references: [id], onDelete: Cascade)
-  ingrediente   Ingrediente @relation(fields: [ingredienteId], references: [id])
+  recipe        Recipe     @relation(fields: [receitaId], references: [id], onDelete: Cascade)
+  ingredient    Ingredient @relation(fields: [ingredienteId], references: [id])
 
   @@unique([receitaId, ingredienteId])
 }
 
-// ─── TIPOS E PREÇOS ───────────────────────────────────────────
-
-model TipoPreco {
-  id          String       @id @default(cuid())
-  tipo        String       // 'Marmita', 'Caldo', etc.
-  tamanho     String       // '400G', '550G', '400ml', etc.
-  valorPix    Float
-  valorSwile  Float
-  pedidoItens PedidoItem[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  deletedAt   DateTime?    // soft delete — preserva referências de pedidos antigos
+model PriceType {
+  id         String      @id @default(cuid())
+  tipo       String      // 'Marmita', 'Caldo', etc.
+  tamanho    String      // '400G', '550G', '400ml', etc.
+  valorPix   Float
+  valorSwile Float
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?   // soft delete — preserva referências de pedidos antigos
 
   @@unique([tipo, tamanho])
 }
 
-// ─── SEMANA E CARDÁPIO ────────────────────────────────────────
-
-model Semana {
-  id           String         @id @default(cuid())
+model Week {
+  id           String        @id @default(cuid())
   numeroSemana Int
   ano          Int
-  cardapio     CardapioItem[]
-  pedidos      Pedido[]
-  compra       Compra?
-  custosGerais CustoGeral[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  menuItems    MenuItem[]
+  orders       Order[]
+  purchase     Purchase?
+  generalCosts GeneralCost[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   deletedAt    DateTime?
 
   @@unique([numeroSemana, ano])
 }
 
-model CardapioItem {
-  id        String       @id @default(cuid())
-  semanaId  String
-  receitaId String
-  semana    Semana       @relation(fields: [semanaId], references: [id])
-  receita   Receita      @relation(fields: [receitaId], references: [id])
-  pedidos   PedidoItem[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  deletedAt DateTime?
+model MenuItem {
+  id         String      @id @default(cuid())
+  semanaId   String
+  receitaId  String
+  week       Week        @relation(fields: [semanaId], references: [id])
+  recipe     Recipe      @relation(fields: [receitaId], references: [id])
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
 
   @@unique([semanaId, receitaId]) // receita aparece no máximo 1x por semana
 }
 
-// ─── PEDIDOS ─────────────────────────────────────────────────
-
-model Pedido {
-  id              String       @id @default(cuid())
+model Order {
+  id              String      @id @default(cuid())
   semanaId        String
   clienteId       String
-  status          String       @default("pendente") // 'pendente' | 'produzido' | 'pago'
-  metodoPagamento String?      // 'pix' | 'swile' — preenchido ao marcar pago
-  semana          Semana       @relation(fields: [semanaId], references: [id])
-  cliente         Cliente      @relation(fields: [clienteId], references: [id])
-  itens           PedidoItem[]
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  status          String      @default("pendente") // 'pendente' | 'produzido' | 'pago'
+  metodoPagamento String?     // 'Pix' | 'Swile' — preenchido ao marcar pago
+  week            Week        @relation(fields: [semanaId], references: [id])
+  client          Client      @relation(fields: [clienteId], references: [id])
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   deletedAt       DateTime?
 }
 
-model PedidoItem {
-  id                 String       @id @default(cuid())
+model OrderItem {
+  id                 String    @id @default(cuid())
   pedidoId           String
   cardapioItemId     String
   tipoPrecoId        String
-  quantidade         Int          @default(1)
-  valorPixSnapshot   Float        // snapshot imutável — copiado de TipoPreco.valorPix
-  valorSwileSnapshot Float        // snapshot imutável — copiado de TipoPreco.valorSwile
-  pedido             Pedido       @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
-  cardapioItem       CardapioItem @relation(fields: [cardapioItemId], references: [id])
-  tipoPreco          TipoPreco    @relation(fields: [tipoPrecoId], references: [id])
+  quantidade         Int       @default(1)
+  snapshotValorPix   Float     // snapshot imutável — copiado de PriceType.valorPix
+  snapshotValorSwile Float     // snapshot imutável — copiado de PriceType.valorSwile
+  order              Order     @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  menuItem           MenuItem  @relation(fields: [cardapioItemId], references: [id])
+  priceType          PriceType @relation(fields: [tipoPrecoId], references: [id])
   deletedAt          DateTime?
 }
 
-// ─── COMPRAS ─────────────────────────────────────────────────
-
-model Compra {
-  id        String       @id @default(cuid())
-  semanaId  String       @unique // uma compra por semana
-  semana    Semana       @relation(fields: [semanaId], references: [id])
-  itens     CompraItem[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+model Purchase {
+  id        String         @id @default(cuid())
+  semanaId  String         @unique // uma compra por semana
+  week      Week           @relation(fields: [semanaId], references: [id])
+  items     PurchaseItem[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
   deletedAt DateTime?
 }
 
-model CompraItem {
-  id            String      @id @default(cuid())
+model PurchaseItem {
+  id            String     @id @default(cuid())
   compraId      String
   ingredienteId String
   quantidade    Float
-  valorTotal    Float       // snapshot — valor pago total
-  valorUnitario Float       // snapshot — calculado: valorTotal / quantidade
-  local         String?     // opcional — nome do mercado (ex: "Atacadão", "Feira")
-  compra        Compra      @relation(fields: [compraId], references: [id], onDelete: Cascade)
-  ingrediente   Ingrediente @relation(fields: [ingredienteId], references: [id])
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  valorTotal    Float      // snapshot — valor pago total
+  valorUnitario Float      // snapshot — calculado: valorTotal / quantidade
+  local         String?    // opcional — nome do mercado (ex: "Atacadão", "Feira")
+  purchase      Purchase   @relation(fields: [compraId], references: [id], onDelete: Cascade)
+  ingredient    Ingredient @relation(fields: [ingredienteId], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   deletedAt     DateTime?
 }
 
-// ─── CUSTOS GERAIS ────────────────────────────────────────────
-
-model CustoGeral {
+model GeneralCost {
   id        String    @id @default(cuid())
   semanaId  String
   descricao String
   valor     Float
   tipo      String    @default("fixo") // 'fixo' | 'percentual_gas'
-  semana    Semana    @relation(fields: [semanaId], references: [id])
+  week      Week      @relation(fields: [semanaId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -202,35 +188,35 @@ model CustoGeral {
 
 ### Transações — regra obrigatória
 
-Toda operação com mais de uma escrita usa `prisma.$transaction`. Os exemplos de cascade e ReceitaIngrediente neste arquivo são aplicações dessa regra.
+Toda operação com mais de uma escrita usa `prisma.$transaction`. Os exemplos de cascade e RecipeIngredient neste arquivo são aplicações dessa regra.
 
 ### Soft delete — regra absoluta
-Toda entidade tem `deletedAt DateTime?`. Nada é deletado fisicamente — exceto `ReceitaIngrediente` (ver abaixo).
+Toda entidade tem `deletedAt DateTime?`. Nada é deletado fisicamente — exceto `RecipeIngredient` (ver abaixo).
 
 Toda query deve filtrar registros ativos:
 ```typescript
 where: { deletedAt: null }
 ```
 
-### ReceitaIngrediente — única exceção ao soft delete
+### RecipeIngredient — única exceção ao soft delete
 Usa delete físico com substituição da lista inteira ao editar uma receita:
 ```typescript
 await prisma.$transaction([
-  prisma.receitaIngrediente.deleteMany({ where: { receitaId: id } }),
-  prisma.receitaIngrediente.createMany({ data: novosIngredientes }),
+  prisma.recipeIngredient.deleteMany({ where: { receitaId: id } }),
+  prisma.recipeIngredient.createMany({ data: novosIngredientes }),
 ])
 ```
-Seguro porque pedidos não referenciam `ReceitaIngrediente` diretamente.
+Seguro porque orders não referenciam `RecipeIngredient` diretamente.
 
-### Soft delete em cascata — Grupo
-Ao excluir grupo, excluir todos os clientes associados na mesma transação:
+### Soft delete em cascata — Group
+Ao excluir group, excluir todos os clients associados na mesma transação:
 ```typescript
 await prisma.$transaction([
-  prisma.cliente.updateMany({
+  prisma.client.updateMany({
     where: { grupoId: id, deletedAt: null },
     data: { deletedAt: new Date() },
   }),
-  prisma.grupo.update({
+  prisma.group.update({
     where: { id },
     data: { deletedAt: new Date() },
   }),
@@ -242,31 +228,31 @@ Campos snapshot são calculados e persistidos na criação. **Nunca recalcular a
 
 | Entidade | Campo snapshot | Origem |
 |---|---|---|
-| `PedidoItem` | `valorPixSnapshot` | `TipoPreco.valorPix` no momento do pedido |
-| `PedidoItem` | `valorSwileSnapshot` | `TipoPreco.valorSwile` no momento do pedido |
-| `CompraItem` | `valorUnitario` | `valorTotal / quantidade` no momento do registro |
+| `OrderItem` | `snapshotValorPix` | `PriceType.valorPix` no momento do pedido |
+| `OrderItem` | `snapshotValorSwile` | `PriceType.valorSwile` no momento do pedido |
+| `PurchaseItem` | `valorUnitario` | `valorTotal / quantidade` no momento do registro |
 
 ### Gás automático
-`CustoGeral` com `tipo = 'percentual_gas'` é gerenciado automaticamente pelo backend.
+`GeneralCost` com `tipo = 'percentual_gas'` é gerenciado automaticamente pelo backend.
 
-Recalculado via upsert toda vez que um `CompraItem` da semana é criado, editado ou removido:
+Recalculado via upsert toda vez que um `PurchaseItem` da semana é criado, editado ou removido:
 ```typescript
-const totalIngredientes = await prisma.compraItem.aggregate({
-  where: { compra: { semanaId }, deletedAt: null },
+const totalIngredientes = await prisma.purchaseItem.aggregate({
+  where: { purchase: { semanaId }, deletedAt: null },
   _sum: { valorTotal: true },
 })
 
-await prisma.custoGeral.upsert({
+await prisma.generalCost.upsert({
   where: { semanaId_tipo: { semanaId, tipo: 'percentual_gas' } },
   create: { semanaId, descricao: 'Gás', valor: totalIngredientes._sum.valorTotal * 0.05, tipo: 'percentual_gas' },
   update: { valor: totalIngredientes._sum.valorTotal * 0.05 },
 })
 ```
 
-### Compra única por semana
-`Compra` tem `@unique` no `semanaId`. Usar `upsert` para garantir:
+### Purchase única por semana
+`Purchase` tem `@unique` no `semanaId`. Usar `upsert` para garantir:
 ```typescript
-await prisma.compra.upsert({
+await prisma.purchase.upsert({
   where: { semanaId },
   create: { semanaId },
   update: {},
@@ -279,9 +265,9 @@ await prisma.compra.upsert({
 
 | Entidade | Ordenação padrão |
 |---|---|
-| Cliente, Ingrediente, Receita, Grupo, TipoPreco | `nome asc` |
-| Pedido | `createdAt desc` |
-| CompraItem, CustoGeral | `createdAt desc` |
+| Client, Ingredient, Recipe, Group, PriceType | `nome asc` |
+| Order | `createdAt desc` |
+| PurchaseItem, GeneralCost | `createdAt desc` |
 
 ---
 
