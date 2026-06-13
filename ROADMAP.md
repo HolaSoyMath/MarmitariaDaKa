@@ -6,35 +6,35 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 
 ## Fase 1 — Setup do Monorepo
 
-- [ ] Inicializar repositório no GitHub
-- [ ] `bun init` na raiz
-- [ ] Configurar `turbo.json`
-- [ ] Configurar workspaces no `package.json` da raiz
-- [ ] Criar estrutura de pastas: `apps/frontend`, `apps/backend`, `shared/schemas`
-- [ ] Copiar docs, obsidian, CLAUDE.md e skills para o projeto
-- [ ] Commit inicial
+- [x] Inicializar repositório no GitHub
+- [x] `bun init` na raiz
+- [x] Configurar `turbo.json`
+- [x] Configurar workspaces no `package.json` da raiz
+- [x] Criar estrutura de pastas: `apps/frontend`, `apps/backend`, `shared/schemas`
+- [x] Copiar docs, obsidian, CLAUDE.md e skills para o projeto
+- [x] Commit inicial
 
 ---
 
 ## Fase 2 — Shared (Schemas Zod)
 
-- [ ] Configurar `shared/` como workspace
-- [ ] Criar `enums.ts`
+- [x] Configurar `shared/` como workspace
+- [x] Criar `enums.ts`
 
 **Cadastros base:**
-- [ ] Grupo — Base, Input, Response
-- [ ] Cliente — Base, Input, Response
-- [ ] Ingrediente — Base, Input, Response
-- [ ] Receita — Base, Input, Response
+- [x] Grupo — Base, Input, Response
+- [x] Cliente — Base, Input, Response
+- [x] Ingrediente — Base, Input, Response
+- [x] Receita — Base, Input, Response
 
 **Operação:**
-- [ ] TipoPreco — Base, Input, Response
-- [ ] Semana — Base, Input, Response
-- [ ] Cardápio — Base, Input, Response
-- [ ] Pedido — Base, Input, MarcarPagoInput, Response
-- [ ] Compra — Base, Input, Response
-- [ ] CustoGeral — Base, Input, Response
-- [ ] Financeiro — PeriodoFinanceiro, RelatorioFinanceiroResponse
+- [x] TipoPreco — Base, Input, Response
+- [x] Semana — Base, Input, Response
+- [x] Cardápio — Base, Input, Response
+- [x] Pedido — Base, Input, MarcarPagoInput, Response
+- [x] Compra — Base, Input, Response
+- [x] CustoGeral — Base, Input, Response
+- [x] Financeiro — PeriodoFinanceiro, RelatorioFinanceiroResponse
 
 ---
 
