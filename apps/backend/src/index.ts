@@ -1,11 +1,19 @@
 import { Elysia } from 'elysia'
-import { PORT } from './lib/constants'
+import { gruposRoutes } from './routes/grupos'
+import { clientesRoutes } from './routes/clientes'
+import { ingredientesRoutes } from './routes/ingredientes'
+
+if (!process.env.PORT) throw new Error('Variável de ambiente PORT não definida')
+const port = Number(process.env.PORT)
 
 const app = new Elysia()
   .get('/health', () => ({ status: 'ok', timestamp: new Date().toISOString() }))
+  .use(gruposRoutes)
+  .use(clientesRoutes)
+  .use(ingredientesRoutes)
 
-app.listen(PORT, () => {
-  console.log(`Backend running at http://localhost:${PORT}`)
+app.listen(port, () => {
+  console.log(`Backend running at http://localhost:${port}`)
 })
 
 export type App = typeof app

@@ -1,0 +1,32 @@
+import { GroupsService } from '../services/grupos.service'
+import type { GroupInput } from '@marmitaria/schemas/grupo/grupoInput.schema'
+import type { GroupResponse } from '@marmitaria/schemas/grupo/grupoResponse.schema'
+
+export class GroupsController {
+  constructor(private service: GroupsService) {}
+
+  private format({ id, nome }: { id: string; nome: string }): GroupResponse {
+    return { id, nome }
+  }
+
+  async listAll(): Promise<GroupResponse[]> {
+    const groups = await this.service.listAll()
+    return groups.map(g => this.format(g))
+  }
+
+  async getById(id: string): Promise<GroupResponse> {
+    return this.format(await this.service.getById(id))
+  }
+
+  async create(data: GroupInput): Promise<GroupResponse> {
+    return this.format(await this.service.create(data))
+  }
+
+  async update(id: string, data: GroupInput): Promise<GroupResponse> {
+    return this.format(await this.service.update(id, data))
+  }
+
+  async remove(id: string): Promise<void> {
+    return this.service.remove(id)
+  }
+}
