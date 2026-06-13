@@ -1,13 +1,13 @@
 import { z } from 'zod'
-import { receitaBase } from './receitaBase.schema'
+import { recipeBase } from './receitaBase.schema'
 
-const receitaIngredienteInput = z.object({
+const recipeIngredientInput = z.object({
   ingredienteId: z.string().uuid(),
   quantidade: z.number().positive(),
 })
 
-export const receitaInput = receitaBase
+export const recipeInput = recipeBase
   .pick({ nome: true })
-  .extend({ ingredientes: z.array(receitaIngredienteInput) })
+  .extend({ ingredientes: z.array(recipeIngredientInput) })
 
-export type ReceitaInput = z.infer<typeof receitaInput>
+export type RecipeInput = z.infer<typeof recipeInput>

@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import { compraBase } from './compraBase.schema'
-import { ingredienteResponse } from '../ingrediente/ingredienteResponse.schema'
+import { purchaseBase } from './compraBase.schema'
+import { ingredientResponse } from '../ingrediente/ingredienteResponse.schema'
 
-const compraItemResponse = z.object({
+const purchaseItemResponse = z.object({
   id: z.string().uuid(),
   ingredienteId: z.string().uuid(),
   quantidade: z.number(),
@@ -10,11 +10,11 @@ const compraItemResponse = z.object({
   valorUnitario: z.number(),
   local: z.string().nullable(),
   createdAt: z.date(),
-  ingrediente: ingredienteResponse,
+  ingrediente: ingredientResponse,
 })
 
-export const compraResponse = compraBase
+export const purchaseResponse = purchaseBase
   .pick({ id: true, semanaId: true })
-  .extend({ itens: z.array(compraItemResponse) })
+  .extend({ itens: z.array(purchaseItemResponse) })
 
-export type CompraResponse = z.infer<typeof compraResponse>
+export type PurchaseResponse = z.infer<typeof purchaseResponse>

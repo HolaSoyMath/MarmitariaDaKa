@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { clienteBase } from './clienteBase.schema'
+import { clientBase } from './clienteBase.schema'
 
-export const clienteInput = clienteBase.pick({ nome: true, grupoId: true })
-export type ClienteInput = z.infer<typeof clienteInput>
+export const clientInput = clientBase.pick({ nome: true, grupoId: true })
+export type ClientInput = z.infer<typeof clientInput>

@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
-export const StatusPedidoEnum = z.enum(['pendente', 'produzido', 'pago'])
-export type StatusPedido = z.infer<typeof StatusPedidoEnum>
+export const OrderStatusEnum = z.enum(['pendente', 'produzido', 'pago'])
+export type OrderStatus = z.infer<typeof OrderStatusEnum>
 
-export const MetodoPagamentoEnum = z.enum(['Pix', 'Swile'])
-export type MetodoPagamento = z.infer<typeof MetodoPagamentoEnum>
+export const PaymentMethodEnum = z.enum(['Pix', 'Swile'])
+export type PaymentMethod = z.infer<typeof PaymentMethodEnum>
 
-export const UnidadeIngredienteEnum = z.enum(['g', 'kg', 'ml', 'L', 'un'])
-export type UnidadeIngrediente = z.infer<typeof UnidadeIngredienteEnum>
+export const IngredientUnitEnum = z.enum(['g', 'kg', 'ml', 'L', 'un'])
+export type IngredientUnit = z.infer<typeof IngredientUnitEnum>

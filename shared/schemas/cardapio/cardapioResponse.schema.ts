@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { cardapioBase } from './cardapioBase.schema'
-import { receitaResponse } from '../receita/receitaResponse.schema'
+import { menuItemBase } from './cardapioBase.schema'
+import { recipeResponse } from '../receita/receitaResponse.schema'
 
-export const cardapioResponse = cardapioBase
+export const menuItemResponse = menuItemBase
   .pick({ id: true, semanaId: true, receitaId: true })
-  .extend({ receita: receitaResponse })
+  .extend({ receita: recipeResponse })
 
-export type CardapioResponse = z.infer<typeof cardapioResponse>
+export type MenuItemResponse = z.infer<typeof menuItemResponse>

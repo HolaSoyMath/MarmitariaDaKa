@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { custoGeralBase } from './custoGeralBase.schema'
+import { generalCostBase } from './custoGeralBase.schema'
 
-export const custoGeralResponse = custoGeralBase.pick({
+export const generalCostResponse = generalCostBase.pick({
   id: true,
   semanaId: true,
   descricao: true,
@@ -9,4 +9,4 @@ export const custoGeralResponse = custoGeralBase.pick({
   automatico: true,
 })
 
-export type CustoGeralResponse = z.infer<typeof custoGeralResponse>
+export type GeneralCostResponse = z.infer<typeof generalCostResponse>

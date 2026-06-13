@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const tipoPrecoBase = z.object({
+export const priceTypeBase = z.object({
   id: z.string().uuid(),
   tipo: z.string().min(1),
   tamanho: z.string().min(1),
@@ -9,4 +9,4 @@ export const tipoPrecoBase = z.object({
   deletedAt: z.date().nullable(),
 })
 
-export type TipoPrecoBase = z.infer<typeof tipoPrecoBase>
+export type PriceTypeBase = z.infer<typeof priceTypeBase>

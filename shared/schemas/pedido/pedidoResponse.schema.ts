@@ -1,22 +1,22 @@
 import { z } from 'zod'
-import { pedidoBase } from './pedidoBase.schema'
-import { clienteResponse } from '../cliente/clienteResponse.schema'
-import { tipoPrecoResponse } from '../tipoPreco/tipoPrecoResponse.schema'
+import { orderBase } from './pedidoBase.schema'
+import { clientResponse } from '../cliente/clienteResponse.schema'
+import { priceTypeResponse } from '../tipoPreco/tipoPrecoResponse.schema'
 
-const pedidoItemResponse = z.object({
+const orderItemResponse = z.object({
   id: z.string().uuid(),
   tipoPrecoId: z.string().uuid(),
   quantidade: z.number().int().positive(),
   snapshotValorPix: z.number(),
   snapshotValorSwile: z.number(),
-  tipoPreco: tipoPrecoResponse,
+  tipoPreco: priceTypeResponse,
 })
 
-export const pedidoResponse = pedidoBase
+export const orderResponse = orderBase
   .pick({ id: true, semanaId: true, clienteId: true, status: true, metodoPagamento: true })
   .extend({
-    cliente: clienteResponse,
-    itens: z.array(pedidoItemResponse),
+    cliente: clientResponse,
+    itens: z.array(orderItemResponse),
   })
 
-export type PedidoResponse = z.infer<typeof pedidoResponse>
+export type OrderResponse = z.infer<typeof orderResponse>

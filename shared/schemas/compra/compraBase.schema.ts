@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const compraItemBase = z.object({
+export const purchaseItemBase = z.object({
   id: z.string().uuid(),
   compraId: z.string().uuid(),
   ingredienteId: z.string().uuid(),
@@ -12,10 +12,10 @@ export const compraItemBase = z.object({
   deletedAt: z.date().nullable(),
 })
 
-export const compraBase = z.object({
+export const purchaseBase = z.object({
   id: z.string().uuid(),
   semanaId: z.string().uuid(),
 })
 
-export type CompraBase = z.infer<typeof compraBase>
-export type CompraItemBase = z.infer<typeof compraItemBase>
+export type PurchaseBase = z.infer<typeof purchaseBase>
+export type PurchaseItemBase = z.infer<typeof purchaseItemBase>

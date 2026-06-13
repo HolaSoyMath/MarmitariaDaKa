@@ -1,34 +1,34 @@
 import { z } from 'zod'
 
-const pratoPorTamanho = z.object({
+const dishBySize = z.object({
   tamanho: z.string(),
   quantidade: z.number().int(),
   faturamento: z.number(),
 })
 
-const pratoRelatorio = z.object({
+const dishReport = z.object({
   nome: z.string(),
   quantidade: z.number().int(),
   faturamento: z.number(),
-  porTamanho: z.array(pratoPorTamanho),
+  porTamanho: z.array(dishBySize),
 })
 
-const metodoRelatorio = z.object({
+const paymentMethodReport = z.object({
   quantidade: z.number().int(),
   valor: z.number(),
 })
 
-export const relatorioFinanceiroResponse = z.object({
+export const financialReportResponse = z.object({
   faturamento: z.number(),
   custo: z.number(),
   lucro: z.number(),
   margemPercentual: z.number(),
   aReceber: z.number(),
   porMetodo: z.object({
-    Pix: metodoRelatorio,
-    Swile: metodoRelatorio,
+    Pix: paymentMethodReport,
+    Swile: paymentMethodReport,
   }),
-  pratos: z.array(pratoRelatorio),
+  pratos: z.array(dishReport),
 })
 
-export type RelatorioFinanceiroResponse = z.infer<typeof relatorioFinanceiroResponse>
+export type FinancialReportResponse = z.infer<typeof financialReportResponse>

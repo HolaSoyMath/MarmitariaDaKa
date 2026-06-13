@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { clienteBase } from './clienteBase.schema'
-import { grupoResponse } from '../grupo/grupoResponse.schema'
+import { clientBase } from './clienteBase.schema'
+import { groupResponse } from '../grupo/grupoResponse.schema'
 
-export const clienteResponse = clienteBase
+export const clientResponse = clientBase
   .pick({ id: true, nome: true, grupoId: true })
-  .extend({ grupo: grupoResponse })
+  .extend({ grupo: groupResponse })
 
-export type ClienteResponse = z.infer<typeof clienteResponse>
+export type ClientResponse = z.infer<typeof clientResponse>

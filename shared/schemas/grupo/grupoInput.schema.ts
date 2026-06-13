@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { grupoBase } from './grupoBase.schema'
+import { groupBase } from './grupoBase.schema'
 
-export const grupoInput = grupoBase.pick({ nome: true })
-export type GrupoInput = z.infer<typeof grupoInput>
+export const groupInput = groupBase.pick({ nome: true })
+export type GroupInput = z.infer<typeof groupInput>

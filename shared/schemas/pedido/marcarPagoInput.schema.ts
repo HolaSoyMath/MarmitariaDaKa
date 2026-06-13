@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import { MetodoPagamentoEnum } from '../enums'
+import { PaymentMethodEnum } from '../enums'
 
-export const marcarPagoInput = z.object({
-  metodoPagamento: MetodoPagamentoEnum,
+export const markPaidInput = z.object({
+  metodoPagamento: PaymentMethodEnum,
 })
 
-export type MarcarPagoInput = z.infer<typeof marcarPagoInput>
+export type MarkPaidInput = z.infer<typeof markPaidInput>

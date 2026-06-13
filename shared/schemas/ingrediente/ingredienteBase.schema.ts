@@ -1,11 +1,11 @@
 import { z } from 'zod'
-import { UnidadeIngredienteEnum } from '../enums'
+import { IngredientUnitEnum } from '../enums'
 
-export const ingredienteBase = z.object({
+export const ingredientBase = z.object({
   id: z.string().uuid(),
   nome: z.string().min(1),
-  unidade: UnidadeIngredienteEnum,
+  unidade: IngredientUnitEnum,
   deletedAt: z.date().nullable(),
 })
 
-export type IngredienteBase = z.infer<typeof ingredienteBase>
+export type IngredientBase = z.infer<typeof ingredientBase>

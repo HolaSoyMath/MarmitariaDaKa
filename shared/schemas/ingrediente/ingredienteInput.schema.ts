@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ingredienteBase } from './ingredienteBase.schema'
+import { ingredientBase } from './ingredienteBase.schema'
 
-export const ingredienteInput = ingredienteBase.pick({ nome: true, unidade: true })
-export type IngredienteInput = z.infer<typeof ingredienteInput>
+export const ingredientInput = ingredientBase.pick({ nome: true, unidade: true })
+export type IngredientInput = z.infer<typeof ingredientInput>

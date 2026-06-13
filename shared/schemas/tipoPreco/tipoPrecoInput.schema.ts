@@ -1,11 +1,11 @@
 import { z } from 'zod'
-import { tipoPrecoBase } from './tipoPrecoBase.schema'
+import { priceTypeBase } from './tipoPrecoBase.schema'
 
-export const tipoPrecoInput = tipoPrecoBase.pick({
+export const priceTypeInput = priceTypeBase.pick({
   tipo: true,
   tamanho: true,
   valorPix: true,
   valorSwile: true,
 })
 
-export type TipoPrecoInput = z.infer<typeof tipoPrecoInput>
+export type PriceTypeInput = z.infer<typeof priceTypeInput>

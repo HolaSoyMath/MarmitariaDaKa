@@ -1,13 +1,13 @@
 import { z } from 'zod'
-import { pedidoBase } from './pedidoBase.schema'
+import { orderBase } from './pedidoBase.schema'
 
-const pedidoItemInput = z.object({
+const orderItemInput = z.object({
   tipoPrecoId: z.string().uuid(),
   quantidade: z.number().int().positive(),
 })
 
-export const pedidoInput = pedidoBase
+export const orderInput = orderBase
   .pick({ semanaId: true, clienteId: true })
-  .extend({ itens: z.array(pedidoItemInput).min(1) })
+  .extend({ itens: z.array(orderItemInput).min(1) })
 
-export type PedidoInput = z.infer<typeof pedidoInput>
+export type OrderInput = z.infer<typeof orderInput>

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const periodoFinanceiro = z.discriminatedUnion('tipo', [
+export const financialPeriod = z.discriminatedUnion('tipo', [
   z.object({
     tipo: z.literal('semana'),
     semanaId: z.string().uuid(),
@@ -17,4 +17,4 @@ export const periodoFinanceiro = z.discriminatedUnion('tipo', [
   }),
 ])
 
-export type PeriodoFinanceiro = z.infer<typeof periodoFinanceiro>
+export type FinancialPeriod = z.infer<typeof financialPeriod>

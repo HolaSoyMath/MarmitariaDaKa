@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
-export const grupoBase = z.object({
+export const groupBase = z.object({
   id: z.string().uuid(),
   nome: z.string().min(1),
   deletedAt: z.date().nullable(),
 })
 
-export type GrupoBase = z.infer<typeof grupoBase>
+export type GroupBase = z.infer<typeof groupBase>

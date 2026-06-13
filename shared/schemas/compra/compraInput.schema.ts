@@ -1,15 +1,15 @@
 import { z } from 'zod'
-import { compraBase } from './compraBase.schema'
+import { purchaseBase } from './compraBase.schema'
 
-const compraItemInput = z.object({
+const purchaseItemInput = z.object({
   ingredienteId: z.string().uuid(),
   quantidade: z.number().positive(),
   valorTotal: z.number().positive(),
   local: z.string().optional(),
 })
 
-export const compraInput = compraBase
+export const purchaseInput = purchaseBase
   .pick({ semanaId: true })
-  .extend({ itens: z.array(compraItemInput).min(1) })
+  .extend({ itens: z.array(purchaseItemInput).min(1) })
 
-export type CompraInput = z.infer<typeof compraInput>
+export type PurchaseInput = z.infer<typeof purchaseInput>

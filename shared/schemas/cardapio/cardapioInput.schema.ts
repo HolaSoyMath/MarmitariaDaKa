@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { cardapioBase } from './cardapioBase.schema'
+import { menuItemBase } from './cardapioBase.schema'
 
-export const cardapioInput = cardapioBase.pick({ semanaId: true, receitaId: true })
-export type CardapioInput = z.infer<typeof cardapioInput>
+export const menuItemInput = menuItemBase.pick({ semanaId: true, receitaId: true })
+export type MenuItemInput = z.infer<typeof menuItemInput>

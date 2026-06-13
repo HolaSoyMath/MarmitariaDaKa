@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { semanaBase } from './semanaBase.schema'
+import { weekBase } from './semanaBase.schema'
 
-export const semanaInput = semanaBase.pick({ numero: true, ano: true })
-export type SemanaInput = z.infer<typeof semanaInput>
+export const weekInput = weekBase.pick({ numero: true, ano: true })
+export type WeekInput = z.infer<typeof weekInput>

@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { StatusPedidoEnum, MetodoPagamentoEnum } from '../enums'
+import { OrderStatusEnum, PaymentMethodEnum } from '../enums'
 
-export const pedidoItemBase = z.object({
+export const orderItemBase = z.object({
   id: z.string().uuid(),
   pedidoId: z.string().uuid(),
   tipoPrecoId: z.string().uuid(),
@@ -10,14 +10,14 @@ export const pedidoItemBase = z.object({
   snapshotValorSwile: z.number().nonnegative(),
 })
 
-export const pedidoBase = z.object({
+export const orderBase = z.object({
   id: z.string().uuid(),
   semanaId: z.string().uuid(),
   clienteId: z.string().uuid(),
-  status: StatusPedidoEnum,
-  metodoPagamento: MetodoPagamentoEnum.nullable(),
+  status: OrderStatusEnum,
+  metodoPagamento: PaymentMethodEnum.nullable(),
   deletedAt: z.date().nullable(),
 })
 
-export type PedidoBase = z.infer<typeof pedidoBase>
-export type PedidoItemBase = z.infer<typeof pedidoItemBase>
+export type OrderBase = z.infer<typeof orderBase>
+export type OrderItemBase = z.infer<typeof orderItemBase>

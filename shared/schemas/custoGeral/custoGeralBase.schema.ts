@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const custoGeralBase = z.object({
+export const generalCostBase = z.object({
   id: z.string().uuid(),
   semanaId: z.string().uuid(),
   descricao: z.string().min(1),
@@ -9,4 +9,4 @@ export const custoGeralBase = z.object({
   deletedAt: z.date().nullable(),
 })
 
-export type CustoGeralBase = z.infer<typeof custoGeralBase>
+export type GeneralCostBase = z.infer<typeof generalCostBase>
