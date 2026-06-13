@@ -200,6 +200,10 @@ model CustoGeral {
 
 ## Regras de banco
 
+### Transações — regra obrigatória
+
+Toda operação com mais de uma escrita usa `prisma.$transaction`. Os exemplos de cascade e ReceitaIngrediente neste arquivo são aplicações dessa regra.
+
 ### Soft delete — regra absoluta
 Toda entidade tem `deletedAt DateTime?`. Nada é deletado fisicamente — exceto `ReceitaIngrediente` (ver abaixo).
 

@@ -92,6 +92,26 @@ where: { deletedAt: null }
 
 ---
 
+## Transações — regra obrigatória
+
+Toda operação que envolva **mais de uma escrita no banco** deve usar `prisma.$transaction`. Sem exceção.
+
+```typescript
+// ERRADO — sem atomicidade
+await prisma.cliente.updateMany({ where: { grupoId: id }, data: { deletedAt: new Date() } })
+await prisma.grupo.update({ where: { id }, data: { deletedAt: new Date() } })
+
+// CORRETO
+await prisma.$transaction([
+  prisma.cliente.updateMany({ where: { grupoId: id }, data: { deletedAt: new Date() } }),
+  prisma.grupo.update({ where: { id }, data: { deletedAt: new Date() } }),
+])
+```
+
+Aplica-se a: cascade soft delete, criação de Pedido + itens, edição de Receita + substituição de ingredientes, qualquer service que execute múltiplas escritas na mesma operação.
+
+---
+
 ## Regras de negócio críticas
 
 **Snapshot de preço:** ao criar `PedidoItem`, copiar `valorPix` e `valorSwile` do `TipoPreco` para `valorPixSnapshot` e `valorSwileSnapshot`. Nunca recalcular depois.
