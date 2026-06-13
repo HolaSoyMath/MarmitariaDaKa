@@ -41,11 +41,11 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 ## Fase 3 — Backend
 
 **Setup:**
-- [ ] Inicializar projeto Bun + Elysia em `apps/backend`
-- [ ] Configurar Prisma + conexão Neon
-- [ ] Rodar migration inicial com o schema completo
-- [ ] Configurar `lib/prisma.ts` singleton
-- [ ] Exportar tipo `App` para Eden Treaty
+- [x] Inicializar projeto Bun + Elysia em `apps/backend`
+- [x] Configurar Prisma + conexão Neon
+- [x] Rodar migration inicial com o schema completo
+- [x] Configurar `lib/prisma.ts` singleton
+- [x] Exportar tipo `App` para Eden Treaty
 
 **Cadastros base:**
 - [ ] Grupos — interface, repository, service, controller, route
