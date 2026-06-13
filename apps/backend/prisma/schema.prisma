@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── GRUPOS E CLIENTES ───────────────────────────────────────
+
+model Grupo {
+  id        String    @id @default(cuid())
+  nome      String    @unique
+  clientes  Cliente[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Cliente {
+  id        String   @id @default(cuid())
+  nome      String
+  grupoId   String
+  grupo     Grupo    @relation(fields: [grupoId], references: [id])
+  pedidos   Pedido[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+// ─── INGREDIENTES E RECEITAS ─────────────────────────────────
+
+model Ingrediente {
+  id          String               @id @default(cuid())
+  nome        String               @unique
+  unidade     String
+  receitas    ReceitaIngrediente[]
+  compraItens CompraItem[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  deletedAt   DateTime?
+}
+
+model Receita {
+  id           String               @id @default(cuid())
+  nome         String               @unique
+  ingredientes ReceitaIngrediente[]
+  cardapio     CardapioItem[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  deletedAt    DateTime?
+}
+
+model ReceitaIngrediente {
+  id            String      @id @default(cuid())
+  receitaId     String
+  ingredienteId String
+  quantidade    Float
+  receita       Receita     @relation(fields: [receitaId], references: [id], onDelete: Cascade)
+  ingrediente   Ingrediente @relation(fields: [ingredienteId], references: [id])
+
+  @@unique([receitaId, ingredienteId])
+}
+
+// ─── TIPOS E PREÇOS ───────────────────────────────────────────
+
+model TipoPreco {
+  id          String       @id @default(cuid())
+  tipo        String
+  tamanho     String
+  valorPix    Float
+  valorSwile  Float
+  pedidoItens PedidoItem[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([tipo, tamanho])
+}
+
+// ─── SEMANA E CARDÁPIO ────────────────────────────────────────
+
+model Semana {
+  id           String         @id @default(cuid())
+  numeroSemana Int
+  ano          Int
+  cardapio     CardapioItem[]
+  pedidos      Pedido[]
+  compra       Compra?
+  custosGerais CustoGeral[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+
+  @@unique([numeroSemana, ano])
+}
+
+model CardapioItem {
+  id        String       @id @default(cuid())
+  semanaId  String
+  receitaId String
+  semana    Semana       @relation(fields: [semanaId], references: [id])
+  receita   Receita      @relation(fields: [receitaId], references: [id])
+  pedidos   PedidoItem[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  deletedAt DateTime?
+
+  @@unique([semanaId, receitaId])
+}
+
+// ─── PEDIDOS ─────────────────────────────────────────────────
+
+model Pedido {
+  id              String       @id @default(cuid())
+  semanaId        String
+  clienteId       String
+  status          String       @default("pendente")
+  metodoPagamento String?
+  semana          Semana       @relation(fields: [semanaId], references: [id])
+  cliente         Cliente      @relation(fields: [clienteId], references: [id])
+  itens           PedidoItem[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+}
+
+model PedidoItem {
+  id                 String       @id @default(cuid())
+  pedidoId           String
+  cardapioItemId     String
+  tipoPrecoId        String
+  quantidade         Int          @default(1)
+  snapshotValorPix   Float
+  snapshotValorSwile Float
+  pedido             Pedido       @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  cardapioItem       CardapioItem @relation(fields: [cardapioItemId], references: [id])
+  tipoPreco          TipoPreco    @relation(fields: [tipoPrecoId], references: [id])
+  deletedAt          DateTime?
+}
+
+// ─── COMPRAS ─────────────────────────────────────────────────
+
+model Compra {
+  id        String       @id @default(cuid())
+  semanaId  String       @unique
+  semana    Semana       @relation(fields: [semanaId], references: [id])
+  itens     CompraItem[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  deletedAt DateTime?
+}
+
+model CompraItem {
+  id            String      @id @default(cuid())
+  compraId      String
+  ingredienteId String
+  quantidade    Float
+  valorTotal    Float
+  valorUnitario Float
+  local         String?
+  compra        Compra      @relation(fields: [compraId], references: [id], onDelete: Cascade)
+  ingrediente   Ingrediente @relation(fields: [ingredienteId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+}
+
+// ─── CUSTOS GERAIS ────────────────────────────────────────────
+
+model CustoGeral {
+  id        String    @id @default(cuid())
+  semanaId  String
+  descricao String
+  valor     Float
+  tipo      String    @default("fixo")
+  semana    Semana    @relation(fields: [semanaId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
