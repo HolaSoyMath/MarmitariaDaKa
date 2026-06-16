@@ -5,3 +5,11 @@ export class NotFoundError extends Error {
     this.name = 'NotFoundError'
   }
 }
+
+export class ConflictError extends Error {
+  status = 409
+  constructor(message = 'Conflict') {
+    super(message)
+    this.name = 'ConflictError'
+  }
+}

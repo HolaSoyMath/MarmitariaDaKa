@@ -51,10 +51,10 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 - [x] Grupos — interface, repository, service, controller, route
 - [x] Clientes — interface, repository, service, controller, route
 - [x] Ingredientes — interface, repository, service, controller, route
-- [ ] Receitas — interface, repository, service, controller, route
-  - [ ] Proteção de edição com pedidos ativos
-  - [ ] Delete físico de ingredientes (substituição da lista)
-  - [ ] Campo `ultimaVezNoCardapio` no response
+- [x] Receitas — interface, repository, service, controller, route
+  - [x] Proteção de edição com pedidos ativos
+  - [x] Delete físico de ingredientes (substituição da lista)
+  - [x] Campo `ultimaVezNoCardapio` no response
 
 **Operação semanal:**
 - [ ] Semana — criação automática via week picker, route
