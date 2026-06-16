@@ -1,0 +1,33 @@
+import type { PriceType } from '@prisma/client'
+import { PriceTypesService } from '../services/tiposPrecos.service'
+import type { PriceTypeInput } from '@marmitaria/schemas/tipoPreco/tipoPrecoInput.schema'
+import type { PriceTypeResponse } from '@marmitaria/schemas/tipoPreco/tipoPrecoResponse.schema'
+
+export class PriceTypesController {
+  constructor(private service: PriceTypesService) {}
+
+  private format(pt: PriceType): PriceTypeResponse {
+    return { id: pt.id, type: pt.type, size: pt.size, pixPrice: pt.pixPrice, swilePrice: pt.swilePrice }
+  }
+
+  async listAll(): Promise<PriceTypeResponse[]> {
+    const pts = await this.service.listAll()
+    return pts.map(pt => this.format(pt))
+  }
+
+  async getById(id: string): Promise<PriceTypeResponse> {
+    return this.format(await this.service.getById(id))
+  }
+
+  async create(data: PriceTypeInput): Promise<PriceTypeResponse> {
+    return this.format(await this.service.create(data))
+  }
+
+  async update(id: string, data: PriceTypeInput): Promise<PriceTypeResponse> {
+    return this.format(await this.service.update(id, data))
+  }
+
+  async remove(id: string): Promise<void> {
+    return this.service.remove(id)
+  }
+}

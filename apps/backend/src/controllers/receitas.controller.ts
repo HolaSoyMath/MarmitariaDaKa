@@ -11,18 +11,18 @@ export class RecipesController {
     const lastWeek = recipe.menuItems[0]?.week
     return {
       id: recipe.id,
-      nome: recipe.nome,
-      ingredientes: recipe.ingredients.map(ri => ({
-        ingredienteId: ri.ingredienteId,
-        quantidade: ri.quantidade,
-        ingrediente: {
+      name: recipe.name,
+      ingredients: recipe.ingredients.map(ri => ({
+        ingredientId: ri.ingredientId,
+        quantity: ri.quantity,
+        ingredient: {
           id: ri.ingredient.id,
-          nome: ri.ingredient.nome,
-          unidade: ri.ingredient.unidade as IngredientResponse['unidade'],
+          name: ri.ingredient.name,
+          unit: ri.ingredient.unit as IngredientResponse['unit'],
         },
       })),
-      ultimaVezNoCardapio: lastWeek
-        ? `Semana ${lastWeek.numeroSemana}/${lastWeek.ano}`
+      lastOnMenu: lastWeek
+        ? `Semana ${lastWeek.weekNumber}/${lastWeek.year}`
         : null,
     }
   }

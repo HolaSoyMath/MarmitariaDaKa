@@ -13,16 +13,16 @@ export class GroupsRepository implements IGroupsRepository {
   }
 
   async create(data: GroupInput): Promise<Group> {
-    return prisma.group.create({ data })
+    return prisma.group.create({ data: { name: data.name } })
   }
 
   async update(id: string, data: GroupInput): Promise<Group> {
-    return prisma.group.update({ where: { id }, data })
+    return prisma.group.update({ where: { id }, data: { name: data.name } })
   }
 
   async softDelete(id: string): Promise<void> {
     await prisma.$transaction([
-      prisma.client.updateMany({ where: { grupoId: id, deletedAt: null }, data: { deletedAt: new Date() } }),
+      prisma.client.updateMany({ where: { groupId: id, deletedAt: null }, data: { deletedAt: new Date() } }),
       prisma.group.update({ where: { id }, data: { deletedAt: new Date() } }),
     ])
   }

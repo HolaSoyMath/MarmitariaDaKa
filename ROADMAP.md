@@ -57,9 +57,9 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
   - [x] Campo `ultimaVezNoCardapio` no response
 
 **Operação semanal:**
-- [ ] Semana — criação automática via week picker, route
-- [ ] TiposPrecos — CRUD completo, route
-- [ ] Cardápio — adicionar/remover prato, validação de receita vinculada, route
+- [x] Semana — criação automática via week picker, route
+- [x] TiposPrecos — CRUD completo, route
+- [x] Cardápio — adicionar/remover prato, validação de receita vinculada, route
 - [ ] Pedidos — CRUD, transições de status, snapshot de preço, route
   - [ ] `marcarProduzido`
   - [ ] `marcarPago` (com método Pix/Swile)

@@ -13,11 +13,11 @@ export class IngredientsRepository implements IIngredientsRepository {
   }
 
   async create(data: IngredientInput): Promise<Ingredient> {
-    return prisma.ingredient.create({ data })
+    return prisma.ingredient.create({ data: { name: data.name, unit: data.unit } })
   }
 
   async update(id: string, data: IngredientInput): Promise<Ingredient> {
-    return prisma.ingredient.update({ where: { id }, data })
+    return prisma.ingredient.update({ where: { id }, data: { name: data.name, unit: data.unit } })
   }
 
   async softDelete(id: string): Promise<void> {

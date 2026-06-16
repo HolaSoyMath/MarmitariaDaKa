@@ -6,8 +6,8 @@ import type { ClientWithGroup } from '../interfaces/clientes.interface'
 export class ClientsController {
   constructor(private service: ClientsService) {}
 
-  private format({ id, nome, grupoId, group }: ClientWithGroup): ClientResponse {
-    return { id, nome, grupoId, group: { id: group.id, nome: group.nome } }
+  private format({ id, name, groupId, group }: ClientWithGroup): ClientResponse {
+    return { id, name, groupId, group: { id: group.id, name: group.name } }
   }
 
   async listAll(): Promise<ClientResponse[]> {

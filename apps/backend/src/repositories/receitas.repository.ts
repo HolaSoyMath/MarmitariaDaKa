@@ -29,11 +29,11 @@ export class RecipesRepository implements IRecipesRepository {
   async create(data: RecipeInput): Promise<RecipeWithIngredients> {
     return prisma.recipe.create({
       data: {
-        nome: data.nome,
+        name: data.name,
         ingredients: {
-          create: data.ingredientes.map(i => ({
-            ingredienteId: i.ingredienteId,
-            quantidade: i.quantidade,
+          create: data.ingredients.map(i => ({
+            ingredientId: i.ingredientId,
+            quantity: i.quantity,
           })),
         },
       },
@@ -43,15 +43,15 @@ export class RecipesRepository implements IRecipesRepository {
 
   async update(id: string, data: RecipeInput): Promise<RecipeWithIngredients> {
     return prisma.$transaction(async tx => {
-      await tx.recipeIngredient.deleteMany({ where: { receitaId: id } })
+      await tx.recipeIngredient.deleteMany({ where: { recipeId: id } })
       return tx.recipe.update({
         where: { id },
         data: {
-          nome: data.nome,
+          name: data.name,
           ingredients: {
-            create: data.ingredientes.map(i => ({
-              ingredienteId: i.ingredienteId,
-              quantidade: i.quantidade,
+            create: data.ingredients.map(i => ({
+              ingredientId: i.ingredientId,
+              quantity: i.quantity,
             })),
           },
         },
@@ -67,7 +67,7 @@ export class RecipesRepository implements IRecipesRepository {
   async hasActiveOrders(id: string): Promise<boolean> {
     const count = await prisma.orderItem.count({
       where: {
-        menuItem: { receitaId: id },
+        menuItem: { recipeId: id },
         order: { status: { in: ['pendente', 'produzido'] }, deletedAt: null },
         deletedAt: null,
       },

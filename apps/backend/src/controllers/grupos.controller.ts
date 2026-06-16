@@ -5,8 +5,8 @@ import type { GroupResponse } from '@marmitaria/schemas/grupo/grupoResponse.sche
 export class GroupsController {
   constructor(private service: GroupsService) {}
 
-  private format({ id, nome }: { id: string; nome: string }): GroupResponse {
-    return { id, nome }
+  private format({ id, name }: { id: string; name: string }): GroupResponse {
+    return { id, name }
   }
 
   async listAll(): Promise<GroupResponse[]> {

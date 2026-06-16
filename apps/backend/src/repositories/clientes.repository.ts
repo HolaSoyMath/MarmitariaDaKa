@@ -12,11 +12,18 @@ export class ClientsRepository implements IClientsRepository {
   }
 
   async create(data: ClientInput): Promise<ClientWithGroup> {
-    return prisma.client.create({ data, include: { group: true } })
+    return prisma.client.create({
+      data: { name: data.name, groupId: data.groupId },
+      include: { group: true },
+    })
   }
 
   async update(id: string, data: ClientInput): Promise<ClientWithGroup> {
-    return prisma.client.update({ where: { id }, data, include: { group: true } })
+    return prisma.client.update({
+      where: { id },
+      data: { name: data.name, groupId: data.groupId },
+      include: { group: true },
+    })
   }
 
   async softDelete(id: string): Promise<void> {

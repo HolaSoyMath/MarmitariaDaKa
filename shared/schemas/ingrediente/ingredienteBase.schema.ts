@@ -3,8 +3,8 @@ import { IngredientUnitEnum } from '../enums'
 
 export const ingredientBase = z.object({
   id: z.string().uuid(),
-  nome: z.string().min(1),
-  unidade: IngredientUnitEnum,
+  name: z.string().min(1),
+  unit: IngredientUnitEnum,
   deletedAt: z.date().nullable(),
 })
 

@@ -3,16 +3,16 @@ import { recipeBase } from './receitaBase.schema'
 import { ingredientResponse } from '../ingrediente/ingredienteResponse.schema'
 
 const recipeIngredientResponse = z.object({
-  ingredienteId: z.string().uuid(),
-  quantidade: z.number(),
-  ingrediente: ingredientResponse,
+  ingredientId: z.string().uuid(),
+  quantity: z.number(),
+  ingredient: ingredientResponse,
 })
 
 export const recipeResponse = recipeBase
-  .pick({ id: true, nome: true })
+  .pick({ id: true, name: true })
   .extend({
-    ingredientes: z.array(recipeIngredientResponse),
-    ultimaVezNoCardapio: z.string().nullable(),
+    ingredients: z.array(recipeIngredientResponse),
+    lastOnMenu: z.string().nullable(),
   })
 
 export type RecipeResponse = z.infer<typeof recipeResponse>

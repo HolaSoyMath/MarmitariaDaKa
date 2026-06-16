@@ -3,10 +3,10 @@ import { priceTypeBase } from './tipoPrecoBase.schema'
 
 export const priceTypeResponse = priceTypeBase.pick({
   id: true,
-  tipo: true,
-  tamanho: true,
-  valorPix: true,
-  valorSwile: true,
+  type: true,
+  size: true,
+  pixPrice: true,
+  swilePrice: true,
 })
 
 export type PriceTypeResponse = z.infer<typeof priceTypeResponse>

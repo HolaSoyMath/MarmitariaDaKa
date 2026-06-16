@@ -5,8 +5,8 @@ import type { IngredientResponse } from '@marmitaria/schemas/ingrediente/ingredi
 export class IngredientsController {
   constructor(private service: IngredientsService) {}
 
-  private format({ id, nome, unidade }: { id: string; nome: string; unidade: string }): IngredientResponse {
-    return { id, nome, unidade: unidade as IngredientResponse['unidade'] }
+  private format({ id, name, unit }: { id: string; name: string; unit: string }): IngredientResponse {
+    return { id, name, unit: unit as IngredientResponse['unit'] }
   }
 
   async listAll(): Promise<IngredientResponse[]> {
