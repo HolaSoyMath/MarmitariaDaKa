@@ -1,10 +1,7 @@
 import { z } from 'zod'
-import { recipeBase } from './recipeBase.schema'
+import { recipeBase, recipeIngredientBase } from './recipeBase.schema'
 
-const recipeIngredientInput = z.object({
-  ingredientId: z.string().uuid(),
-  quantity: z.number().positive(),
-})
+const recipeIngredientInput = recipeIngredientBase.pick({ ingredientId: true, quantity: true })
 
 export const recipeInput = recipeBase
   .pick({ name: true })

@@ -1,17 +1,10 @@
 import { z } from 'zod'
-import { purchaseBase } from './purchaseBase.schema'
+import { purchaseBase, purchaseItemBase } from './purchaseBase.schema'
 import { ingredientResponse } from '../ingredient/ingredientResponse.schema'
 
-const purchaseItemResponse = z.object({
-  id: z.string().uuid(),
-  ingredientId: z.string().uuid(),
-  quantity: z.number(),
-  totalValue: z.number(),
-  unitValue: z.number(),
-  location: z.string().nullable(),
-  createdAt: z.date(),
-  ingredient: ingredientResponse,
-})
+const purchaseItemResponse = purchaseItemBase
+  .pick({ id: true, ingredientId: true, quantity: true, totalValue: true, unitValue: true, location: true, createdAt: true })
+  .extend({ ingredient: ingredientResponse })
 
 export const purchaseResponse = purchaseBase
   .pick({ id: true, weekId: true })

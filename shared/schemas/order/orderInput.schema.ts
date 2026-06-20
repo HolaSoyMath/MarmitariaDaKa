@@ -1,11 +1,7 @@
 import { z } from 'zod'
-import { orderBase } from './orderBase.schema'
+import { orderBase, orderItemBase } from './orderBase.schema'
 
-const orderItemInput = z.object({
-  menuItemId: z.string().uuid(),
-  priceTypeId: z.string().uuid(),
-  quantity: z.number().int().positive(),
-})
+const orderItemInput = orderItemBase.pick({ menuItemId: true, priceTypeId: true, quantity: true })
 
 export const orderInput = orderBase
   .pick({ weekId: true, clientId: true })
