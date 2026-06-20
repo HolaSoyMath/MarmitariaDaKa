@@ -44,16 +44,17 @@ marmitaria/
 ├── shared/
 │   └── schemas/                 # schemas Zod compartilhados (front ↔ back)
 │       ├── enums.ts
-│       ├── cliente/
-│       ├── grupo/
-│       ├── ingrediente/
-│       ├── receita/
-│       ├── cardapio/
-│       ├── pedido/
-│       ├── tipoPreco/
-│       ├── compra/
-│       ├── custoGeral/
-│       └── financeiro/
+│       ├── client/
+│       ├── group/
+│       ├── ingredient/
+│       ├── recipe/
+│       ├── menuItem/
+│       ├── order/
+│       ├── priceType/
+│       ├── purchase/
+│       ├── generalCost/
+│       ├── financial/
+│       └── week/
 └── apps/
     ├── frontend/                # Next.js — ver apps/frontend/CLAUDE.md
     │   └── src/
@@ -101,3 +102,4 @@ Tipagens internas de cada lado ficam em `apps/frontend/src/types/` e `apps/backe
 4. `docs/` tem detalhe técnico, `obsidian/` tem contexto de negócio — complementares, nunca substitutos
 5. Toda alteração de regra de negócio financeira (preço, snapshot, gás) deve atualizar o nó correspondente no Obsidian antes de qualquer código
 6. Soft delete em todas as entidades — nada é deletado fisicamente do banco
+7. **Convenção de idioma — inglês obrigatório em todo o código:** nomes de arquivos, pastas, funções, variáveis, classes, propriedades de schema, rotas de API e tipos TypeScript devem estar em inglês. Português é reservado para texto exibido ao usuário (labels, mensagens) e para comentários/documentação.

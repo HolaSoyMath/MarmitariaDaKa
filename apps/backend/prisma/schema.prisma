@@ -105,7 +105,7 @@ model Order {
   id            String      @id @default(cuid())
   weekId        String
   clientId      String
-  status        String      @default("pendente")
+  status        String      @default("pending")
   paymentMethod String?
   week          Week        @relation(fields: [weekId], references: [id])
   client        Client      @relation(fields: [clientId], references: [id])

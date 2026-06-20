@@ -1,24 +1,24 @@
-import { Elysia } from 'elysia'
-import { gruposRoutes } from './routes/grupos'
-import { clientesRoutes } from './routes/clientes'
-import { ingredientesRoutes } from './routes/ingredientes'
-import { receitasRoutes } from './routes/receitas'
-import { semanasRoutes } from './routes/semanas'
-import { tiposPrecoRoutes } from './routes/tiposPrecos'
-import { menuItemRoutes } from './routes/cardapio'
+﻿import { Elysia } from 'elysia'
+import { groupsRoutes } from './routes/groups'
+import { clientsRoutes } from './routes/clients'
+import { ingredientsRoutes } from './routes/ingredients'
+import { recipesRoutes } from './routes/recipes'
+import { weeksRoutes } from './routes/weeks'
+import { priceTypesRoutes } from './routes/priceTypes'
+import { menuItemsRoutes } from './routes/menuItems'
 
 if (!process.env.PORT) throw new Error('Variável de ambiente PORT não definida')
 const port = Number(process.env.PORT)
 
 const app = new Elysia()
   .get('/health', () => ({ status: 'ok', timestamp: new Date().toISOString() }))
-  .use(gruposRoutes)
-  .use(clientesRoutes)
-  .use(ingredientesRoutes)
-  .use(receitasRoutes)
-  .use(semanasRoutes)
-  .use(tiposPrecoRoutes)
-  .use(menuItemRoutes)
+  .use(groupsRoutes)
+  .use(clientsRoutes)
+  .use(ingredientsRoutes)
+  .use(recipesRoutes)
+  .use(weeksRoutes)
+  .use(priceTypesRoutes)
+  .use(menuItemsRoutes)
 
 app.listen(port, () => {
   console.log(`Backend running at http://localhost:${port}`)

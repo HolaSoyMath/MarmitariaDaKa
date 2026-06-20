@@ -10,27 +10,29 @@ Bun + Elysia. Leia o `CLAUDE.md` da raiz antes deste.
 apps/backend/src/
 ├── index.ts                     # Entry point — instância Elysia + rotas
 ├── routes/
-│   ├── clientes.ts
-│   ├── grupos.ts
-│   ├── ingredientes.ts
-│   ├── receitas.ts
-│   ├── cardapio.ts
-│   ├── pedidos.ts
-│   ├── precos.ts
-│   ├── compras.ts
-│   ├── custos.ts
-│   └── financeiro.ts
+│   ├── clients.ts
+│   ├── groups.ts
+│   ├── ingredients.ts
+│   ├── recipes.ts
+│   ├── menuItems.ts
+│   ├── weeks.ts
+│   ├── priceTypes.ts
+│   ├── orders.ts
+│   ├── purchases.ts
+│   ├── generalCosts.ts
+│   └── financial.ts
 ├── services/
-│   ├── clientes.service.ts
-│   ├── grupos.service.ts
-│   ├── ingredientes.service.ts
-│   ├── receitas.service.ts
-│   ├── cardapio.service.ts
-│   ├── pedidos.service.ts
-│   ├── precos.service.ts
-│   ├── compras.service.ts
-│   ├── custos.service.ts
-│   └── financeiro.service.ts
+│   ├── clients.service.ts
+│   ├── groups.service.ts
+│   ├── ingredients.service.ts
+│   ├── recipes.service.ts
+│   ├── menuItems.service.ts
+│   ├── weeks.service.ts
+│   ├── priceTypes.service.ts
+│   ├── orders.service.ts
+│   ├── purchases.service.ts
+│   ├── generalCosts.service.ts
+│   └── financial.service.ts
 ├── repositories/
 │   └── (um por entidade)
 ├── types/                       # Tipagens internas do backend
@@ -59,11 +61,11 @@ Route (Elysia)
 Sempre usar os schemas do `shared/schemas/` nas rotas:
 
 ```typescript
-import { pedidoInput } from '../../../shared/schemas/pedido/pedidoInput.schema'
+import { orderInput } from '@marmitaria/schemas/order/orderInput.schema'
 
-app.post('/pedidos', ({ body }) => {
-  const data = pedidoInput.parse(body)
-  return pedidosService.criar(data)
+app.post('/orders', ({ body }) => {
+  const data = orderInput.parse(body)
+  return ordersService.create(data)
 })
 ```
 
@@ -75,10 +77,10 @@ Todas as entidades têm `deletedAt: DateTime?`. **Nunca usar `delete()` do Prism
 
 ```typescript
 // ERRADO
-await prisma.cliente.delete({ where: { id } })
+await prisma.client.delete({ where: { id } })
 
 // CORRETO
-await prisma.cliente.update({
+await prisma.client.update({
   where: { id },
   data: { deletedAt: new Date() }
 })
@@ -98,13 +100,13 @@ Toda operação que envolva **mais de uma escrita no banco** deve usar `prisma.$
 
 ```typescript
 // ERRADO — sem atomicidade
-await prisma.cliente.updateMany({ where: { grupoId: id }, data: { deletedAt: new Date() } })
-await prisma.grupo.update({ where: { id }, data: { deletedAt: new Date() } })
+await prisma.client.updateMany({ where: { groupId: id }, data: { deletedAt: new Date() } })
+await prisma.group.update({ where: { id }, data: { deletedAt: new Date() } })
 
 // CORRETO
 await prisma.$transaction([
-  prisma.cliente.updateMany({ where: { grupoId: id }, data: { deletedAt: new Date() } }),
-  prisma.grupo.update({ where: { id }, data: { deletedAt: new Date() } }),
+  prisma.client.updateMany({ where: { groupId: id }, data: { deletedAt: new Date() } }),
+  prisma.group.update({ where: { id }, data: { deletedAt: new Date() } }),
 ])
 ```
 
@@ -114,17 +116,17 @@ Aplica-se a: cascade soft delete, criação de Pedido + itens, edição de Recei
 
 ## Regras de negócio críticas
 
-**Snapshot de preço:** ao criar `OrderItem`, copiar `valorPix` e `valorSwile` do `PriceType` para `snapshotValorPix` e `snapshotValorSwile`. Nunca recalcular depois.
+**Snapshot de preço:** ao criar `OrderItem`, copiar `pixPrice` e `swilePrice` do `PriceType` para `snapshotPixPrice` e `snapshotSwilePrice`. Nunca recalcular depois.
 
-**Gás:** ao salvar qualquer alteração em `PurchaseItem` da semana, recalcular o `GeneralCost` de tipo `percentual_gas` como 5% da soma dos `valorTotal` dos `PurchaseItem` ativos daquela semana.
+**Gás:** ao salvar qualquer alteração em `PurchaseItem` da semana, recalcular o `GeneralCost` de tipo `gas_percentage` como 5% da soma dos `totalValue` dos `PurchaseItem` ativos daquela semana.
 
-**Snapshot de valorUnitario:** ao salvar `PurchaseItem`, calcular `valorUnitario = valorTotal / quantidade` e persistir. Nunca recalcular depois.
+**Snapshot de unitValue:** ao salvar `PurchaseItem`, calcular `unitValue = totalValue / quantity` e persistir. Nunca recalcular depois.
 
-**Status de pedido:** a transição é sempre `pendente → produzido → pago`. Pago é irreversível. Produzido pode voltar para pendente.
+**Status de pedido:** a transição é sempre `pending → produced → paid`. `paid` é irreversível. `produced` pode voltar para `pending`.
 
-**Proteção de receita:** antes de editar ou excluir uma `Recipe`, verificar se existe `OrderItem → MenuItem → Recipe` com order de status `pendente` ou `produzido`. Se existir, rejeitar com erro.
+**Proteção de receita:** antes de editar ou excluir uma `Recipe`, verificar se existe `OrderItem → MenuItem → Recipe` com order de status `pending` ou `produced`. Se existir, rejeitar com erro.
 
-**Purchase única por semana:** cada `Week` tem no máximo uma `Purchase` (`@unique` no `semanaId`). A dona edita a lista de itens da purchase existente.
+**Purchase única por semana:** cada `Week` tem no máximo uma `Purchase` (`@unique` no `weekId`). A dona edita a lista de itens da purchase existente.
 
 ---
 
@@ -135,12 +137,18 @@ O `index.ts` deve exportar o tipo `App` para o frontend consumir via Eden Treaty
 ```typescript
 // index.ts
 const app = new Elysia()
-  .use(clientesRoutes)
+  .use(clientsRoutes)
   // ...demais rotas
 
 export type App = typeof app
 export default app
 ```
+
+---
+
+## Convenção de idioma
+
+**Todo o código deve estar em inglês:** nomes de arquivos, pastas, classes, funções, variáveis, propriedades, rotas de API e tipos. Português é reservado para texto exibido ao usuário e para comentários/documentação.
 
 ---
 

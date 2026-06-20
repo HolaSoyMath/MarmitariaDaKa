@@ -109,6 +109,12 @@ export const api = treaty<App>(process.env.NEXT_PUBLIC_API_URL!)
 
 ---
 
+## Convenção de idioma
+
+**Todo o código deve estar em inglês:** nomes de arquivos, componentes, hooks, funções, variáveis e propriedades. As rotas Next.js (`app/*/`) podem usar português nos segmentos de URL pois são visíveis ao usuário. Português é reservado para texto exibido na UI e para comentários/documentação.
+
+---
+
 ## Deploy
 
 Vercel. Variável de ambiente obrigatória: `NEXT_PUBLIC_API_URL` apontando para o backend no Render.
