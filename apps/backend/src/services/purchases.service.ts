@@ -1,7 +1,8 @@
 import type { IPurchasesRepository, PurchaseWithItems } from '../interfaces/purchases.interface'
 import type { PurchaseInput } from '@marmitaria/schemas/purchase/purchaseInput.schema'
+import { ConfigRepository } from '../repositories/config.repository'
 
-const GAS_PERCENTAGE = 0.05
+const configRepository = new ConfigRepository()
 
 export class PurchasesService {
   constructor(private repository: IPurchasesRepository) {}
@@ -11,8 +12,9 @@ export class PurchasesService {
   }
 
   async upsert(data: PurchaseInput): Promise<PurchaseWithItems> {
+    const config = await configRepository.getConfig()
     const totalIngredients = data.items.reduce((acc, i) => acc + i.totalValue, 0)
-    const gasValue = totalIngredients * GAS_PERCENTAGE
+    const gasValue = Math.round(totalIngredients * config.gasPercentage)
     return this.repository.upsert(data, gasValue)
   }
 }

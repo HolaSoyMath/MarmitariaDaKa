@@ -7,8 +7,8 @@ export const orderItemBase = z.object({
   menuItemId: z.string().uuid(),
   priceTypeId: z.string().uuid(),
   quantity: z.number().int().positive(),
-  snapshotPixPrice: z.number().nonnegative(),
-  snapshotSwilePrice: z.number().nonnegative(),
+  snapshotPixPrice: z.number().int().nonnegative(),
+  snapshotSwilePrice: z.number().int().nonnegative(),
 })
 
 export const orderBase = z.object({

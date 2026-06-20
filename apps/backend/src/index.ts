@@ -10,6 +10,7 @@ import { ordersRoutes } from './routes/orders'
 import { purchasesRoutes } from './routes/purchases'
 import { generalCostsRoutes } from './routes/generalCosts'
 import { financialRoutes } from './routes/financial'
+import { configRoutes } from './routes/config'
 
 if (!process.env.PORT) throw new Error('Variável de ambiente PORT não definida')
 const port = Number(process.env.PORT)
@@ -27,6 +28,7 @@ const app = new Elysia()
   .use(purchasesRoutes)
   .use(generalCostsRoutes)
   .use(financialRoutes)
+  .use(configRoutes)
 
 app.listen(port, () => {
   console.log(`Backend running at http://localhost:${port}`)

@@ -4,7 +4,7 @@ export const generalCostBase = z.object({
   id: z.string().uuid(),
   weekId: z.string().uuid(),
   description: z.string().min(1),
-  value: z.number().nonnegative(),
+  value: z.number().int().nonnegative(),
   automatic: z.boolean(),
   deletedAt: z.date().nullable(),
 })

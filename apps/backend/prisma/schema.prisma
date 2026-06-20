@@ -62,8 +62,8 @@ model PriceType {
   id         String      @id @default(cuid())
   type       String
   size       String
-  pixPrice   Float
-  swilePrice Float
+  pixPrice   Int
+  swilePrice Int
   orderItems OrderItem[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -121,8 +121,8 @@ model OrderItem {
   menuItemId         String
   priceTypeId        String
   quantity           Int       @default(1)
-  snapshotPixPrice   Float
-  snapshotSwilePrice Float
+  snapshotPixPrice   Int
+  snapshotSwilePrice Int
   order              Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menuItem           MenuItem  @relation(fields: [menuItemId], references: [id])
   priceType          PriceType @relation(fields: [priceTypeId], references: [id])
@@ -144,8 +144,8 @@ model PurchaseItem {
   purchaseId   String
   ingredientId String
   quantity     Float
-  totalValue   Float
-  unitValue    Float
+  totalValue   Int
+  unitValue    Int
   location     String?
   purchase     Purchase   @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
@@ -158,10 +158,15 @@ model GeneralCost {
   id          String    @id @default(cuid())
   weekId      String
   description String
-  value       Float
+  value       Int
   type        String    @default("fixo")
   week        Week      @relation(fields: [weekId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+}
+
+model Config {
+  id            String @id @default(cuid())
+  gasPercentage Float
 }
