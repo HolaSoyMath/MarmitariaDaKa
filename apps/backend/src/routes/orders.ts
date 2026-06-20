@@ -21,7 +21,13 @@ export const ordersRoutes = new Elysia({ prefix: '/orders' })
       return { message: error.message }
     }
   })
-  .get('/', ({ query }) => controller.listByWeek(query.weekId as string))
+  .get('/', ({ query, set }) => {
+    if (!query.weekId) {
+      set.status = 400
+      return { message: 'weekId é obrigatório' }
+    }
+    return controller.listByWeek(query.weekId)
+  })
   .get('/:id', ({ params: { id } }) => controller.getById(id))
   .post('/', ({ body }) => controller.create(orderInput.parse(body)))
   .patch('/:id', ({ params: { id }, body }) => controller.update(id, orderInput.parse(body)))

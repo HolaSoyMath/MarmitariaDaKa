@@ -60,10 +60,10 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 - [x] Semana — criação automática via week picker, route
 - [x] TiposPrecos — CRUD completo, route
 - [x] Cardápio — adicionar/remover prato, validação de receita vinculada, route
-- [ ] Pedidos — CRUD, transições de status, snapshot de preço, route
-  - [ ] `marcarProduzido`
-  - [ ] `marcarPago` (com método Pix/Swile)
-  - [ ] `reverterParaPendente`
+- [x] Pedidos — CRUD, transições de status, snapshot de preço, route
+  - [x] `marcarProduzido`
+  - [x] `marcarPago` (com método Pix/Swile)
+  - [x] `reverterParaPendente`
 - [ ] Compras — upsert por semana, snapshot valorUnitario, gás automático, route
 - [ ] CustosGerais — CRUD manual, proteção do gás, route
 - [ ] Financeiro — cálculo por semana/mês/período, métrica "a receber", route
