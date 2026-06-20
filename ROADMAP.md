@@ -64,9 +64,9 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
   - [x] `marcarProduzido`
   - [x] `marcarPago` (com método Pix/Swile)
   - [x] `reverterParaPendente`
-- [ ] Compras — upsert por semana, snapshot valorUnitario, gás automático, route
-- [ ] CustosGerais — CRUD manual, proteção do gás, route
-- [ ] Financeiro — cálculo por semana/mês/período, métrica "a receber", route
+- [x] Compras — upsert por semana, snapshot valorUnitario, gás automático, route
+- [x] CustosGerais — CRUD manual, proteção do gás, route
+- [x] Financeiro — cálculo por semana/mês/período, métrica "a receber", route
 
 ---
 
