@@ -5,6 +5,7 @@ import { priceTypeResponse } from '../priceType/priceTypeResponse.schema'
 
 const orderItemResponse = z.object({
   id: z.string().uuid(),
+  menuItemId: z.string().uuid(),
   priceTypeId: z.string().uuid(),
   quantity: z.number().int().positive(),
   snapshotPixPrice: z.number(),

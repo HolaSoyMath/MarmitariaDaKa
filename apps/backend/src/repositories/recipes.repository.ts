@@ -68,7 +68,7 @@ export class RecipesRepository implements IRecipesRepository {
     const count = await prisma.orderItem.count({
       where: {
         menuItem: { recipeId: id },
-        order: { status: { in: ['pendente', 'produzido'] }, deletedAt: null },
+        order: { status: { in: ['pending', 'produced'] }, deletedAt: null },
         deletedAt: null,
       },
     })

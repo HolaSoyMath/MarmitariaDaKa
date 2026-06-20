@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { orderBase } from './orderBase.schema'
 
 const orderItemInput = z.object({
+  menuItemId: z.string().uuid(),
   priceTypeId: z.string().uuid(),
   quantity: z.number().int().positive(),
 })
