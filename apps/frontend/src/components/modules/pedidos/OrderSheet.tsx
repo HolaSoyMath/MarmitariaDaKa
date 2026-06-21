@@ -2,22 +2,17 @@
 
 import { useState } from 'react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { SearchSelect } from '@/components/shared/SearchSelect'
+import { OrderItemRow } from '@/components/modules/pedidos/OrderItemRow'
 import { ClientSheet } from '@/components/modules/clientes/ClientDialog'
 import { GroupsDialog } from '@/components/modules/clientes/GroupsDialog'
 import { useOrderSheet } from '@/hooks/useOrderSheet'
 import { useWeek } from '@/context/WeekContext'
 import { formatCurrency } from '@/formatters/currency'
-import { X, Plus, Minus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.schema'
 
 interface Props {
@@ -53,6 +48,10 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
     deleteOrder,
   } = useOrderSheet(order, onOpenChange)
 
+  const clientOptions = Object.entries(clientsByGroup).flatMap(([group, clients]) =>
+    clients.map((c) => ({ value: c.id, label: c.name, group })),
+  )
+
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -77,25 +76,13 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
                   <Plus /> Novo
                 </Button>
               </div>
-              <Select value={clientId} onValueChange={setClientId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecionar cliente" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(clientsByGroup).map(([group, groupClients]) => (
-                    <div key={group}>
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                        {group}
-                      </div>
-                      {groupClients.map((client) => (
-                        <SelectItem key={client.id} value={client.id}>
-                          {client.name}
-                        </SelectItem>
-                      ))}
-                    </div>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchSelect
+                value={clientId}
+                onValueChange={setClientId}
+                options={clientOptions}
+                placeholder="Selecionar cliente"
+                searchPlaceholder="Pesquisar cliente..."
+              />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -110,83 +97,15 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
 
               <div className="flex flex-col gap-2.5">
                 {rows.map((row, i) => (
-                  <div
+                  <OrderItemRow
                     key={i}
-                    className="border border-border rounded-md p-3.5 flex flex-col gap-3 bg-card"
-                  >
-                    <div className="flex gap-2 items-center">
-                      <Select
-                        value={row.menuItemId}
-                        onValueChange={(v) => updateRow(i, { menuItemId: v })}
-                      >
-                        <SelectTrigger className="flex-1 min-w-0">
-                          <SelectValue placeholder="Prato" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {menuItems.map((item) => (
-                            <SelectItem key={item.id} value={item.id}>
-                              {item.recipe.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => removeRow(i)}
-                        disabled={rows.length === 1}
-                        className="w-7.5 h-7.5 flex-none rounded-lg text-muted-foreground hover:border-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
-                      >
-                        <X className="size-3.5" />
-                      </Button>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="inline-flex border border-border rounded-lg overflow-hidden">
-                        {priceTypes.map((pt) => (
-                          <Button
-                            key={pt.id}
-                            type="button"
-                            variant={row.priceTypeId === pt.id ? 'default' : 'ghost'}
-                            onClick={() => updateRow(i, { priceTypeId: pt.id })}
-                            className="rounded-none border-r border-border last:border-r-0 h-auto py-1.5 text-[13px] font-semibold cursor-pointer"
-                          >
-                            {pt.size}
-                          </Button>
-                        ))}
-                      </div>
-
-                      <div className="inline-flex items-center border border-border rounded-lg overflow-hidden">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={() =>
-                            updateRow(i, {
-                              quantity: String(Math.max(0, Number(row.quantity) - 1)),
-                            })
-                          }
-                          className="w-8 h-8.5 rounded-none p-0 cursor-pointer"
-                        >
-                          <Minus className="size-3.5" />
-                        </Button>
-                        <span className="w-9 text-center font-heading font-extrabold text-lg border-l border-r border-border h-8.5 grid place-items-center">
-                          {row.quantity === '' ? '0' : row.quantity}
-                        </span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={() =>
-                            updateRow(i, { quantity: String(Number(row.quantity) + 1) })
-                          }
-                          className="w-8 h-8.5 rounded-none p-0 cursor-pointer"
-                        >
-                          <Plus className="size-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                    row={row}
+                    isOnly={rows.length === 1}
+                    menuItems={menuItems}
+                    priceTypes={priceTypes}
+                    onRemove={() => removeRow(i)}
+                    onUpdate={(patch) => updateRow(i, patch)}
+                  />
                 ))}
               </div>
 
