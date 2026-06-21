@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
 import {
   Dialog,
@@ -14,10 +14,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useCreateIngredient, useUpdateIngredient, useDeleteIngredient } from '@/hooks/useIngredients'
+import { IngredientUnitEnum } from '@marmitaria/schemas/enums'
 import type { IngredientResponse } from '@marmitaria/schemas/ingredient/ingredientResponse.schema'
-import type { IngredientUnit } from '@/constants/units'
-
-const UNITS: IngredientUnit[] = ['g', 'kg', 'ml', 'L', 'un']
+import type { IngredientUnit } from '@marmitaria/schemas/enums'
 
 interface Props {
   open: boolean
@@ -28,8 +27,10 @@ interface Props {
 export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
   const isEditing = !!ingredient
 
-  const [name, setName] = useState('')
-  const [unit, setUnit] = useState<IngredientUnit>('g')
+  const [form, setForm] = useState<{ name: string; unit: IngredientUnit }>({
+    name: ingredient?.name ?? '',
+    unit: ingredient?.unit ?? 'g',
+  })
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   const createIngredient = useCreateIngredient()
@@ -38,21 +39,13 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
 
   const isSaving = createIngredient.isPending || updateIngredient.isPending
 
-  useEffect(() => {
-    if (open) {
-      setName(ingredient?.name ?? '')
-      setUnit(ingredient?.unit ?? 'g')
-      setConfirmOpen(false)
-    }
-  }, [open, ingredient])
-
   async function handleSave() {
-    const trimmed = name.trim()
-    if (!trimmed) return
+    const name = form.name.trim()
+    if (!name) return
     if (isEditing) {
-      await updateIngredient.mutateAsync({ id: ingredient.id, data: { name: trimmed, unit } })
+      await updateIngredient.mutateAsync({ id: ingredient.id, data: { name, unit: form.unit } })
     } else {
-      await createIngredient.mutateAsync({ name: trimmed, unit })
+      await createIngredient.mutateAsync({ name, unit: form.unit })
     }
     onOpenChange(false)
   }
@@ -77,8 +70,8 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
               <Label htmlFor="ing-name">Nome</Label>
               <Input
                 id="ing-name"
-                value={name}
-                onChange={e => setName(e.target.value)}
+                value={form.name}
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="ex: Requeijão"
                 onKeyDown={e => e.key === 'Enter' && handleSave()}
               />
@@ -87,13 +80,13 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
             <div className="flex flex-col gap-2">
               <Label>Tipo</Label>
               <div className="flex gap-2 flex-wrap">
-                {UNITS.map(u => (
+                {IngredientUnitEnum.options.map(u => (
                   <Button
                     key={u}
                     type="button"
-                    variant={unit === u ? 'default' : 'outline'}
+                    variant={form.unit === u ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setUnit(u)}
+                    onClick={() => setForm(f => ({ ...f, unit: u }))}
                   >
                     {u}
                   </Button>
@@ -116,7 +109,7 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={!name.trim() || isSaving}>
+            <Button onClick={handleSave} disabled={!form.name.trim() || isSaving}>
               Salvar
             </Button>
           </SheetFooter>

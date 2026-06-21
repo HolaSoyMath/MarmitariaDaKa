@@ -92,6 +92,7 @@ export function IngredientsView() {
       )}
 
       <IngredientSheet
+        key={selected?.id ?? 'new'}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         ingredient={selected ?? undefined}
