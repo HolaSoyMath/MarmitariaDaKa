@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@marmitaria/schemas/*": ["../../shared/schemas/*"]
     }
   },
   "include": [
