@@ -1,7 +1,7 @@
 ﻿import type { Group } from '@prisma/client'
 import type { IGroupsRepository } from '../interfaces/groups.interface'
 import type { GroupInput } from '@marmitaria/schemas/group/groupInput.schema'
-import { NotFoundError } from '../lib/errors'
+import { NotFoundError, ConflictError } from '../lib/errors'
 
 export class GroupsService {
   constructor(private repository: IGroupsRepository) {}
@@ -17,11 +17,15 @@ export class GroupsService {
   }
 
   async create(data: GroupInput): Promise<Group> {
+    const existing = await this.repository.findByName(data.name)
+    if (existing) throw new ConflictError(`Já existe um grupo com o nome "${data.name}".`)
     return this.repository.create(data)
   }
 
   async update(id: string, data: GroupInput): Promise<Group> {
     await this.getById(id)
+    const existing = await this.repository.findByName(data.name)
+    if (existing && existing.id !== id) throw new ConflictError(`Já existe um grupo com o nome "${data.name}".`)
     return this.repository.update(id, data)
   }
 

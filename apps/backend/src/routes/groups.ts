@@ -3,7 +3,7 @@ import { GroupsRepository } from '../repositories/groups.repository'
 import { GroupsService } from '../services/groups.service'
 import { GroupsController } from '../controllers/groups.controller'
 import { groupInput } from '@marmitaria/schemas/group/groupInput.schema'
-import { NotFoundError } from '../lib/errors'
+import { NotFoundError, ConflictError } from '../lib/errors'
 
 const repository = new GroupsRepository()
 const service = new GroupsService(repository)
@@ -13,6 +13,10 @@ export const groupsRoutes = new Elysia({ prefix: '/groups' })
   .onError(({ error, set }) => {
     if (error instanceof NotFoundError) {
       set.status = 404
+      return { message: error.message }
+    }
+    if (error instanceof ConflictError) {
+      set.status = 409
       return { message: error.message }
     }
   })

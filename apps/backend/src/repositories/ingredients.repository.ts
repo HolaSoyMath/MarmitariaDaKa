@@ -12,6 +12,10 @@ export class IngredientsRepository implements IIngredientsRepository {
     return prisma.ingredient.findFirst({ where: { id, deletedAt: null } })
   }
 
+  async findByName(name: string): Promise<Ingredient | null> {
+    return prisma.ingredient.findFirst({ where: { name, deletedAt: null } })
+  }
+
   async create(data: IngredientInput): Promise<Ingredient> {
     return prisma.ingredient.create({ data: { name: data.name, unit: data.unit } })
   }

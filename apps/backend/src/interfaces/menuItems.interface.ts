@@ -11,6 +11,7 @@ export type MenuItemWithRecipe = MenuItem & {
 export interface IMenuItemsRepository {
   findByWeek(weekId: string): Promise<MenuItemWithRecipe[]>
   findById(id: string): Promise<MenuItemWithRecipe | null>
+  findByWeekAndRecipe(weekId: string, recipeId: string): Promise<MenuItemWithRecipe | null>
   create(data: MenuItemInput): Promise<MenuItemWithRecipe>
   softDelete(id: string): Promise<void>
   recipeExists(recipeId: string): Promise<boolean>

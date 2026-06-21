@@ -4,6 +4,7 @@ import type { IngredientInput } from '@marmitaria/schemas/ingredient/ingredientI
 export interface IIngredientsRepository {
   findAll(): Promise<Ingredient[]>
   findById(id: string): Promise<Ingredient | null>
+  findByName(name: string): Promise<Ingredient | null>
   create(data: IngredientInput): Promise<Ingredient>
   update(id: string, data: IngredientInput): Promise<Ingredient>
   softDelete(id: string): Promise<void>

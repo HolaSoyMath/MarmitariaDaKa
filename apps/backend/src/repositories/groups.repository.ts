@@ -12,6 +12,10 @@ export class GroupsRepository implements IGroupsRepository {
     return prisma.group.findFirst({ where: { id, deletedAt: null } })
   }
 
+  async findByName(name: string): Promise<Group | null> {
+    return prisma.group.findFirst({ where: { name, deletedAt: null } })
+  }
+
   async create(data: GroupInput): Promise<Group> {
     return prisma.group.create({ data: { name: data.name } })
   }

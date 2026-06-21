@@ -16,6 +16,8 @@ export class RecipesService {
   }
 
   async create(data: RecipeInput): Promise<RecipeWithIngredients> {
+    const existing = await this.repository.findByName(data.name)
+    if (existing) throw new ConflictError(`Já existe uma receita com o nome "${data.name}".`)
     return this.repository.create(data)
   }
 
@@ -24,6 +26,8 @@ export class RecipesService {
     if (await this.repository.hasActiveOrders(id)) {
       throw new ConflictError('Receita possui pedidos ativos e não pode ser editada')
     }
+    const existing = await this.repository.findByName(data.name)
+    if (existing && existing.id !== id) throw new ConflictError(`Já existe uma receita com o nome "${data.name}".`)
     return this.repository.update(id, data)
   }
 

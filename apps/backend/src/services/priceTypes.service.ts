@@ -1,7 +1,7 @@
 ﻿import type { PriceType } from '@prisma/client'
 import type { IPriceTypesRepository } from '../interfaces/priceTypes.interface'
 import type { PriceTypeInput } from '@marmitaria/schemas/priceType/priceTypeInput.schema'
-import { NotFoundError } from '../lib/errors'
+import { NotFoundError, ConflictError } from '../lib/errors'
 
 export class PriceTypesService {
   constructor(private repository: IPriceTypesRepository) {}
@@ -17,11 +17,15 @@ export class PriceTypesService {
   }
 
   async create(data: PriceTypeInput): Promise<PriceType> {
+    const existing = await this.repository.findByTypeAndSize(data.type, data.size)
+    if (existing) throw new ConflictError(`Já existe um tipo de preço "${data.type} ${data.size}".`)
     return this.repository.create(data)
   }
 
   async update(id: string, data: PriceTypeInput): Promise<PriceType> {
     await this.getById(id)
+    const existing = await this.repository.findByTypeAndSize(data.type, data.size)
+    if (existing && existing.id !== id) throw new ConflictError(`Já existe um tipo de preço "${data.type} ${data.size}".`)
     return this.repository.update(id, data)
   }
 

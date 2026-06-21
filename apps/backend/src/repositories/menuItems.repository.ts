@@ -1,8 +1,6 @@
-﻿import { Prisma } from '@prisma/client'
-import { prisma } from '../lib/prisma'
+﻿import { prisma } from '../lib/prisma'
 import type { IMenuItemsRepository, MenuItemWithRecipe } from '../interfaces/menuItems.interface'
 import type { MenuItemInput } from '@marmitaria/schemas/menuItem/menuItemInput.schema'
-import { ConflictError } from '../lib/errors'
 
 const includeRecipe = {
   recipe: {
@@ -33,18 +31,18 @@ export class MenuItemsRepository implements IMenuItemsRepository {
     })
   }
 
+  async findByWeekAndRecipe(weekId: string, recipeId: string): Promise<MenuItemWithRecipe | null> {
+    return prisma.menuItem.findFirst({
+      where: { weekId, recipeId, deletedAt: null },
+      include: includeRecipe,
+    })
+  }
+
   async create(data: MenuItemInput): Promise<MenuItemWithRecipe> {
-    try {
-      return await prisma.menuItem.create({
-        data: { weekId: data.weekId, recipeId: data.recipeId },
-        include: includeRecipe,
-      })
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
-        throw new ConflictError('Receita já está no cardápio desta semana')
-      }
-      throw e
-    }
+    return prisma.menuItem.create({
+      data: { weekId: data.weekId, recipeId: data.recipeId },
+      include: includeRecipe,
+    })
   }
 
   async softDelete(id: string): Promise<void> {

@@ -19,6 +19,8 @@ export class MenuItemsService {
     if (!(await this.repository.recipeExists(data.recipeId))) {
       throw new NotFoundError('Receita não encontrada')
     }
+    const existing = await this.repository.findByWeekAndRecipe(data.weekId, data.recipeId)
+    if (existing) throw new ConflictError('Receita já está no cardápio desta semana')
     return this.repository.create(data)
   }
 

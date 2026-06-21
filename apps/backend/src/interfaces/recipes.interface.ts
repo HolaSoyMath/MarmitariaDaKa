@@ -9,6 +9,7 @@ export type RecipeWithIngredients = Recipe & {
 export interface IRecipesRepository {
   findAll(): Promise<RecipeWithIngredients[]>
   findById(id: string): Promise<RecipeWithIngredients | null>
+  findByName(name: string): Promise<RecipeWithIngredients | null>
   create(data: RecipeInput): Promise<RecipeWithIngredients>
   update(id: string, data: RecipeInput): Promise<RecipeWithIngredients>
   softDelete(id: string): Promise<void>

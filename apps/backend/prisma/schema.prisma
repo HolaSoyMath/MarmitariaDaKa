@@ -7,8 +7,8 @@ datasource db {
 }
 
 model Group {
-  id        String    @id @default(cuid())
-  name      String    @unique
+  id        String    @id @default(uuid())
+  name      String
   clients   Client[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -16,7 +16,7 @@ model Group {
 }
 
 model Client {
-  id        String    @id @default(cuid())
+  id        String    @id @default(uuid())
   name      String
   groupId   String
   group     Group     @relation(fields: [groupId], references: [id])
@@ -27,8 +27,8 @@ model Client {
 }
 
 model Ingredient {
-  id            String             @id @default(cuid())
-  name          String             @unique
+  id            String             @id @default(uuid())
+  name          String
   unit          String
   recipes       RecipeIngredient[]
   purchaseItems PurchaseItem[]
@@ -38,8 +38,8 @@ model Ingredient {
 }
 
 model Recipe {
-  id          String             @id @default(cuid())
-  name        String             @unique
+  id          String             @id @default(uuid())
+  name        String
   ingredients RecipeIngredient[]
   menuItems   MenuItem[]
   createdAt   DateTime           @default(now())
@@ -48,7 +48,7 @@ model Recipe {
 }
 
 model RecipeIngredient {
-  id           String     @id @default(cuid())
+  id           String     @id @default(uuid())
   recipeId     String
   ingredientId String
   quantity     Float
@@ -59,7 +59,7 @@ model RecipeIngredient {
 }
 
 model PriceType {
-  id         String      @id @default(cuid())
+  id         String      @id @default(uuid())
   type       String
   size       String
   pixPrice   Int
@@ -69,11 +69,10 @@ model PriceType {
   updatedAt  DateTime    @updatedAt
   deletedAt  DateTime?
 
-  @@unique([type, size])
 }
 
 model Week {
-  id           String        @id @default(cuid())
+  id           String        @id @default(uuid())
   weekNumber   Int
   year         Int
   menuItems    MenuItem[]
@@ -88,7 +87,7 @@ model Week {
 }
 
 model MenuItem {
-  id         String      @id @default(cuid())
+  id         String      @id @default(uuid())
   weekId     String
   recipeId   String
   week       Week        @relation(fields: [weekId], references: [id])
@@ -98,11 +97,10 @@ model MenuItem {
   updatedAt  DateTime    @updatedAt
   deletedAt  DateTime?
 
-  @@unique([weekId, recipeId])
 }
 
 model Order {
-  id            String      @id @default(cuid())
+  id            String      @id @default(uuid())
   weekId        String
   clientId      String
   status        String      @default("pending")
@@ -116,7 +114,7 @@ model Order {
 }
 
 model OrderItem {
-  id                 String    @id @default(cuid())
+  id                 String    @id @default(uuid())
   orderId            String
   menuItemId         String
   priceTypeId        String
@@ -130,7 +128,7 @@ model OrderItem {
 }
 
 model Purchase {
-  id        String         @id @default(cuid())
+  id        String         @id @default(uuid())
   weekId    String         @unique
   week      Week           @relation(fields: [weekId], references: [id])
   items     PurchaseItem[]
@@ -140,7 +138,7 @@ model Purchase {
 }
 
 model PurchaseItem {
-  id           String     @id @default(cuid())
+  id           String     @id @default(uuid())
   purchaseId   String
   ingredientId String
   quantity     Float
@@ -155,7 +153,7 @@ model PurchaseItem {
 }
 
 model GeneralCost {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   weekId      String
   description String
   value       Int
@@ -167,6 +165,6 @@ model GeneralCost {
 }
 
 model Config {
-  id            String @id @default(cuid())
+  id            String @id @default(uuid())
   gasPercentage Float
 }

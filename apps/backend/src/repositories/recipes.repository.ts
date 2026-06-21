@@ -26,6 +26,13 @@ export class RecipesRepository implements IRecipesRepository {
     })
   }
 
+  async findByName(name: string): Promise<RecipeWithIngredients | null> {
+    return prisma.recipe.findFirst({
+      where: { name, deletedAt: null },
+      include: { ingredients: includeIngredients, menuItems: includeMenuItems },
+    })
+  }
+
   async create(data: RecipeInput): Promise<RecipeWithIngredients> {
     return prisma.recipe.create({
       data: {

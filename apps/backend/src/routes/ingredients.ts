@@ -3,7 +3,7 @@ import { IngredientsRepository } from '../repositories/ingredients.repository'
 import { IngredientsService } from '../services/ingredients.service'
 import { IngredientsController } from '../controllers/ingredients.controller'
 import { ingredientInput } from '@marmitaria/schemas/ingredient/ingredientInput.schema'
-import { NotFoundError } from '../lib/errors'
+import { NotFoundError, ConflictError } from '../lib/errors'
 
 const repository = new IngredientsRepository()
 const service = new IngredientsService(repository)
@@ -13,6 +13,10 @@ export const ingredientsRoutes = new Elysia({ prefix: '/ingredients' })
   .onError(({ error, set }) => {
     if (error instanceof NotFoundError) {
       set.status = 404
+      return { message: error.message }
+    }
+    if (error instanceof ConflictError) {
+      set.status = 409
       return { message: error.message }
     }
   })
