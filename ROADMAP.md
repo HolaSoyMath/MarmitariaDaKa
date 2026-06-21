@@ -77,9 +77,9 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 - [x] Configurar Tailwind + shadcn/ui
 - [x] Configurar Eden Treaty em `lib/api.ts`
 - [x] Configurar TanStack Query em `lib/queryClient.ts`
-- [ ] Criar `SemanaContext`
-- [ ] Criar `constants/` — unidades, status, métodos de pagamento
-- [ ] Criar `formatters/` — moeda, semana, unidade
+- [x] Criar `SemanaContext`
+- [x] Criar `constants/` — unidades, status, métodos de pagamento
+- [x] Criar `formatters/` — moeda, semana, unidade
 
 **Componentes base:**
 - [ ] Layout — Sidebar, BottomNav, Header, PageWrapper

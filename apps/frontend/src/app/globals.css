@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,82 +39,150 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* radius Marmitaria */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 30px;
+
+  /* cores Marmitaria */
+  --color-mustard:        var(--mustard);
+  --color-mustard-faint:  var(--mustard-faint);
+  --color-mustard-dark:   var(--mustard-dark);
+
+  --color-pix:            var(--pix);
+  --color-pix-faint:      var(--pix-faint);
+
+  --color-swile:          var(--swile);
+  --color-swile-faint:    var(--swile-faint);
+
+  --color-terra:          var(--terra);
+
+  --color-ink-faint:      var(--ink-faint);
+  --color-border-strong:  var(--border-strong);
+
+  --color-sidebar-subtle: var(--sidebar-subtle);
+  --color-sidebar-faint:  var(--sidebar-faint);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* shadcn tokens — valores Marmitaria */
+  --background: oklch(0.955 0.018 74);
+  --foreground: oklch(0.29 0.018 55);
+
+  --card: oklch(0.992 0.006 85);
+  --card-foreground: oklch(0.29 0.018 55);
+
+  --popover: oklch(0.992 0.006 85);
+  --popover-foreground: oklch(0.29 0.018 55);
+
+  --primary: oklch(0.81 0.135 82);
+  --primary-foreground: oklch(0.28 0.03 70);
+
+  --secondary: oklch(0.972 0.012 80);
+  --secondary-foreground: oklch(0.29 0.018 55);
+
+  --muted: oklch(0.945 0.016 78);
+  --muted-foreground: oklch(0.50 0.020 55);
+
+  --accent: oklch(0.81 0.135 82 / 0.16);
+  --accent-foreground: oklch(0.60 0.125 70);
+
+  --destructive: oklch(0.63 0.145 40);
+
+  --border: oklch(0.88 0.012 75);
+  --input: oklch(0.83 0.013 72);
+  --ring: oklch(0.81 0.135 82);
+
+  --radius: 0.625rem;
+
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  --sidebar: oklch(0.29 0.018 55);
+  --sidebar-foreground: oklch(0.92 0.012 80);
+  --sidebar-primary: oklch(0.81 0.135 82);
+  --sidebar-primary-foreground: oklch(0.28 0.03 70);
+  --sidebar-accent: oklch(1 0 0 / 0.10);
+  --sidebar-accent-foreground: oklch(0.81 0.135 82);
+  --sidebar-border: oklch(1 0 0 / 0.12);
+  --sidebar-ring: oklch(0.81 0.135 82);
+
+  /* tokens Marmitaria extras */
+  --mustard:       oklch(0.81 0.135 82);
+  --mustard-faint: oklch(0.81 0.135 82 / 0.16);
+  --mustard-dark:  oklch(0.60 0.125 70);
+
+  --pix:       oklch(0.50 0.085 132);
+  --pix-faint: oklch(0.66 0.095 130 / 0.16);
+
+  --swile:       oklch(0.52 0.140 38);
+  --swile-faint: oklch(0.63 0.145 40 / 0.13);
+
+  --terra: oklch(0.63 0.145 40);
+
+  --ink-faint:    oklch(0.66 0.016 60);
+  --border-strong: oklch(0.83 0.013 72);
+
+  --sidebar-subtle: oklch(0.74 0.015 78);
+  --sidebar-faint:  oklch(0.60 0.018 75);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: oklch(0.215 0.012 60);
+  --foreground: oklch(0.93 0.012 82);
+
+  --card: oklch(0.258 0.013 60);
+  --card-foreground: oklch(0.93 0.012 82);
+
+  --popover: oklch(0.258 0.013 60);
+  --popover-foreground: oklch(0.93 0.012 82);
+
+  --primary: oklch(0.81 0.135 82);
+  --primary-foreground: oklch(0.28 0.03 70);
+
+  --secondary: oklch(0.300 0.014 62);
+  --secondary-foreground: oklch(0.93 0.012 82);
+
+  --muted: oklch(0.330 0.014 64);
+  --muted-foreground: oklch(0.74 0.014 78);
+
+  --accent: oklch(0.81 0.135 82 / 0.20);
+  --accent-foreground: oklch(0.60 0.125 70);
+
+  --destructive: oklch(0.63 0.145 40);
+
+  --border: oklch(0.36 0.012 65);
+  --input: oklch(0.42 0.013 66);
+  --ring: oklch(0.81 0.135 82);
+
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+
+  --sidebar: oklch(0.175 0.012 60);
+  --sidebar-foreground: oklch(0.92 0.012 80);
+  --sidebar-primary: oklch(0.81 0.135 82);
+  --sidebar-primary-foreground: oklch(0.28 0.03 70);
+  --sidebar-accent: oklch(1 0 0 / 0.10);
+  --sidebar-accent-foreground: oklch(0.81 0.135 82);
+  --sidebar-border: oklch(1 0 0 / 0.10);
+  --sidebar-ring: oklch(0.81 0.135 82);
+
+  /* tokens Marmitaria que mudam no dark */
+  --mustard-faint: oklch(0.81 0.135 82 / 0.20);
+
+  --pix:       oklch(0.72 0.10 132);
+  --pix-faint: oklch(0.66 0.095 130 / 0.22);
+
+  --swile:       oklch(0.70 0.145 42);
+  --swile-faint: oklch(0.63 0.145 40 / 0.20);
 }
 
 @layer base {
