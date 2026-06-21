@@ -91,8 +91,8 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 - [x] Receitas — lista com última vez no cardápio, criar/editar com IngredienteSelector
 - [x] Tipos & Preços — CRUD com dual pricing Pix/Swile
 - [x] Cardápio — cards de prato, modal de adicionar com busca
-- [ ] Pedidos — lista com status, drawer novo pedido, modal cliente inline, empty state
-- [ ] Home — cards de totais, grade de pratos, lista de clientes, accordion, checkbox produzido, dropdown pago
+- [x] Pedidos — lista com status, drawer novo pedido, modal cliente inline, empty state
+- [x] Home — cards de totais, grade de pratos, lista de clientes, accordion, checkbox produzido, dropdown pago
 - [ ] Compras & Custos — abas, IngredienteSelector, valor unitário calculado, custos inline, gás read-only, painel consolidado
 - [ ] Financeiro — toggle modos, gráfico barras, pratos com drill-down, Pix vs Swile
 
