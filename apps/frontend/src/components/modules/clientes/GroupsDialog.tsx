@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,65 +8,71 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useGroups, useCreateGroup, useUpdateGroup, useDeleteGroup } from '@/hooks/useGroups'
+} from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  useGroups,
+  useCreateGroup,
+  useUpdateGroup,
+  useDeleteGroup,
+} from "@/hooks/useGroups";
 
 interface Props {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function GroupsDialog({ open, onOpenChange }: Props) {
-  const { data: groups = [] } = useGroups()
+  const { data: groups = [] } = useGroups();
 
-  const [renamingId, setRenamingId] = useState<string | null>(null)
-  const [renameValue, setRenameValue] = useState('')
-  const [newGroupName, setNewGroupName] = useState('')
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [newGroupName, setNewGroupName] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const createGroup = useCreateGroup()
-  const updateGroup = useUpdateGroup()
-  const deleteGroup = useDeleteGroup()
+  const createGroup = useCreateGroup();
+  const updateGroup = useUpdateGroup();
+  const deleteGroup = useDeleteGroup();
 
   function startRename(id: string, currentName: string) {
-    setRenamingId(id)
-    setRenameValue(currentName)
+    setRenamingId(id);
+    setRenameValue(currentName);
   }
 
   function cancelRename() {
-    setRenamingId(null)
-    setRenameValue('')
+    setRenamingId(null);
+    setRenameValue("");
   }
 
   async function handleRename(id: string) {
-    const name = renameValue.trim()
-    if (!name) return
+    const name = renameValue.trim();
+    if (!name) return;
     try {
-      await updateGroup.mutateAsync({ id, data: { name } })
-      cancelRename()
+      await updateGroup.mutateAsync({ id, data: { name } });
+      cancelRename();
     } catch {}
   }
 
   async function handleCreate() {
-    const name = newGroupName.trim()
-    if (!name) return
+    const name = newGroupName.trim();
+    if (!name) return;
     try {
-      await createGroup.mutateAsync({ name })
-      setNewGroupName('')
+      await createGroup.mutateAsync({ name });
+      setNewGroupName("");
     } catch {}
   }
 
   async function handleDelete() {
-    if (!confirmDeleteId) return
+    if (!confirmDeleteId) return;
     try {
-      await deleteGroup.mutateAsync(confirmDeleteId)
-      setConfirmDeleteId(null)
+      await deleteGroup.mutateAsync(confirmDeleteId);
+      setConfirmDeleteId(null);
     } catch {}
   }
 
-  const confirmDeleteGroup = groups.find(g => g.id === confirmDeleteId)
+  const confirmDeleteGroup = groups.find((g) => g.id === confirmDeleteId);
 
   return (
     <>
@@ -81,27 +87,25 @@ export function GroupsDialog({ open, onOpenChange }: Props) {
 
           <div className="flex flex-col gap-1">
             {groups.length === 0 && (
-              <p className="text-sm text-muted-foreground py-2">Nenhum grupo cadastrado.</p>
+              <p className="text-sm text-muted-foreground py-2">
+                Nenhum grupo cadastrado.
+              </p>
             )}
-            {groups.map(group => (
+            {groups.map((group) => (
               <div key={group.id} className="flex items-center gap-2 py-1.5">
                 {renamingId === group.id ? (
                   <>
                     <Input
                       value={renameValue}
-                      onChange={e => setRenameValue(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') handleRename(group.id)
-                        if (e.key === 'Escape') cancelRename()
+                      onChange={(e) => setRenameValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleRename(group.id);
+                        if (e.key === "Escape") cancelRename();
                       }}
                       className="h-8 flex-1"
                       autoFocus
                     />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={cancelRename}
-                    >
+                    <Button size="sm" variant="ghost" onClick={cancelRename}>
                       Cancelar
                     </Button>
                     <Button
@@ -114,7 +118,9 @@ export function GroupsDialog({ open, onOpenChange }: Props) {
                   </>
                 ) : (
                   <>
-                    <span className="flex-1 text-sm font-medium">{group.name}</span>
+                    <span className="flex-1 text-sm font-medium">
+                      {group.name}
+                    </span>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -140,8 +146,8 @@ export function GroupsDialog({ open, onOpenChange }: Props) {
             <Input
               placeholder="Novo grupo"
               value={newGroupName}
-              onChange={e => setNewGroupName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleCreate()}
+              onChange={(e) => setNewGroupName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
               className="h-8"
             />
             <Button
@@ -161,28 +167,20 @@ export function GroupsDialog({ open, onOpenChange }: Props) {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!confirmDeleteId} onOpenChange={open => !open && setConfirmDeleteId(null)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Excluir grupo?</DialogTitle>
-            <DialogDescription>
-              Todos os clientes do grupo <b>{confirmDeleteGroup?.name}</b> serão desativados junto. Essa ação não pode ser desfeita.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setConfirmDeleteId(null)}>
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteGroup.isPending}
-            >
-              Sim, excluir
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={!!confirmDeleteId}
+        onOpenChange={(open) => !open && setConfirmDeleteId(null)}
+        title="Excluir grupo?"
+        description={
+          <>
+            Todos os clientes do grupo <b>{confirmDeleteGroup?.name}</b> serão
+            desativados junto. Essa ação não pode ser desfeita.
+          </>
+        }
+        confirmLabel="Sim, excluir"
+        onConfirm={handleDelete}
+        isPending={deleteGroup.isPending}
+      />
     </>
-  )
+  );
 }

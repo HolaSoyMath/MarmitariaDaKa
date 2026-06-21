@@ -10,6 +10,7 @@ interface IngredienteSelectorProps {
   value: string | null
   onChange: (id: string) => void
   onCreateNew: () => void
+  exclude?: string[]
   className?: string
 }
 
@@ -17,6 +18,7 @@ export function IngredienteSelector({
   value,
   onChange,
   onCreateNew,
+  exclude = [],
   className,
 }: IngredienteSelectorProps) {
   const { data: ingredients, isLoading } = useQuery({
@@ -46,7 +48,7 @@ export function IngredienteSelector({
           {isLoading ? 'Carregando…' : 'Selecionar ingrediente'}
         </option>
         <option value="__create__">+ Cadastrar novo item</option>
-        {ingredients?.map((ing) => (
+        {ingredients?.filter(ing => !exclude.includes(ing.id)).map((ing) => (
           <option key={ing.id} value={ing.id}>
             {ing.name} — {ing.unit}
           </option>

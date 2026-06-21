@@ -1,60 +1,66 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
+import { useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useCreateIngredient, useUpdateIngredient, useDeleteIngredient } from '@/hooks/useIngredients'
-import { IngredientUnitEnum } from '@marmitaria/schemas/enums'
-import type { IngredientResponse } from '@marmitaria/schemas/ingredient/ingredientResponse.schema'
-import type { IngredientUnit } from '@marmitaria/schemas/enums'
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  useCreateIngredient,
+  useUpdateIngredient,
+  useDeleteIngredient,
+} from "@/hooks/useIngredients";
+import { IngredientUnitEnum } from "@marmitaria/schemas/enums";
+import type { IngredientResponse } from "@marmitaria/schemas/ingredient/ingredientResponse.schema";
+import type { IngredientUnit } from "@marmitaria/schemas/enums";
 
 interface Props {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  ingredient?: IngredientResponse
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  ingredient?: IngredientResponse;
 }
 
 export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
-  const isEditing = !!ingredient
+  const isEditing = !!ingredient;
 
   const [form, setForm] = useState<{ name: string; unit: IngredientUnit }>({
-    name: ingredient?.name ?? '',
-    unit: ingredient?.unit ?? 'g',
-  })
-  const [confirmOpen, setConfirmOpen] = useState(false)
+    name: ingredient?.name ?? "",
+    unit: ingredient?.unit ?? "g",
+  });
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const createIngredient = useCreateIngredient()
-  const updateIngredient = useUpdateIngredient()
-  const deleteIngredient = useDeleteIngredient()
+  const createIngredient = useCreateIngredient();
+  const updateIngredient = useUpdateIngredient();
+  const deleteIngredient = useDeleteIngredient();
 
-  const isSaving = createIngredient.isPending || updateIngredient.isPending
+  const isSaving = createIngredient.isPending || updateIngredient.isPending;
 
   async function handleSave() {
-    const name = form.name.trim()
-    if (!name) return
+    const name = form.name.trim();
+    if (!name) return;
     if (isEditing) {
-      await updateIngredient.mutateAsync({ id: ingredient.id, data: { name, unit: form.unit } })
+      await updateIngredient.mutateAsync({
+        id: ingredient.id,
+        data: { name, unit: form.unit },
+      });
     } else {
-      await createIngredient.mutateAsync({ name, unit: form.unit })
+      await createIngredient.mutateAsync({ name, unit: form.unit });
     }
-    onOpenChange(false)
+    onOpenChange(false);
   }
 
   async function handleDelete() {
-    if (!ingredient) return
-    await deleteIngredient.mutateAsync(ingredient.id)
-    setConfirmOpen(false)
-    onOpenChange(false)
+    if (!ingredient) return;
+    await deleteIngredient.mutateAsync(ingredient.id);
+    setConfirmOpen(false);
+    onOpenChange(false);
   }
 
   return (
@@ -62,7 +68,9 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent className="flex flex-col gap-0 p-0">
           <SheetHeader className="px-6 py-5 border-b">
-            <SheetTitle>{isEditing ? 'Editar ingrediente' : 'Novo ingrediente'}</SheetTitle>
+            <SheetTitle>
+              {isEditing ? "Editar ingrediente" : "Novo ingrediente"}
+            </SheetTitle>
           </SheetHeader>
 
           <div className="flex flex-col gap-5 px-6 py-6 flex-1">
@@ -71,22 +79,24 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
               <Input
                 id="ing-name"
                 value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
                 placeholder="ex: Requeijão"
-                onKeyDown={e => e.key === 'Enter' && handleSave()}
+                onKeyDown={(e) => e.key === "Enter" && handleSave()}
               />
             </div>
 
             <div className="flex flex-col gap-2">
               <Label>Tipo</Label>
               <div className="flex gap-2 flex-wrap">
-                {IngredientUnitEnum.options.map(u => (
+                {IngredientUnitEnum.options.map((u) => (
                   <Button
                     key={u}
                     type="button"
-                    variant={form.unit === u ? 'default' : 'outline'}
+                    variant={form.unit === u ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setForm(f => ({ ...f, unit: u }))}
+                    onClick={() => setForm((f) => ({ ...f, unit: u }))}
                   >
                     {u}
                   </Button>
@@ -109,35 +119,29 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={!form.name.trim() || isSaving}>
+            <Button
+              onClick={handleSave}
+              disabled={!form.name.trim() || isSaving}
+            >
               Salvar
             </Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
 
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Remover ingrediente?</DialogTitle>
-            <DialogDescription>
-              <b>{ingredient?.name}</b> será removido do cadastro. Essa ação não pode ser desfeita.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteIngredient.isPending}
-            >
-              Sim, remover
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Remover ingrediente?"
+        description={
+          <>
+            <b>{ingredient?.name}</b> será removido do cadastro. Essa ação não
+            pode ser desfeita.
+          </>
+        }
+        onConfirm={handleDelete}
+        isPending={deleteIngredient.isPending}
+      />
     </>
-  )
+  );
 }

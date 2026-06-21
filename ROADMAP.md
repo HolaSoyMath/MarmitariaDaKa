@@ -87,8 +87,8 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 
 **Módulos — por tela:**
 - [x] Ingredientes — CRUD simples
-- [ ] Clientes — lista, modal cliente com chips de grupo, modal grupos empilhado
-- [ ] Receitas — lista com última vez no cardápio, criar/editar com IngredienteSelector
+- [x] Clientes — lista, modal cliente com chips de grupo, modal grupos empilhado
+- [x] Receitas — lista com última vez no cardápio, criar/editar com IngredienteSelector
 - [ ] Tipos & Preços — CRUD com dual pricing Pix/Swile
 - [ ] Cardápio — cards de prato, modal de adicionar com busca
 - [ ] Pedidos — lista com status, drawer novo pedido, modal cliente inline, empty state

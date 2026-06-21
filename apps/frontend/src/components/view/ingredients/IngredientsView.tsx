@@ -81,7 +81,7 @@ export function IngredientsView() {
                       size="sm"
                       onClick={() => openEdit(ingredient)}
                     >
-                      editar
+                      Editar
                     </Button>
                   </TableCell>
                 </TableRow>
