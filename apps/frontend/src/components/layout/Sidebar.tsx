@@ -7,6 +7,7 @@ import {
   ClipboardListIcon,
   UtensilsIcon,
   UsersIcon,
+  TagIcon,
   ShoppingCartIcon,
   BarChart2Icon,
 } from 'lucide-react'
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { href: '/pedidos',    label: 'Pedidos',             icon: ClipboardListIcon },
   { href: '/cardapio',   label: 'Cardápio & Receitas', icon: UtensilsIcon },
   { href: '/clientes',   label: 'Clientes',            icon: UsersIcon },
+  { href: '/precos',     label: 'Tipos & Preços',      icon: TagIcon },
   { href: '/compras',    label: 'Compras & Custos',    icon: ShoppingCartIcon },
   { href: '/financeiro', label: 'Financeiro',          icon: BarChart2Icon },
 ] as const
