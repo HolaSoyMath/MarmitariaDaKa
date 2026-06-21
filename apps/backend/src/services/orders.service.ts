@@ -59,4 +59,12 @@ export class OrdersService {
     }
     return this.repository.updateStatus(id, 'pending', null)
   }
+
+  async revertToProduced(id: string): Promise<OrderWithItems> {
+    const order = await this.getById(id)
+    if (order.status !== 'paid') {
+      throw new ConflictError('Pedido não está pago')
+    }
+    return this.repository.updateStatus(id, 'produced', null)
+  }
 }

@@ -5,73 +5,17 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { OrderSheet } from '@/components/modules/pedidos/OrderSheet'
+import { OrdersTable } from '@/components/modules/pedidos/OrdersTable'
 import {
   useOrders,
   useMarkProduced,
   useMarkPaid,
   useRevertToPending,
+  useRevertToProduced,
 } from '@/hooks/useOrders'
 import { useWeek } from '@/context/WeekContext'
-import { formatCurrency } from '@/formatters/currency'
-import { formatOrderItems } from '@/formatters/order'
-import { cn } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.schema'
-
-const GRID = { gridTemplateColumns: '34px 1.25fr 2fr auto 64px', gap: '14px' }
-
-function OrderCheck({
-  checked,
-  onChange,
-  disabled = false,
-  variant,
-}: {
-  checked: boolean
-  onChange: () => void
-  disabled?: boolean
-  variant: 'feito' | 'pago'
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onChange}
-      disabled={disabled}
-      className={cn(
-        'w-6 h-6 flex-none border-2 rounded-[7px] grid place-items-center transition-all cursor-pointer',
-        'disabled:opacity-40 disabled:cursor-not-allowed',
-        variant === 'feito'
-          ? checked
-            ? 'bg-pix border-pix text-white'
-            : 'bg-card border-border-strong hover:border-pix'
-          : checked
-            ? 'bg-primary border-primary text-primary-foreground'
-            : 'bg-card border-border-strong hover:border-primary',
-      )}
-    >
-      {checked && <span className="text-[15px] font-extrabold leading-none">✓</span>}
-    </button>
-  )
-}
-
-function OrderValue({ order }: { order: OrderResponse }) {
-  const pixTotal = order.items.reduce((s, i) => s + i.snapshotPixPrice * i.quantity, 0)
-  const swileTotal = order.items.reduce((s, i) => s + i.snapshotSwilePrice * i.quantity, 0)
-
-  if (order.status === 'paid' && order.paymentMethod) {
-    const isPix = order.paymentMethod === 'Pix'
-    const total = isPix ? pixTotal : swileTotal
-    return (
-      <span className={cn('font-semibold', isPix ? 'text-pix' : 'text-swile')}>
-        {order.paymentMethod}{' '}
-        <b className="font-heading font-extrabold text-[17px]">{formatCurrency(total)}</b>
-      </span>
-    )
-  }
-
-  return (
-    <b className="font-heading font-extrabold text-[17px]">{formatCurrency(pixTotal)}</b>
-  )
-}
 
 export function OrdersView() {
   const { currentWeek } = useWeek()
@@ -80,6 +24,7 @@ export function OrdersView() {
   const markProduced = useMarkProduced()
   const markPaid = useMarkPaid()
   const revertToPending = useRevertToPending()
+  const revertToProduced = useRevertToProduced()
 
   const [sheetOpen, setSheetOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null)
@@ -149,87 +94,12 @@ export function OrdersView() {
           </Button>
         </div>
       ) : (
-        <div className="border border-border rounded-lg bg-card shadow-sm overflow-hidden" style={{ padding: '6px' }}>
-          {/* Header */}
-          <div className="grid px-4.5 py-3" style={GRID}>
-            <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint text-center whitespace-nowrap">
-              ✓ feito
-            </span>
-            <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint">
-              Cliente
-            </span>
-            <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint">
-              Itens
-            </span>
-            <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint">
-              Valor
-            </span>
-            <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint text-center">
-              Pago
-            </span>
-          </div>
-
-          {/* Linhas */}
-          {orders.map((order) => {
-            const isDone = order.status === 'produced' || order.status === 'paid'
-            return (
-              <div
-                key={order.id}
-                className={cn(
-                  'grid items-center px-4.5 py-3.5 border-t border-border transition-colors',
-                  isDone ? 'bg-pix-faint' : 'hover:bg-secondary',
-                )}
-                style={GRID}
-              >
-                {/* Feito */}
-                <div className="flex justify-center">
-                  <OrderCheck
-                    checked={isDone}
-                    onChange={() => handleFeitoToggle(order)}
-                    disabled={order.status === 'paid'}
-                    variant="feito"
-                  />
-                </div>
-
-                {/* Cliente */}
-                <button
-                  type="button"
-                  onClick={() => openEdit(order)}
-                  disabled={order.status !== 'pending'}
-                  className="text-left disabled:cursor-default cursor-pointer"
-                >
-                  <span className="text-[15px] font-bold block">{order.client.name}</span>
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-ink-faint mt-0.5 block">
-                    {order.client.group.name}
-                  </span>
-                </button>
-
-                {/* Itens */}
-                <span
-                  className={cn(
-                    'text-[13.5px] text-muted-foreground',
-                    isDone && 'line-through decoration-[1.5px] text-ink-faint',
-                  )}
-                >
-                  {formatOrderItems(order)}
-                </span>
-
-                {/* Valor */}
-                <OrderValue order={order} />
-
-                {/* Pago */}
-                <div className="flex justify-center">
-                  <OrderCheck
-                    checked={order.status === 'paid'}
-                    onChange={() => handlePagoToggle(order)}
-                    disabled={order.status === 'pending'}
-                    variant="pago"
-                  />
-                </div>
-              </div>
-            )
-          })}
-        </div>
+        <OrdersTable
+          orders={orders}
+          onFeitoToggle={handleFeitoToggle}
+          onPagoToggle={handlePagoToggle}
+          onEdit={openEdit}
+        />
       )}
 
       {/* Dialog de método de pagamento */}
@@ -259,12 +129,12 @@ export function OrdersView() {
         open={!!unmarkDialogId}
         onOpenChange={(open) => !open && setUnmarkDialogId(null)}
         title="Desmarcar pagamento?"
-        description="O pedido voltará para pendente e o método de pagamento será removido."
+        description="O pedido voltará para produzido e o método de pagamento será removido."
         onConfirm={() => {
-          if (unmarkDialogId) revertToPending.mutate(unmarkDialogId)
+          if (unmarkDialogId) revertToProduced.mutate(unmarkDialogId)
           setUnmarkDialogId(null)
         }}
-        isPending={revertToPending.isPending}
+        isPending={revertToProduced.isPending}
       />
 
       <OrderSheet

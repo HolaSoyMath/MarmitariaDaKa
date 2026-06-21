@@ -70,4 +70,8 @@ export class OrdersController {
   async revertToPending(id: string): Promise<OrderResponse> {
     return this.format(await this.service.revertToPending(id))
   }
+
+  async revertToProduced(id: string): Promise<OrderResponse> {
+    return this.format(await this.service.revertToProduced(id))
+  }
 }

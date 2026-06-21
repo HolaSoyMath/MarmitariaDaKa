@@ -102,3 +102,15 @@ export function useRevertToPending() {
     onError: (error) => toastError(error, 'Não foi possível reverter o pedido.'),
   })
 }
+
+export function useRevertToProduced() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await api.patch<OrderResponse>(`/orders/${id}/revert-to-produced`)
+      return res.data
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onError: (error) => toastError(error, 'Não foi possível desmarcar o pagamento.'),
+  })
+}
