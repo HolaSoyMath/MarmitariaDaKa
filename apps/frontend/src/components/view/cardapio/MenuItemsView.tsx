@@ -5,13 +5,16 @@ import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { AddMenuItemDialog } from '@/components/modules/cardapio/AddMenuItemDialog'
 import { useMenuItems, useRemoveMenuItem } from '@/hooks/useMenuItems'
+import { usePriceTypes } from '@/hooks/usePriceTypes'
 import { useWeek } from '@/context/WeekContext'
-import { Plus, X } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { MenuItemCard } from '@/components/modules/cardapio/MenuItemCard'
 import type { MenuItemResponse } from '@marmitaria/schemas/menuItem/menuItemResponse.schema'
 
 export function MenuItemsView() {
   const { currentWeek } = useWeek()
   const { data: menuItems = [], isLoading } = useMenuItems(currentWeek?.id ?? null)
+  const { data: priceTypes = [] } = usePriceTypes()
   const removeMenuItem = useRemoveMenuItem()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -46,25 +49,9 @@ export function MenuItemsView() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {menuItems.map((item) => (
-            <div
-              key={item.id}
-              className="relative rounded-lg border p-4 flex flex-col gap-1"
-            >
-              <button
-                className="absolute top-2 right-2 p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                onClick={() => setToRemove(item)}
-                aria-label="Remover prato"
-              >
-                <X className="size-4" />
-              </button>
-              <span className="font-medium text-sm pr-6">{item.recipe.name}</span>
-              <span className="text-xs text-muted-foreground">
-                {item.recipe.ingredients.length}{' '}
-                {item.recipe.ingredients.length === 1 ? 'ingrediente' : 'ingredientes'}
-              </span>
-            </div>
+            <MenuItemCard key={item.id} item={item} priceTypes={priceTypes} onRemove={setToRemove} />
           ))}
         </div>
       )}
