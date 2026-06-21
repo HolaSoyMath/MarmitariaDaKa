@@ -6,12 +6,20 @@
     "shared/*"
   ],
   "devDependencies": {
+    "@prisma/studio-core": "0.27.3",
     "@types/bun": "latest",
+    "@prisma/client": "7.2.0",
+    "prisma": "7.2.0",
     "turbo": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
+  "trustedDependencies": [
+    "prisma",
+    "@prisma/client",
+    "@prisma/engines"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",

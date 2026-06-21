@@ -1,4 +1,5 @@
 ﻿import { Elysia } from 'elysia'
+import { cors } from '@elysiajs/cors'
 import { groupsRoutes } from './routes/groups'
 import { clientsRoutes } from './routes/clients'
 import { ingredientsRoutes } from './routes/ingredients'
@@ -16,6 +17,7 @@ if (!process.env.PORT) throw new Error('Variável de ambiente PORT não definida
 const port = Number(process.env.PORT)
 
 const app = new Elysia()
+  .use(cors({ origin: /localhost/ }))
   .get('/health', () => ({ status: 'ok', timestamp: new Date().toISOString() }))
   .use(groupsRoutes)
   .use(clientsRoutes)

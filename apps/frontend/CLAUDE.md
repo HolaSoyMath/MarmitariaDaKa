@@ -87,6 +87,23 @@ export const api = treaty<App>(process.env.NEXT_PUBLIC_API_URL!)
 - Componentes específicos de módulo em `components/modules/[modulo]/`
 - Nunca importar de `shared/schemas/` diretamente nos componentes — usar os tipos inferidos via `z.infer<>` importados de `shared/schemas/`
 
+## Padrão Server / Client
+
+`page.tsx` **nunca deve ter `'use client'`**. Toda interatividade (useState, hooks, eventos) fica em um componente `*View.tsx` dentro de `components/view/[entity]/`.
+
+```
+app/(private)/[rota]/page.tsx              → Server Component puro, só importa o View
+components/view/[entity]/[Entity]View.tsx  → 'use client', toda a lógica de estado e TanStack Query
+components/modules/[modulo]/[X]Sheet.tsx   → 'use client', formulários e drawers reutilizáveis
+hooks/use[Entity].ts                       → hooks TanStack Query (inglês)
+```
+
+---
+
+## Tailwind — tamanhos
+
+Preferir as classes utilitárias padrão do Tailwind (`w-25`, `w-32`, `p-6`, etc.) em vez de valores arbitrários com colchetes (`w-[100px]`, `p-[30px]`). Valores arbitrários só quando nenhuma classe padrão servir.
+
 ---
 
 ## Padrões de UI importantes

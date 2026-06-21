@@ -86,7 +86,7 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 - [x] Shared — WeekPicker, IngredienteSelector, StatusBadge
 
 **Módulos — por tela:**
-- [ ] Ingredientes — CRUD simples
+- [x] Ingredientes — CRUD simples
 - [ ] Clientes — lista, modal cliente com chips de grupo, modal grupos empilhado
 - [ ] Receitas — lista com última vez no cardápio, criar/editar com IngredienteSelector
 - [ ] Tipos & Preços — CRUD com dual pricing Pix/Swile
