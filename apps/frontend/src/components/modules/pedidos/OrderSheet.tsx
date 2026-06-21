@@ -116,7 +116,7 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
                 className="justify-start text-sm text-muted-foreground hover:text-foreground mt-0.5 cursor-pointer"
               >
                 <Plus className="size-3.5" />
-                adicionar item
+                Adicionar item
               </Button>
             </div>
           </div>

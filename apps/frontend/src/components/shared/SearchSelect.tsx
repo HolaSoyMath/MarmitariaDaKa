@@ -43,7 +43,9 @@ export function SearchSelect({
   const selected = options.find((o) => o.value === value)
   const hasGroups = options.some((o) => !!o.group)
 
-  const grouped = options.reduce<Record<string, SearchSelectOption[]>>((acc, opt) => {
+  const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'))
+
+  const grouped = sorted.reduce<Record<string, SearchSelectOption[]>>((acc, opt) => {
     const key = opt.group ?? ''
     if (!acc[key]) acc[key] = []
     acc[key].push(opt)
@@ -94,7 +96,7 @@ export function SearchSelect({
                     ))}
                   </CommandGroup>
                 ))
-              : options.map((opt) => (
+              : sorted.map((opt) => (
                   <CommandItem
                     key={opt.value}
                     value={opt.label}
