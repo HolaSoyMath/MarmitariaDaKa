@@ -17,8 +17,7 @@ import { GroupsDialog } from '@/components/modules/clientes/GroupsDialog'
 import { useOrderSheet } from '@/hooks/useOrderSheet'
 import { useWeek } from '@/context/WeekContext'
 import { formatCurrency } from '@/formatters/currency'
-import { cn } from '@/lib/utils'
-import { X } from 'lucide-react'
+import { X, Plus, Minus } from 'lucide-react'
 import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.schema'
 
 interface Props {
@@ -65,7 +64,6 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
           </SheetHeader>
 
           <div className="flex flex-col gap-4 px-5.5 py-5 flex-1 overflow-y-auto">
-            {/* Cliente */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <Label className="text-[13px] font-semibold text-muted-foreground">Cliente</Label>
@@ -76,7 +74,7 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
                   className="h-auto py-1 text-xs cursor-pointer"
                   onClick={() => setClientSheetOpen(true)}
                 >
-                  + novo
+                  <Plus /> Novo
                 </Button>
               </div>
               <Select value={clientId} onValueChange={setClientId}>
@@ -100,7 +98,6 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
               </Select>
             </div>
 
-            {/* Itens */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <Label className="text-[13px] font-semibold text-muted-foreground">
@@ -117,7 +114,6 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
                     key={i}
                     className="border border-border rounded-md p-3.5 flex flex-col gap-3 bg-card"
                   >
-                    {/* Linha topo: prato + remover */}
                     <div className="flex gap-2 items-center">
                       <Select
                         value={row.menuItemId}
@@ -135,79 +131,77 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
                         </SelectContent>
                       </Select>
 
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
+                        size="icon"
                         onClick={() => removeRow(i)}
                         disabled={rows.length === 1}
-                        className="w-7.5 h-7.5 flex-none border border-border rounded-lg grid place-items-center text-muted-foreground hover:border-destructive hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                        className="w-7.5 h-7.5 flex-none rounded-lg text-muted-foreground hover:border-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                       >
                         <X className="size-3.5" />
-                      </button>
+                      </Button>
                     </div>
 
-                    {/* Linha baixo: tamanho chips + stepper */}
                     <div className="flex items-center justify-between gap-2">
-                      {/* Toggle de tamanho */}
                       <div className="inline-flex border border-border rounded-lg overflow-hidden">
                         {priceTypes.map((pt) => (
-                          <button
+                          <Button
                             key={pt.id}
                             type="button"
+                            variant={row.priceTypeId === pt.id ? 'default' : 'ghost'}
                             onClick={() => updateRow(i, { priceTypeId: pt.id })}
-                            className={cn(
-                              'px-3 py-1.5 text-[13px] font-semibold border-r border-border last:border-r-0 transition-colors cursor-pointer',
-                              row.priceTypeId === pt.id
-                                ? 'bg-primary text-primary-foreground'
-                                : 'text-muted-foreground hover:bg-muted',
-                            )}
+                            className="rounded-none border-r border-border last:border-r-0 h-auto py-1.5 text-[13px] font-semibold cursor-pointer"
                           >
                             {pt.size}
-                          </button>
+                          </Button>
                         ))}
                       </div>
 
-                      {/* Stepper de quantidade */}
                       <div className="inline-flex items-center border border-border rounded-lg overflow-hidden">
-                        <button
+                        <Button
                           type="button"
+                          variant="ghost"
                           onClick={() =>
                             updateRow(i, {
                               quantity: String(Math.max(0, Number(row.quantity) - 1)),
                             })
                           }
-                          className="w-8 h-8.5 text-lg grid place-items-center hover:bg-muted transition-colors cursor-pointer"
+                          className="w-8 h-8.5 rounded-none p-0 cursor-pointer"
                         >
-                          −
-                        </button>
+                          <Minus className="size-3.5" />
+                        </Button>
                         <span className="w-9 text-center font-heading font-extrabold text-lg border-l border-r border-border h-8.5 grid place-items-center">
                           {row.quantity === '' ? '0' : row.quantity}
                         </span>
-                        <button
+                        <Button
                           type="button"
+                          variant="ghost"
                           onClick={() =>
                             updateRow(i, { quantity: String(Number(row.quantity) + 1) })
                           }
-                          className="w-8 h-8.5 text-lg grid place-items-center hover:bg-muted transition-colors cursor-pointer"
+                          className="w-8 h-8.5 rounded-none p-0 cursor-pointer"
                         >
-                          +
-                        </button>
+                          <Plus className="size-3.5" />
+                        </Button>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={addRow}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors py-1 text-left mt-0.5 cursor-pointer"
+                className="justify-start text-sm text-muted-foreground hover:text-foreground mt-0.5 cursor-pointer"
               >
-                + adicionar item
-              </button>
+                <Plus className="size-3.5" />
+                adicionar item
+              </Button>
             </div>
           </div>
 
-          {/* Totais */}
           <div className="px-5.5 py-4 border-t">
             <div className="flex gap-3.5">
               <div className="flex-1 rounded-md p-2.5 text-center bg-pix-faint">
@@ -229,7 +223,6 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
             </div>
           </div>
 
-          {/* Footer */}
           <div className="px-5.5 py-4 border-t flex flex-col gap-3">
             {isEditing && order?.status === 'pending' && (
               <Button
