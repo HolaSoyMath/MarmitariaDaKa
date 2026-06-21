@@ -115,6 +115,23 @@ export const api = treaty<App>(process.env.NEXT_PUBLIC_API_URL!)
 
 ---
 
+## Componentes shadcn/ui
+
+Componentes são instalados via CLI — **escrever o comando e deixar o dev rodar manualmente no terminal**, nunca executar automaticamente.
+
+```bash
+# Adicionar um componente
+npx shadcn@latest add <nome>
+
+# Exemplos
+npx shadcn@latest add button
+npx shadcn@latest add dialog sheet
+```
+
+Componentes instalados ficam em `src/components/ui/` e nunca são editados diretamente — criar wrappers em `src/components/shared/` se precisar de variações.
+
+---
+
 ## Deploy
 
 Vercel. Variável de ambiente obrigatória: `NEXT_PUBLIC_API_URL` apontando para o backend no Render.

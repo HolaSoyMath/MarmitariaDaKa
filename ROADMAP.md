@@ -73,10 +73,10 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 ## Fase 4 — Frontend
 
 **Setup:**
-- [ ] Inicializar Next.js em `apps/frontend`
-- [ ] Configurar Tailwind + shadcn/ui
-- [ ] Configurar Eden Treaty em `lib/api.ts`
-- [ ] Configurar TanStack Query em `lib/queryClient.ts`
+- [x] Inicializar Next.js em `apps/frontend`
+- [x] Configurar Tailwind + shadcn/ui
+- [x] Configurar Eden Treaty em `lib/api.ts`
+- [x] Configurar TanStack Query em `lib/queryClient.ts`
 - [ ] Criar `SemanaContext`
 - [ ] Criar `constants/` — unidades, status, métodos de pagamento
 - [ ] Criar `formatters/` — moeda, semana, unidade
