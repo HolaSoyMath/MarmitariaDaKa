@@ -82,17 +82,17 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 - [x] Criar `formatters/` — moeda, semana, unidade
 
 **Componentes base:**
-- [ ] Layout — Sidebar, BottomNav, Header, PageWrapper
-- [ ] Shared — WeekPicker, IngredienteSelector, StatusBadge
+- [x] Layout — Sidebar, BottomNav, Header, PageWrapper
+- [x] Shared — WeekPicker, IngredienteSelector, StatusBadge
 
 **Módulos — por tela:**
-- [ ] Home — cards de totais, grade de pratos, lista de clientes, accordion, checkbox produzido, dropdown pago
-- [ ] Pedidos — lista com status, drawer novo pedido, modal cliente inline, empty state
-- [ ] Cardápio — cards de prato, modal de adicionar com busca
-- [ ] Receitas — lista com última vez no cardápio, criar/editar com IngredienteSelector
 - [ ] Ingredientes — CRUD simples
 - [ ] Clientes — lista, modal cliente com chips de grupo, modal grupos empilhado
+- [ ] Receitas — lista com última vez no cardápio, criar/editar com IngredienteSelector
 - [ ] Tipos & Preços — CRUD com dual pricing Pix/Swile
+- [ ] Cardápio — cards de prato, modal de adicionar com busca
+- [ ] Pedidos — lista com status, drawer novo pedido, modal cliente inline, empty state
+- [ ] Home — cards de totais, grade de pratos, lista de clientes, accordion, checkbox produzido, dropdown pago
 - [ ] Compras & Custos — abas, IngredienteSelector, valor unitário calculado, custos inline, gás read-only, painel consolidado
 - [ ] Financeiro — toggle modos, gráfico barras, pratos com drill-down, Pix vs Swile
 
