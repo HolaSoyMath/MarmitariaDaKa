@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { WeekPicker } from '@/components/shared/WeekPicker'
 
 const PAGE_META: Record<string, { title: string; subtitle: string }> = {
-  '/cardapio':   { title: 'Cardápio & Receitas', subtitle: 'Cardápio da Semana' },
+  '/cardapio':   { title: 'Cardápio da semana',   subtitle: 'Cardápio da Semana' },
   '/receitas':   { title: 'Receitas',             subtitle: 'Cadastro de Pratos' },
   '/ingredientes': { title: 'Ingredientes',       subtitle: 'Cadastro de Ingredientes' },
   '/clientes':   { title: 'Clientes',             subtitle: 'Lista de Clientes' },
