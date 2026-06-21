@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { getISOWeek, getISOWeekYear } from 'date-fns'
 import { api } from '@/lib/api'
 
 type WeekState = { id: string; number: number; year: number } | null
@@ -15,12 +16,7 @@ const WeekContext = createContext<WeekContextValue | null>(null)
 
 function getCurrentISOWeek(): { number: number; year: number } {
   const now = new Date()
-  const dayOfWeek = now.getDay() || 7
-  const thursday = new Date(now)
-  thursday.setDate(now.getDate() + 4 - dayOfWeek)
-  const yearStart = new Date(thursday.getFullYear(), 0, 1)
-  const weekNumber = Math.ceil(((thursday.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
-  return { number: weekNumber, year: thursday.getFullYear() }
+  return { number: getISOWeek(now), year: getISOWeekYear(now) }
 }
 
 async function openWeek(number: number, year: number): Promise<WeekState> {

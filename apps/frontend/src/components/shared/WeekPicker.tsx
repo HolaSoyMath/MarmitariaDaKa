@@ -1,15 +1,15 @@
 'use client'
 
+import { addDays, getISOWeeksInYear, setISOWeek, setISOWeekYear, startOfISOWeek } from 'date-fns'
 import { useWeek } from '@/context/WeekContext'
 
+function thursdayOfIsoWeek(week: number, year: number): Date {
+  const monday = startOfISOWeek(setISOWeek(setISOWeekYear(new Date(), year), week))
+  return addDays(monday, 3)
+}
+
 function isoWeeksInYear(year: number): number {
-  const dec28 = new Date(year, 11, 28)
-  const dow = dec28.getDay() || 7
-  const thu = new Date(dec28)
-  thu.setDate(dec28.getDate() + 4 - dow)
-  return Math.ceil(
-    ((thu.getTime() - new Date(thu.getFullYear(), 0, 1).getTime()) / 86400000 + 1) / 7,
-  )
+  return getISOWeeksInYear(new Date(year, 0, 1))
 }
 
 function offsetWeek(n: number, y: number, delta: 1 | -1) {
@@ -23,14 +23,6 @@ function offsetWeek(n: number, y: number, delta: 1 | -1) {
     num = 1
   }
   return { number: num, year }
-}
-
-function mondayOfIsoWeek(week: number, year: number): Date {
-  const jan4 = new Date(year, 0, 4)
-  const dow = jan4.getDay() || 7
-  const monday = new Date(jan4)
-  monday.setDate(jan4.getDate() - dow + 1 + (week - 1) * 7)
-  return monday
 }
 
 const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'long' })
@@ -54,28 +46,27 @@ export function WeekPicker() {
     setWeek(number, year)
   }
 
-  const monthLabel = currentWeek
-    ? capitalize(monthFormatter.format(mondayOfIsoWeek(currentWeek.number, currentWeek.year)))
-    : '…'
+  const thursday = currentWeek ? thursdayOfIsoWeek(currentWeek.number, currentWeek.year) : null
+  const monthLabel = thursday ? capitalize(monthFormatter.format(thursday)) : '…'
 
   return (
-    <div className="inline-flex items-center gap-0.5 rounded-[10px] bg-sidebar p-1">
+    <div className="inline-flex items-center gap-0.5 rounded-sm bg-sidebar p-1">
       <button
         onClick={handlePrev}
         disabled={isLoading}
         aria-label="Semana anterior"
-        className="grid h-7 w-7 place-items-center rounded-[7px] text-[17px] leading-none text-[oklch(0.85_0.01_80)] transition-colors hover:bg-white/[0.12] disabled:opacity-40"
+        className="grid h-7 w-7 place-items-center rounded-[7px] text-[17px] leading-none text-[oklch(0.85_0.01_80)] transition-colors hover:bg-white/12 disabled:opacity-40"
       >
         ‹
       </button>
 
-      <span className="px-[11px] font-mono text-[12px] whitespace-nowrap text-white">
+      <span className="px-2.75 font-mono text-[12px] whitespace-nowrap text-white">
         {currentWeek ? (
           <>
             Semana{' '}
             <b className="text-primary font-medium">{currentWeek.number}</b>
             {' · '}
-            {monthLabel} {currentWeek.year}
+            {monthLabel} {thursday?.getFullYear()}
           </>
         ) : (
           '…'
@@ -86,7 +77,7 @@ export function WeekPicker() {
         onClick={handleNext}
         disabled={isLoading}
         aria-label="Próxima semana"
-        className="grid h-7 w-7 place-items-center rounded-[7px] text-[17px] leading-none text-[oklch(0.85_0.01_80)] transition-colors hover:bg-white/[0.12] disabled:opacity-40"
+        className="grid h-7 w-7 place-items-center rounded-[7px] text-[17px] leading-none text-[oklch(0.85_0.01_80)] transition-colors hover:bg-white/12 disabled:opacity-40"
       >
         ›
       </button>

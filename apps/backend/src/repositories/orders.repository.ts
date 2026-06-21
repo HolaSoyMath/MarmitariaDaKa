@@ -108,7 +108,7 @@ export class OrdersRepository implements IOrdersRepository {
     await prisma.order.update({ where: { id }, data: { deletedAt: new Date() } })
   }
 
-  async updateStatus(id: string, status: string, paymentMethod?: string): Promise<OrderWithItems> {
+  async updateStatus(id: string, status: string, paymentMethod?: string | null): Promise<OrderWithItems> {
     return prisma.order.update({
       where: { id },
       data: { status, ...(paymentMethod !== undefined && { paymentMethod }) },

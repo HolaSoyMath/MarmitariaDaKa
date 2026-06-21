@@ -54,9 +54,9 @@ export class OrdersService {
 
   async revertToPending(id: string): Promise<OrderWithItems> {
     const order = await this.getById(id)
-    if (order.status !== 'produced') {
-      throw new ConflictError('Pedido precisa estar produzido para ser revertido para pendente')
+    if (order.status === 'pending') {
+      throw new ConflictError('Pedido já está pendente')
     }
-    return this.repository.updateStatus(id, 'pending')
+    return this.repository.updateStatus(id, 'pending', null)
   }
 }

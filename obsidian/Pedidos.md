@@ -25,7 +25,7 @@ pendente → produzido → pago
 - `pendente → produzido` — dona marca quando a marmita está pronta
 - `produzido → pago` — dona marca quando recebe o pagamento, informando Pix ou Swile
 - `produzido → pendente` — reversão permitida (erro ao marcar antes de produzir)
-- `pago` — **irreversível**
+- `pago → pendente` — reversão permitida com confirmação (modal "Tem certeza?"); limpa o método de pagamento
 
 **Ações de mudar status ocorrem exclusivamente na Home** — a tela de Pedidos é somente leitura para status.
 

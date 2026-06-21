@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation'
 import {
   HomeIcon,
   ClipboardListIcon,
-  UtensilsIcon,
+  CalendarDaysIcon,
+  ChefHatIcon,
   UsersIcon,
   TagIcon,
   ShoppingCartIcon,
@@ -16,7 +17,8 @@ import { cn } from '@/lib/utils'
 const NAV_ITEMS = [
   { href: '/',           label: 'Home',               icon: HomeIcon },
   { href: '/pedidos',    label: 'Pedidos',             icon: ClipboardListIcon },
-  { href: '/cardapio',   label: 'Cardápio & Receitas', icon: UtensilsIcon },
+  { href: '/cardapio',   label: 'Cardápio da semana',  icon: CalendarDaysIcon },
+  { href: '/receitas',   label: 'Pratos',              icon: ChefHatIcon },
   { href: '/clientes',   label: 'Clientes',            icon: UsersIcon },
   { href: '/precos',     label: 'Tipos & Preços',      icon: TagIcon },
   { href: '/compras',    label: 'Compras & Custos',    icon: ShoppingCartIcon },
