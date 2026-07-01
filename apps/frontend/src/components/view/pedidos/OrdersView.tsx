@@ -71,7 +71,6 @@ export function OrdersView() {
     <div className="p-7.5 flex flex-col gap-6">
       {/* Cabeçalho da seção */}
       <div className="flex items-baseline gap-3 flex-wrap">
-        <h2 className="font-heading font-bold text-xl whitespace-nowrap">Pedidos da semana</h2>
         {orders.length > 0 && (
           <span className="text-muted-foreground text-[13.5px]">
             {orders.length} pedido{orders.length !== 1 ? 's' : ''} · {pendingCount} a produzir ·{' '}
@@ -79,7 +78,7 @@ export function OrdersView() {
           </span>
         )}
         <span className="flex-1" />
-        <Button onClick={openCreate} disabled={!currentWeek}>
+        <Button onClick={openCreate} disabled={!currentWeek} className="rounded-sm">
           <Plus /> Novo pedido
         </Button>
       </div>
@@ -87,9 +86,9 @@ export function OrdersView() {
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando...</p>
       ) : orders.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-16 text-center border-2 border-dashed border-border rounded-lg">
+        <div className="flex flex-col items-center gap-3 py-16 text-center bg-card rounded-sm">
           <p className="text-muted-foreground">Nenhum pedido nessa semana ainda.</p>
-          <Button variant="outline" onClick={openCreate} disabled={!currentWeek}>
+          <Button variant="outline" onClick={openCreate} disabled={!currentWeek} className="rounded-sm">
             <Plus /> Registrar primeiro pedido
           </Button>
         </div>
@@ -104,19 +103,19 @@ export function OrdersView() {
 
       {/* Dialog de método de pagamento */}
       <Dialog open={!!payDialogId} onOpenChange={(open) => !open && setPayDialogId(null)}>
-        <DialogContent className="max-w-xs">
+        <DialogContent className="max-w-xs rounded-sm">
           <DialogHeader>
             <DialogTitle>Como foi pago?</DialogTitle>
           </DialogHeader>
           <div className="flex gap-3 pt-1">
             <Button
-              className="flex-1 bg-pix hover:bg-pix/90 text-white cursor-pointer"
+              className="flex-1 rounded-sm bg-pix hover:bg-pix/90 text-white cursor-pointer"
               onClick={() => confirmPayment('Pix')}
             >
               Pix
             </Button>
             <Button
-              className="flex-1 bg-swile hover:bg-swile/90 text-white cursor-pointer"
+              className="flex-1 rounded-sm bg-swile hover:bg-swile/90 text-white cursor-pointer"
               onClick={() => confirmPayment('Swile')}
             >
               Swile

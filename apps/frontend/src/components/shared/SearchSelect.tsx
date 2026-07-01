@@ -76,12 +76,12 @@ export function SearchSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="min-w-(--radix-popover-trigger-width) p-0 overflow-hidden border shadow-2xl"
+        className="min-w-(--radix-popover-trigger-width) p-0 overflow-hidden shadow-none rounded-sm"
         align="start"
       >
-        <Command className="bg-muted">
+        <Command className="bg-clip-padding">
           <CommandInput placeholder={searchPlaceholder} />
-          <CommandList>
+          <CommandList className="overflow-y-auto scrollbar-thin [scrollbar-color:var(--border)_var(--muted)]">
             <CommandEmpty>{emptyText}</CommandEmpty>
             {hasGroups
               ? Object.entries(grouped).map(([group, items]) => (

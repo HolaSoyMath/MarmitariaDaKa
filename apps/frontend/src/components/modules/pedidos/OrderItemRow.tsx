@@ -1,14 +1,9 @@
 'use client'
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchSelect } from '@/components/shared/SearchSelect'
 import { Button } from '@/components/ui/button'
-import { X, Plus, Minus } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Plus, Minus, Trash } from 'lucide-react'
 import type { MenuItemResponse } from '@marmitaria/schemas/menuItem/menuItemResponse.schema'
 import type { PriceTypeResponse } from '@marmitaria/schemas/priceType/priceTypeResponse.schema'
 
@@ -47,9 +42,9 @@ export function OrderItemRow({
       : availablePriceTypes
 
   return (
-    <div className="border border-border rounded-md p-3.5 flex flex-col gap-3 bg-card">
+    <div className="border border-border rounded-sm p-3.5 flex flex-col gap-3 bg-card">
       <div className="flex gap-2 items-center">
-        <Select
+        <SearchSelect
           value={row.menuItemId}
           onValueChange={(v) => {
             const validIds = menuItems.find((m) => m.id === v)?.priceTypes.map((pt) => pt.id) ?? []
@@ -60,63 +55,60 @@ export function OrderItemRow({
                 : ''
             onUpdate({ menuItemId: v, priceTypeId: nextPriceTypeId })
           }}
-        >
-          <SelectTrigger className="flex-1 min-w-0 cursor-pointer">
-            <SelectValue placeholder="Prato" />
-          </SelectTrigger>
-          <SelectContent>
-            {menuItems.map((item) => (
-              <SelectItem key={item.id} value={item.id} className="cursor-pointer">
-                {item.recipe.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          options={menuItems.map((item) => ({ value: item.id, label: item.recipe.name }))}
+          placeholder="Prato"
+          searchPlaceholder="Buscar prato..."
+          className="flex-1 rounded-sm"
+        />
 
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={onRemove}
           disabled={isOnly}
-          className="w-7.5 h-7.5 flex-none rounded-lg text-muted-foreground hover:border-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+          className="w-7.5 h-7.5 flex-none rounded-sm text-muted-foreground hover:text-destructive cursor-pointer"
         >
-          <X className="size-3.5" />
+          <Trash className="size-3.5" />
         </Button>
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <div className="inline-flex border border-border rounded-lg overflow-hidden">
+        <div className="inline-flex border border-border rounded-sm overflow-hidden">
           {rowPriceTypes.map((pt) => (
             <Button
               key={pt.id}
               type="button"
               variant={row.priceTypeId === pt.id ? 'default' : 'ghost'}
               onClick={() => onUpdate({ priceTypeId: pt.id })}
-              className="rounded-none border-r border-border last:border-r-0 h-auto py-1.5 text-md font-semibold cursor-pointer hover:bg-accent"
+              className="rounded-none h-full py-1.5 text-md font-semibold cursor-pointer border-none hover:bg-accent"
             >
               {pt.size}
             </Button>
           ))}
         </div>
 
-        <div className="inline-flex items-center border border-border rounded-lg overflow-hidden">
+        <div className="inline-flex items-center border border-border rounded-sm overflow-hidden">
           <Button
             type="button"
             variant="ghost"
             onClick={() => onUpdate({ quantity: String(Math.max(0, Number(row.quantity) - 1)) })}
-            className="w-8 h-8.5 rounded-none p-0 cursor-pointer hover:bg-accent"
+            className="w-8 h-8.5 rounded-none p-0 cursor-pointer hover:bg-primary border-none"
           >
             <Minus className="size-3.5" />
           </Button>
-          <span className="w-9 text-center font-heading font-extrabold text-lg border-l border-r border-border h-8.5 grid place-items-center">
-            {row.quantity === '' ? '0' : row.quantity}
-          </span>
+          <Input
+            type="number"
+            min="0"
+            value={row.quantity}
+            onChange={(e) => onUpdate({ quantity: e.target.value })}
+            className="w-9 text-center font-heading font-extrabold text-lg border-none rounded-none h-8.5 shadow-none focus-visible:ring-0 px-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
           <Button
             type="button"
             variant="ghost"
             onClick={() => onUpdate({ quantity: String(Number(row.quantity) + 1) })}
-            className="w-8 h-8.5 rounded-none p-0 cursor-pointer hover:bg-accent"
+            className="w-8 h-8.5 rounded-none p-0 cursor-pointer hover:bg-primary border-none"
           >
             <Plus className="size-3.5" />
           </Button>
