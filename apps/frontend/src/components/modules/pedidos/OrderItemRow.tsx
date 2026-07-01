@@ -35,12 +35,31 @@ export function OrderItemRow({
   onRemove,
   onUpdate,
 }: OrderItemRowProps) {
+  const selectedMenuItem = menuItems.find((m) => m.id === row.menuItemId)
+  const availablePriceTypes = selectedMenuItem?.recipe.priceTypes ?? []
+
+  const rowPriceTypes =
+    row.priceTypeId && !availablePriceTypes.some((pt) => pt.id === row.priceTypeId)
+      ? [
+          ...availablePriceTypes,
+          ...priceTypes.filter((pt) => pt.id === row.priceTypeId),
+        ]
+      : availablePriceTypes
+
   return (
     <div className="border border-border rounded-md p-3.5 flex flex-col gap-3 bg-card">
       <div className="flex gap-2 items-center">
         <Select
           value={row.menuItemId}
-          onValueChange={(v) => onUpdate({ menuItemId: v })}
+          onValueChange={(v) => {
+            const validIds = menuItems.find((m) => m.id === v)?.recipe.priceTypes.map((pt) => pt.id) ?? []
+            const nextPriceTypeId = validIds.includes(row.priceTypeId)
+              ? row.priceTypeId
+              : validIds.length === 1
+                ? validIds[0]
+                : ''
+            onUpdate({ menuItemId: v, priceTypeId: nextPriceTypeId })
+          }}
         >
           <SelectTrigger className="flex-1 min-w-0 cursor-pointer">
             <SelectValue placeholder="Prato" />
@@ -68,7 +87,7 @@ export function OrderItemRow({
 
       <div className="flex items-center justify-between gap-2">
         <div className="inline-flex border border-border rounded-lg overflow-hidden">
-          {priceTypes.map((pt) => (
+          {rowPriceTypes.map((pt) => (
             <Button
               key={pt.id}
               type="button"

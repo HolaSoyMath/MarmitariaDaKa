@@ -41,6 +41,7 @@ model Recipe {
   id          String             @id @default(uuid())
   name        String
   ingredients RecipeIngredient[]
+  priceTypes  RecipePriceType[]
   menuItems   MenuItem[]
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
@@ -58,15 +59,26 @@ model RecipeIngredient {
   @@unique([recipeId, ingredientId])
 }
 
+model RecipePriceType {
+  id          String    @id @default(uuid())
+  recipeId    String
+  priceTypeId String
+  recipe      Recipe    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  priceType   PriceType @relation(fields: [priceTypeId], references: [id])
+
+  @@unique([recipeId, priceTypeId])
+}
+
 model PriceType {
-  id         String      @id @default(uuid())
+  id         String            @id @default(uuid())
   type       String
   size       String
   pixPrice   Int
   swilePrice Int
   orderItems OrderItem[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  recipes    RecipePriceType[]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
   deletedAt  DateTime?
 
 }

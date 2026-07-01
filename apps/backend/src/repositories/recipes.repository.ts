@@ -4,6 +4,8 @@ import type { RecipeInput } from '@marmitaria/schemas/recipe/recipeInput.schema'
 
 const includeIngredients = { include: { ingredient: true } }
 
+const includePriceTypes = { include: { priceType: true } }
+
 const includeMenuItems = {
   where: { deletedAt: null as null },
   include: { week: true },
@@ -11,25 +13,31 @@ const includeMenuItems = {
   take: 1,
 }
 
+const includeAll = {
+  ingredients: includeIngredients,
+  priceTypes: includePriceTypes,
+  menuItems: includeMenuItems,
+}
+
 export class RecipesRepository implements IRecipesRepository {
   async findAll(): Promise<RecipeWithIngredients[]> {
     return prisma.recipe.findMany({
       where: { deletedAt: null },
-      include: { ingredients: includeIngredients, menuItems: includeMenuItems },
+      include: includeAll,
     })
   }
 
   async findById(id: string): Promise<RecipeWithIngredients | null> {
     return prisma.recipe.findFirst({
       where: { id, deletedAt: null },
-      include: { ingredients: includeIngredients, menuItems: includeMenuItems },
+      include: includeAll,
     })
   }
 
   async findByName(name: string): Promise<RecipeWithIngredients | null> {
     return prisma.recipe.findFirst({
       where: { name, deletedAt: null },
-      include: { ingredients: includeIngredients, menuItems: includeMenuItems },
+      include: includeAll,
     })
   }
 
@@ -43,14 +51,18 @@ export class RecipesRepository implements IRecipesRepository {
             quantity: i.quantity,
           })),
         },
+        priceTypes: {
+          create: data.priceTypeIds.map(priceTypeId => ({ priceTypeId })),
+        },
       },
-      include: { ingredients: includeIngredients, menuItems: includeMenuItems },
+      include: includeAll,
     })
   }
 
   async update(id: string, data: RecipeInput): Promise<RecipeWithIngredients> {
     return prisma.$transaction(async tx => {
       await tx.recipeIngredient.deleteMany({ where: { recipeId: id } })
+      await tx.recipePriceType.deleteMany({ where: { recipeId: id } })
       return tx.recipe.update({
         where: { id },
         data: {
@@ -61,8 +73,11 @@ export class RecipesRepository implements IRecipesRepository {
               quantity: i.quantity,
             })),
           },
+          priceTypes: {
+            create: data.priceTypeIds.map(priceTypeId => ({ priceTypeId })),
+          },
         },
-        include: { ingredients: includeIngredients, menuItems: includeMenuItems },
+        include: includeAll,
       })
     })
   }

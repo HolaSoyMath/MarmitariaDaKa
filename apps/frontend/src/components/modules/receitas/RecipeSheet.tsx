@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,12 +11,14 @@ import {
 } from "@/components/shared/SearchSelect";
 import { IngredientSheet } from "@/components/modules/ingredients/IngredientSheet";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { SheetBase } from "@/components/ui/SheetBase";
 import {
   useCreateRecipe,
   useUpdateRecipe,
   useDeleteRecipe,
 } from "@/hooks/useRecipes";
 import { useIngredients } from "@/hooks/useIngredients";
+import { usePriceTypes } from "@/hooks/usePriceTypes";
 import { X, Plus } from "lucide-react";
 import type { RecipeResponse } from "@marmitaria/schemas/recipe/recipeResponse.schema";
 
@@ -49,10 +45,14 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
       quantity: String(i.quantity),
     })) ?? [{ ingredientId: "", quantity: "" }],
   );
+  const [priceTypeIds, setPriceTypeIds] = useState<string[]>(
+    recipe?.priceTypes.map((pt) => pt.id) ?? [],
+  );
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [newIngredientOpen, setNewIngredientOpen] = useState(false);
 
   const { data: ingredients = [] } = useIngredients();
+  const { data: priceTypes = [] } = usePriceTypes();
 
   const createRecipe = useCreateRecipe();
   const updateRecipe = useUpdateRecipe();
@@ -86,12 +86,16 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
   function isValid() {
     const trimmed = name.trim();
     const ingredients = buildIngredients();
-    return trimmed.length > 0 && ingredients.length > 0;
+    return trimmed.length > 0 && ingredients.length > 0 && priceTypeIds.length > 0;
   }
 
   async function handleSave() {
     if (!isValid()) return;
-    const payload = { name: name.trim(), ingredients: buildIngredients() };
+    const payload = {
+      name: name.trim(),
+      ingredients: buildIngredients(),
+      priceTypeIds,
+    };
     if (isEditing) {
       await updateRecipe.mutateAsync({ id: recipe.id, data: payload });
     } else {
@@ -109,118 +113,136 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
 
   return (
     <>
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="flex flex-col gap-0 p-0 overflow-y-auto">
-          <SheetHeader className="px-6 py-5 border-b">
-            <SheetTitle>
-              {isEditing ? "Editar receita" : "Nova receita"}
-            </SheetTitle>
-          </SheetHeader>
+      <SheetBase
+        resetKey={recipe?.id ?? "new"}
+        open={open}
+        onOpenChange={onOpenChange}
+        title={isEditing ? "Editar receita" : "Nova receita"}
+        onSave={handleSave}
+        onCancel={() => {}}
+        onDelete={isEditing ? () => setConfirmOpen(true) : undefined}
+        deleteButtonDisabled={deleteRecipe.isPending}
+        saveButtonDisabled={!isValid() || isSaving}
+      >
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="recipe-name">Nome</Label>
+          <Input
+            id="recipe-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="ex: Frango grelhado"
+            onKeyDown={(e) => e.key === "Enter" && handleSave()}
+            className="bg-card rounded-sm"
+          />
+        </div>
 
-          <div className="flex flex-col gap-5 px-6 py-6 flex-1">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="recipe-name">Nome</Label>
-              <Input
-                id="recipe-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="ex: Frango grelhado"
-                onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              />
+        <div className="flex flex-col gap-2">
+          <Label>Tamanhos</Label>
+          {priceTypes.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Nenhum tipo de preço cadastrado.{" "}
+              <Link href="/precos" className="underline">
+                Cadastre um tamanho primeiro
+              </Link>
+              .
+            </p>
+          ) : (
+            <div className="flex gap-2 flex-wrap">
+              {priceTypes.map((pt) => (
+                <Button
+                  key={pt.id}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  data-selected={priceTypeIds.includes(pt.id)}
+                  onClick={() =>
+                    setPriceTypeIds((ids) =>
+                      ids.includes(pt.id)
+                        ? ids.filter((id) => id !== pt.id)
+                        : [...ids, pt.id],
+                    )
+                  }
+                  className="bg-card hover:bg-accent rounded-sm data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:hover:bg-primary"
+                >
+                  {pt.type} {pt.size}
+                </Button>
+              ))}
             </div>
+          )}
+        </div>
 
-            <div className="flex flex-col gap-2">
-              <Label>Ingredientes</Label>
-              <div className="flex flex-col gap-2">
-                {rows.map((row, i) => {
-                  const excludedIds = rows
-                    .filter((_, j) => j !== i)
-                    .map((r) => r.ingredientId)
-                    .filter(Boolean);
+        <div className="flex flex-col gap-2">
+          <Label>Ingredientes</Label>
+          <div className="flex flex-col gap-2">
+            {rows.map((row, i) => {
+              const excludedIds = rows
+                .filter((_, j) => j !== i)
+                .map((r) => r.ingredientId)
+                .filter(Boolean);
 
-                  const options: SearchSelectOption[] = [
-                    { value: CREATE_NEW_INGREDIENT, label: "+ Cadastrar novo item" },
-                    ...ingredients
-                      .filter((ing) => !excludedIds.includes(ing.id))
-                      .map((ing) => ({
-                        value: ing.id,
-                        label: `${ing.name} — ${ing.unit}`,
-                      })),
-                  ];
+              const options: SearchSelectOption[] = [
+                { value: CREATE_NEW_INGREDIENT, label: "+ Cadastrar novo item" },
+                ...ingredients
+                  .filter((ing) => !excludedIds.includes(ing.id))
+                  .map((ing) => ({
+                    value: ing.id,
+                    label: `${ing.name} — ${ing.unit}`,
+                  })),
+              ];
 
-                  return (
-                    <div key={i} className="flex gap-2 items-center">
-                      <SearchSelect
-                        value={row.ingredientId}
-                        onValueChange={(val) => {
-                          if (val === CREATE_NEW_INGREDIENT) {
-                            setNewIngredientOpen(true);
-                            return;
-                          }
-                          updateRow(i, { ingredientId: val });
-                        }}
-                        options={options}
-                        placeholder="Selecionar ingrediente"
-                        searchPlaceholder="Buscar ingrediente..."
-                        emptyText="Nenhum ingrediente encontrado."
-                        className="flex-1 rounded-sm shadow-none"
-                      />
-                      <Input
-                        type="number"
-                        min="0"
-                        step="any"
-                        value={row.quantity}
-                        onChange={(e) =>
-                          updateRow(i, { quantity: e.target.value })
-                        }
-                        placeholder="Qtd."
-                        className="w-24 h-full rounded-md"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeRow(i)}
-                        disabled={rows.length === 1}
-                      >
-                        <X className="size-4 text-red-500" />
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="border-dashed w-fit"
-                onClick={addRow}
-              >
-                <Plus className="size-4 mr-1" /> Adicionar ingrediente
-              </Button>
-            </div>
+              return (
+                <div key={i} className="flex gap-2 items-center">
+                  <SearchSelect
+                    value={row.ingredientId}
+                    onValueChange={(val) => {
+                      if (val === CREATE_NEW_INGREDIENT) {
+                        setNewIngredientOpen(true);
+                        return;
+                      }
+                      updateRow(i, { ingredientId: val });
+                    }}
+                    options={options}
+                    placeholder="Selecionar ingrediente"
+                    searchPlaceholder="Buscar ingrediente..."
+                    emptyText="Nenhum ingrediente encontrado."
+                    className="flex-1 rounded-sm shadow-none"
+                  />
+                  <Input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={row.quantity}
+                    onChange={(e) =>
+                      updateRow(i, { quantity: e.target.value })
+                    }
+                    placeholder="Qtd."
+                    className="w-24 h-full bg-card rounded-sm"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeRow(i)}
+                    disabled={rows.length === 1}
+                    className="rounded-sm"
+                  >
+                    <X className="size-4 text-red-500" />
+                  </Button>
+                </div>
+              );
+            })}
           </div>
-
-          <SheetFooter className="px-6 py-4 border-t flex-row gap-2">
-            {isEditing && (
-              <Button
-                variant="destructive"
-                className="mr-auto"
-                onClick={() => setConfirmOpen(true)}
-                disabled={deleteRecipe.isPending}
-              >
-                Remover
-              </Button>
-            )}
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave} disabled={!isValid() || isSaving}>
-              Salvar
-            </Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="border-dashed w-fit bg-card hover:bg-accent rounded-sm"
+            onClick={addRow}
+          >
+            <Plus className="size-4 mr-1" /> Adicionar ingrediente
+          </Button>
+        </div>
+      </SheetBase>
 
       <ConfirmDialog
         open={confirmOpen}

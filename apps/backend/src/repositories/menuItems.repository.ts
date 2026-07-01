@@ -6,6 +6,7 @@ const includeRecipe = {
   recipe: {
     include: {
       ingredients: { include: { ingredient: true } },
+      priceTypes: { include: { priceType: true } },
       menuItems: {
         where: { deletedAt: null as null },
         include: { week: true },

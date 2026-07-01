@@ -44,7 +44,7 @@ export function SheetBase({
           </SheetHeader>
 
           {children && (
-            <div key={resetKey} className="flex flex-col gap-5 px-6 py-6 flex-1">
+            <div key={resetKey} className="flex flex-col gap-5 px-6 py-6 flex-1 overflow-y-auto">
               {children}
             </div>
           )}

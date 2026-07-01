@@ -10,6 +10,7 @@ O cardápio define quais pratos estarão disponíveis para pedido em uma semana 
 
 - **Só entra prato com receita cadastrada** — não é possível adicionar um prato ao cardápio sem ter uma receita vinculada
 - Cada receita aparece **no máximo uma vez** por semana — sem repetição
+- O card do prato no cardápio mostra somente os tamanhos vinculados à receita (definidos no cadastro da receita), não todos os tipos de preço cadastrados no sistema
 - O cardápio é por semana — semanas diferentes podem ter cardápios completamente distintos
 - Remover um prato do cardápio só é possível se não houver pedidos ativos com aquele prato (`pendente` ou `produzido`)
 

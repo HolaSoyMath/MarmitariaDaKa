@@ -5,6 +5,9 @@ const recipeIngredientInput = recipeIngredientBase.pick({ ingredientId: true, qu
 
 export const recipeInput = recipeBase
   .pick({ name: true })
-  .extend({ ingredients: z.array(recipeIngredientInput) })
+  .extend({
+    ingredients: z.array(recipeIngredientInput),
+    priceTypeIds: z.array(z.string().uuid()).min(1),
+  })
 
 export type RecipeInput = z.infer<typeof recipeInput>

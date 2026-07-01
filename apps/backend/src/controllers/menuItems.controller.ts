@@ -25,6 +25,13 @@ export class MenuItemsController {
             unit: ri.ingredient.unit as IngredientResponse['unit'],
           },
         })),
+        priceTypes: item.recipe.priceTypes.map(rpt => ({
+          id: rpt.priceType.id,
+          type: rpt.priceType.type,
+          size: rpt.priceType.size,
+          pixPrice: rpt.priceType.pixPrice,
+          swilePrice: rpt.priceType.swilePrice,
+        })),
         lastOnMenu: lastWeek
           ? `Semana ${lastWeek.weekNumber}/${lastWeek.year}`
           : null,

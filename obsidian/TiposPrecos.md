@@ -34,4 +34,5 @@ Exemplos:
 
 ## Relacionamentos
 
+- [[Receitas]] — cada receita declara em quais tamanhos é oferecida
 - [[Pedidos]] — ao registrar um item de pedido, o preço do tipo é copiado como snapshot

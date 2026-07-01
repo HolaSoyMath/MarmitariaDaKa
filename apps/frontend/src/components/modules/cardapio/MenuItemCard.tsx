@@ -3,15 +3,13 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { MenuItemResponse } from '@marmitaria/schemas/menuItem/menuItemResponse.schema'
-import type { PriceTypeResponse } from '@marmitaria/schemas/priceType/priceTypeResponse.schema'
 
 interface MenuItemCardProps {
   item: MenuItemResponse
-  priceTypes: PriceTypeResponse[]
   onRemove: (item: MenuItemResponse) => void
 }
 
-export function MenuItemCard({ item, priceTypes, onRemove }: MenuItemCardProps) {
+export function MenuItemCard({ item, onRemove }: MenuItemCardProps) {
   const { recipe } = item
 
   const ingredientPreview = recipe.ingredients
@@ -22,13 +20,13 @@ export function MenuItemCard({ item, priceTypes, onRemove }: MenuItemCardProps) 
   const hasMore = recipe.ingredients.length > 3
 
   return (
-    <div className="rounded-2xl border bg-card p-5 shadow-sm flex flex-col gap-3">
-      <div className="flex items-start justify-between gap-3">
+    <div className="rounded-sm border bg-card p-5 flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-3">
         <span className="font-bold text-lg leading-tight">{recipe.name}</span>
         <Button
           variant="outline"
           size="sm"
-          className="shrink-0 text-muted-foreground"
+          className="shrink-0 text-muted-foreground rounded-sm"
           onClick={() => onRemove(item)}
         >
           Remover
@@ -36,11 +34,7 @@ export function MenuItemCard({ item, priceTypes, onRemove }: MenuItemCardProps) 
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
-        <Badge variant="outline" className="border-dashed text-muted-foreground gap-1.5 rounded-full">
-          <span className="size-2 rounded-full bg-muted-foreground/50 shrink-0" />
-          Receita vinculada
-        </Badge>
-        {priceTypes.map((pt) => (
+        {recipe.priceTypes.map((pt) => (
           <Badge key={pt.id} variant="secondary" className="rounded-full font-semibold">
             {pt.size}
           </Badge>

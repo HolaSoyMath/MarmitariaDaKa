@@ -52,7 +52,7 @@ export function RecipesView() {
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando...</p>
       ) : filteredRecipes.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-16 text-center bg-card">
+        <div className="flex flex-col items-center gap-3 py-16 text-center bg-card rounded-sm">
           <p className="text-muted-foreground">
             {search
               ? 'Nenhuma receita encontrada.'

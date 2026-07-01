@@ -46,9 +46,6 @@ export function Sidebar() {
           <b className="block font-heading font-extrabold text-[18px] leading-[1.05] tracking-tight text-white">
             Marmitaria<br />da Ká
           </b>
-          <small className="mt-1 block font-mono text-[10.5px] uppercase tracking-[0.07em] text-sidebar-subtle">
-            gestão semanal
-          </small>
         </div>
       </div>
 
