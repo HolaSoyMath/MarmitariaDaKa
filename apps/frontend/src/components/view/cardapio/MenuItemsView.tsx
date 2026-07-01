@@ -22,9 +22,9 @@ export function MenuItemsView() {
 
   const existingRecipeIds = menuItems.map((item) => item.recipeId)
 
-  const filteredMenuItems = menuItems.filter((item) =>
-    item.recipe.name.toLowerCase().includes(search.toLowerCase()),
-  )
+  const filteredMenuItems = [...menuItems]
+    .sort((a, b) => a.recipe.name.localeCompare(b.recipe.name))
+    .filter((item) => item.recipe.name.toLowerCase().includes(search.toLowerCase()))
 
   async function handleRemove() {
     if (!toRemove) return
@@ -64,7 +64,7 @@ export function MenuItemsView() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {filteredMenuItems.map((item) => (
             <MenuItemCard key={item.id} item={item} onRemove={setToRemove} />
           ))}

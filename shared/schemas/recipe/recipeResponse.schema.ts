@@ -8,7 +8,7 @@ const recipeIngredientResponse = recipeIngredientBase
   .extend({ ingredient: ingredientResponse })
 
 export const recipeResponse = recipeBase
-  .pick({ id: true, name: true })
+  .pick({ id: true, name: true, active: true })
   .extend({
     ingredients: z.array(recipeIngredientResponse),
     priceTypes: z.array(priceTypeResponse),

@@ -40,6 +40,7 @@ model Ingredient {
 model Recipe {
   id          String             @id @default(uuid())
   name        String
+  active      Boolean            @default(true)
   ingredients RecipeIngredient[]
   priceTypes  RecipePriceType[]
   menuItems   MenuItem[]
@@ -77,6 +78,7 @@ model PriceType {
   swilePrice Int
   orderItems OrderItem[]
   recipes    RecipePriceType[]
+  menuItems  MenuItemPriceType[]
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
   deletedAt  DateTime?
@@ -99,16 +101,27 @@ model Week {
 }
 
 model MenuItem {
-  id         String      @id @default(uuid())
+  id         String              @id @default(uuid())
   weekId     String
   recipeId   String
-  week       Week        @relation(fields: [weekId], references: [id])
-  recipe     Recipe      @relation(fields: [recipeId], references: [id])
+  week       Week                @relation(fields: [weekId], references: [id])
+  recipe     Recipe              @relation(fields: [recipeId], references: [id])
+  priceTypes MenuItemPriceType[]
   orderItems OrderItem[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
   deletedAt  DateTime?
 
+}
+
+model MenuItemPriceType {
+  id          String    @id @default(uuid())
+  menuItemId  String
+  priceTypeId String
+  menuItem    MenuItem  @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  priceType   PriceType @relation(fields: [priceTypeId], references: [id])
+
+  @@unique([menuItemId, priceTypeId])
 }
 
 model Order {

@@ -86,6 +86,14 @@ export class RecipesRepository implements IRecipesRepository {
     await prisma.recipe.update({ where: { id }, data: { deletedAt: new Date() } })
   }
 
+  async setActive(id: string, active: boolean): Promise<RecipeWithIngredients> {
+    return prisma.recipe.update({
+      where: { id },
+      data: { active },
+      include: includeAll,
+    })
+  }
+
   async hasPendingOrders(id: string): Promise<boolean> {
     const count = await prisma.orderItem.count({
       where: {

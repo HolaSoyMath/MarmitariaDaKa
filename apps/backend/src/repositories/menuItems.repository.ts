@@ -2,7 +2,7 @@
 import type { IMenuItemsRepository, MenuItemWithRecipe } from '../interfaces/menuItems.interface'
 import type { MenuItemInput } from '@marmitaria/schemas/menuItem/menuItemInput.schema'
 
-const includeRecipe = {
+const includeAll = {
   recipe: {
     include: {
       ingredients: { include: { ingredient: true } },
@@ -15,34 +15,56 @@ const includeRecipe = {
       },
     },
   },
+  priceTypes: { include: { priceType: true } },
 }
 
 export class MenuItemsRepository implements IMenuItemsRepository {
   async findByWeek(weekId: string): Promise<MenuItemWithRecipe[]> {
     return prisma.menuItem.findMany({
       where: { weekId, deletedAt: null },
-      include: includeRecipe,
+      include: includeAll,
     })
   }
 
   async findById(id: string): Promise<MenuItemWithRecipe | null> {
     return prisma.menuItem.findFirst({
       where: { id, deletedAt: null },
-      include: includeRecipe,
+      include: includeAll,
     })
   }
 
   async findByWeekAndRecipe(weekId: string, recipeId: string): Promise<MenuItemWithRecipe | null> {
     return prisma.menuItem.findFirst({
       where: { weekId, recipeId, deletedAt: null },
-      include: includeRecipe,
+      include: includeAll,
     })
   }
 
   async create(data: MenuItemInput): Promise<MenuItemWithRecipe> {
     return prisma.menuItem.create({
-      data: { weekId: data.weekId, recipeId: data.recipeId },
-      include: includeRecipe,
+      data: {
+        weekId: data.weekId,
+        recipeId: data.recipeId,
+        priceTypes: {
+          create: data.priceTypeIds.map(priceTypeId => ({ priceTypeId })),
+        },
+      },
+      include: includeAll,
+    })
+  }
+
+  async updatePriceTypes(id: string, priceTypeIds: string[]): Promise<MenuItemWithRecipe> {
+    return prisma.$transaction(async tx => {
+      await tx.menuItemPriceType.deleteMany({ where: { menuItemId: id } })
+      return tx.menuItem.update({
+        where: { id },
+        data: {
+          priceTypes: {
+            create: priceTypeIds.map(priceTypeId => ({ priceTypeId })),
+          },
+        },
+        include: includeAll,
+      })
     })
   }
 
@@ -53,6 +75,14 @@ export class MenuItemsRepository implements IMenuItemsRepository {
   async recipeExists(recipeId: string): Promise<boolean> {
     const r = await prisma.recipe.findFirst({ where: { id: recipeId, deletedAt: null } })
     return !!r
+  }
+
+  async getRecipePriceTypeIds(recipeId: string): Promise<string[]> {
+    const rows = await prisma.recipePriceType.findMany({
+      where: { recipeId },
+      select: { priceTypeId: true },
+    })
+    return rows.map(r => r.priceTypeId)
   }
 
   async hasPendingOrders(menuItemId: string): Promise<boolean> {

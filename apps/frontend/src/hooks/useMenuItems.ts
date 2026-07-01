@@ -38,6 +38,21 @@ export function useAddMenuItem() {
   })
 }
 
+export function useUpdateMenuItemPriceTypes() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, priceTypeIds }: { id: string; priceTypeIds: string[] }) => {
+      const res = await api.patch<MenuItemResponse>(`/menu-items/${id}/price-types`, { priceTypeIds })
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      toast.success('Tamanhos atualizados.')
+    },
+    onError: (error) => toastError(error, 'Não foi possível atualizar os tamanhos.'),
+  })
+}
+
 export function useRemoveMenuItem() {
   const queryClient = useQueryClient()
   return useMutation({

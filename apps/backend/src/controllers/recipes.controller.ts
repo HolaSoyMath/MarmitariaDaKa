@@ -12,6 +12,7 @@ export class RecipesController {
     return {
       id: recipe.id,
       name: recipe.name,
+      active: recipe.active,
       ingredients: recipe.ingredients.map(ri => ({
         ingredientId: ri.ingredientId,
         quantity: ri.quantity,
@@ -53,5 +54,9 @@ export class RecipesController {
 
   async remove(id: string): Promise<void> {
     return this.service.remove(id)
+  }
+
+  async setActive(id: string, active: boolean): Promise<RecipeResponse> {
+    return this.format(await this.service.setActive(id, active))
   }
 }

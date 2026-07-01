@@ -65,3 +65,18 @@ export function useDeleteRecipe() {
     onError: (error) => toastError(error, 'Não foi possível remover a receita.'),
   })
 }
+
+export function useSetRecipeActive() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
+      const res = await api.patch<RecipeResponse>(`/recipes/${id}/active`, { active })
+      return res.data
+    },
+    onSuccess: (_data, { active }) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      toast.success(active ? 'Receita ativada.' : 'Receita desativada.')
+    },
+    onError: (error) => toastError(error, 'Não foi possível atualizar a receita.'),
+  })
+}

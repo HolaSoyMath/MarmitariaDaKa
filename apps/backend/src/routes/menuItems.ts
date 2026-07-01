@@ -3,6 +3,7 @@ import { MenuItemsRepository } from '../repositories/menuItems.repository'
 import { MenuItemsService } from '../services/menuItems.service'
 import { MenuItemsController } from '../controllers/menuItems.controller'
 import { menuItemInput } from '@marmitaria/schemas/menuItem/menuItemInput.schema'
+import { menuItemUpdatePriceTypesInput } from '@marmitaria/schemas/menuItem/menuItemUpdatePriceTypesInput.schema'
 import { NotFoundError, ConflictError } from '../lib/errors'
 
 const repository = new MenuItemsRepository()
@@ -22,6 +23,9 @@ export const menuItemsRoutes = new Elysia({ prefix: '/menu-items' })
   })
   .get('/', ({ query }) => controller.listByWeek(query.weekId as string))
   .post('/', ({ body }) => controller.add(menuItemInput.parse(body)))
+  .patch('/:id/price-types', ({ params: { id }, body }) =>
+    controller.updatePriceTypes(id, menuItemUpdatePriceTypesInput.parse(body).priceTypeIds),
+  )
   .delete('/:id', async ({ params: { id }, set }) => {
     await controller.remove(id)
     set.status = 204

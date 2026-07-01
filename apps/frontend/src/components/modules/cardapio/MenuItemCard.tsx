@@ -1,7 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Pencil } from 'lucide-react'
+import { MenuItemSizesDialog } from '@/components/modules/cardapio/MenuItemSizesDialog'
 import type { MenuItemResponse } from '@marmitaria/schemas/menuItem/menuItemResponse.schema'
 
 interface MenuItemCardProps {
@@ -11,6 +14,7 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, onRemove }: MenuItemCardProps) {
   const { recipe } = item
+  const [sizesDialogOpen, setSizesDialogOpen] = useState(false)
 
   const ingredientPreview = recipe.ingredients
     .slice(0, 3)
@@ -34,17 +38,28 @@ export function MenuItemCard({ item, onRemove }: MenuItemCardProps) {
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
-        {recipe.priceTypes.map((pt) => (
+        {item.priceTypes.map((pt) => (
           <Badge key={pt.id} variant="secondary" className="rounded-full font-semibold">
             {pt.size}
           </Badge>
         ))}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => setSizesDialogOpen(true)}
+          className="rounded-sm text-muted-foreground"
+        >
+          <Pencil className="size-3.5" />
+        </Button>
       </div>
 
       <div className="border-t border-dashed pt-2.5 text-sm text-muted-foreground">
         {ingredientPreview}
         {hasMore && ' …'}
       </div>
+
+      <MenuItemSizesDialog open={sizesDialogOpen} onOpenChange={setSizesDialogOpen} item={item} />
     </div>
   )
 }

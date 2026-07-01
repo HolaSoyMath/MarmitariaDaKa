@@ -16,6 +16,7 @@ export class MenuItemsController {
       recipe: {
         id: item.recipe.id,
         name: item.recipe.name,
+        active: item.recipe.active,
         ingredients: item.recipe.ingredients.map(ri => ({
           ingredientId: ri.ingredientId,
           quantity: ri.quantity,
@@ -36,6 +37,13 @@ export class MenuItemsController {
           ? `Semana ${lastWeek.weekNumber}/${lastWeek.year}`
           : null,
       },
+      priceTypes: item.priceTypes.map(mpt => ({
+        id: mpt.priceType.id,
+        type: mpt.priceType.type,
+        size: mpt.priceType.size,
+        pixPrice: mpt.priceType.pixPrice,
+        swilePrice: mpt.priceType.swilePrice,
+      })),
     }
   }
 
@@ -46,6 +54,10 @@ export class MenuItemsController {
 
   async add(data: MenuItemInput): Promise<MenuItemResponse> {
     return this.format(await this.service.add(data))
+  }
+
+  async updatePriceTypes(id: string, priceTypeIds: string[]): Promise<MenuItemResponse> {
+    return this.format(await this.service.updatePriceTypes(id, priceTypeIds))
   }
 
   async remove(id: string): Promise<void> {

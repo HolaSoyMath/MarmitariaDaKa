@@ -3,6 +3,7 @@ import { RecipesRepository } from '../repositories/recipes.repository'
 import { RecipesService } from '../services/recipes.service'
 import { RecipesController } from '../controllers/recipes.controller'
 import { recipeInput } from '@marmitaria/schemas/recipe/recipeInput.schema'
+import { recipeActiveInput } from '@marmitaria/schemas/recipe/recipeActiveInput.schema'
 import { NotFoundError, ConflictError } from '../lib/errors'
 
 const repository = new RecipesRepository()
@@ -24,6 +25,9 @@ export const recipesRoutes = new Elysia({ prefix: '/recipes' })
   .get('/:id', ({ params: { id } }) => controller.getById(id))
   .post('/', ({ body }) => controller.create(recipeInput.parse(body)))
   .patch('/:id', ({ params: { id }, body }) => controller.update(id, recipeInput.parse(body)))
+  .patch('/:id/active', ({ params: { id }, body }) =>
+    controller.setActive(id, recipeActiveInput.parse(body).active),
+  )
   .delete('/:id', async ({ params: { id }, set }) => {
     await controller.remove(id)
     set.status = 204

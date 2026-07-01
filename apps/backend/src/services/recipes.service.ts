@@ -38,4 +38,9 @@ export class RecipesService {
     }
     await this.repository.softDelete(id)
   }
+
+  async setActive(id: string, active: boolean): Promise<RecipeWithIngredients> {
+    await this.getById(id)
+    return this.repository.setActive(id, active)
+  }
 }

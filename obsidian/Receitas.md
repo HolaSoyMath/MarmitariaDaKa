@@ -13,12 +13,24 @@ Receitas são o pré-requisito para montar o cardápio — sem receita cadastrad
 - **Nome** — texto único (ex: "Fricassê de Frango", "Caldo de Feijão")
 - **Ingredientes** — lista com ingrediente + quantidade
 - **Tamanhos disponíveis** — um ou mais [[TiposPrecos|tipos de preço]] em que o prato é oferecido (ex: Marmita 400G, Marmita 550G), cada um já com seu preço Pix/Swile vindo do cadastro de Tipos e Preços
+- **Ativa** — booleano, `true` por padrão
 
 ---
 
 ## Última vez no cardápio
 
 A lista de receitas exibe quando aquela receita foi usada pela última vez no cardápio semanal. Se nunca foi usada, exibe "nunca usada". Ajuda a dona a lembrar quais pratos já fez recentemente.
+
+---
+
+## Ativar / desativar
+
+Uma receita pode ser desativada sem ser excluída — útil quando a dona quer parar de oferecer um prato temporariamente (ex: para ajustar a receita) sem perder o cadastro nem o histórico.
+
+- Receita desativada some da lista padrão de Receitas (existe um filtro para ver as inativas) e não aparece mais no modal de "Adicionar prato ao cardápio"
+- Desativar/ativar não é bloqueado por pedidos pendentes — é só uma flag de visibilidade, não altera dados
+- Pratos já adicionados ao cardápio de semanas anteriores continuam existindo normalmente mesmo se a receita for desativada depois
+- A lista de Receitas é sempre ordenada em ordem alfabética por nome
 
 ---
 

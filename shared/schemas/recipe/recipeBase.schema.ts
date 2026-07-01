@@ -9,6 +9,7 @@ export const recipeIngredientBase = z.object({
 export const recipeBase = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
+  active: z.boolean(),
   deletedAt: z.date().nullable(),
 })
 

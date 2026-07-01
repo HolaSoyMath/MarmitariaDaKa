@@ -36,7 +36,7 @@ export function OrderItemRow({
   onUpdate,
 }: OrderItemRowProps) {
   const selectedMenuItem = menuItems.find((m) => m.id === row.menuItemId)
-  const availablePriceTypes = selectedMenuItem?.recipe.priceTypes ?? []
+  const availablePriceTypes = selectedMenuItem?.priceTypes ?? []
 
   const rowPriceTypes =
     row.priceTypeId && !availablePriceTypes.some((pt) => pt.id === row.priceTypeId)
@@ -52,7 +52,7 @@ export function OrderItemRow({
         <Select
           value={row.menuItemId}
           onValueChange={(v) => {
-            const validIds = menuItems.find((m) => m.id === v)?.recipe.priceTypes.map((pt) => pt.id) ?? []
+            const validIds = menuItems.find((m) => m.id === v)?.priceTypes.map((pt) => pt.id) ?? []
             const nextPriceTypeId = validIds.includes(row.priceTypeId)
               ? row.priceTypeId
               : validIds.length === 1
