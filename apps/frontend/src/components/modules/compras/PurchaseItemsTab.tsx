@@ -224,7 +224,7 @@ export function PurchaseItemsTab({
       </div>
 
       <div className="flex gap-3 mt-4.5 flex-wrap">
-        <div className="border border-border rounded-lg bg-secondary shadow-sm flex flex-col gap-1.5 p-5.5 w-60">
+        <div className="border border-border rounded-lg shadow-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
           <span className="text-sm text-muted-foreground">
             Total Ingredientes
           </span>
@@ -232,7 +232,7 @@ export function PurchaseItemsTab({
             {formatCurrency(ingredientTotalCents)}
           </div>
         </div>
-        <div className="border border-border rounded-lg bg-secondary shadow-sm flex flex-col gap-1.5 p-5.5 w-60">
+        <div className="border border-border rounded-lg shadow-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
           <span className="text-sm text-muted-foreground">
             Total geral (Ingred. + custo)
           </span>
