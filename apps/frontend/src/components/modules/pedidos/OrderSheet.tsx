@@ -1,32 +1,37 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { SearchSelect } from '@/components/shared/SearchSelect'
-import { OrderItemRow } from '@/components/modules/pedidos/OrderItemRow'
-import { ClientSheet } from '@/components/modules/clientes/ClientDialog'
-import { GroupsDialog } from '@/components/modules/clientes/GroupsDialog'
-import { useOrderSheet } from '@/hooks/useOrderSheet'
-import { useWeek } from '@/context/WeekContext'
-import { formatCurrency } from '@/formatters/currency'
-import { Plus } from 'lucide-react'
-import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.schema'
+import { useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { SearchSelect } from "@/components/shared/SearchSelect";
+import { OrderItemRow } from "@/components/modules/pedidos/OrderItemRow";
+import { ClientSheet } from "@/components/modules/clientes/ClientSheet";
+import { GroupsDialog } from "@/components/modules/clientes/GroupsDialog";
+import { useOrderSheet } from "@/hooks/useOrderSheet";
+import { useWeek } from "@/context/WeekContext";
+import { formatCurrency } from "@/formatters/currency";
+import { Plus } from "lucide-react";
+import type { OrderResponse } from "@marmitaria/schemas/order/orderResponse.schema";
 
 interface Props {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  order?: OrderResponse
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  order?: OrderResponse;
 }
 
 export function OrderSheet({ open, onOpenChange, order }: Props) {
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [clientSheetOpen, setClientSheetOpen] = useState(false)
-  const [groupsDialogOpen, setGroupsDialogOpen] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [clientSheetOpen, setClientSheetOpen] = useState(false);
+  const [groupsDialogOpen, setGroupsDialogOpen] = useState(false);
 
-  const { currentWeek } = useWeek()
+  const { currentWeek } = useWeek();
 
   const {
     isEditing,
@@ -46,11 +51,12 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
     menuItems,
     priceTypes,
     deleteOrder,
-  } = useOrderSheet(order, onOpenChange)
+  } = useOrderSheet(order, onOpenChange);
 
-  const clientOptions = Object.entries(clientsByGroup).flatMap(([group, clients]) =>
-    clients.map((c) => ({ value: c.id, label: c.name, group })),
-  )
+  const clientOptions = Object.entries(clientsByGroup).flatMap(
+    ([group, clients]) =>
+      clients.map((c) => ({ value: c.id, label: c.name, group })),
+  );
 
   return (
     <>
@@ -58,14 +64,16 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
         <SheetContent className="flex flex-col gap-0 p-0 overflow-y-auto bg-card">
           <SheetHeader className="flex-row items-center gap-3 px-5.5 py-5 border-b">
             <SheetTitle className="flex-1 font-heading font-extrabold text-xl">
-              {isEditing ? 'Editar pedido' : 'Novo pedido'}
+              {isEditing ? "Editar pedido" : "Novo pedido"}
             </SheetTitle>
           </SheetHeader>
 
           <div className="flex flex-col gap-4 px-5.5 py-5 flex-1 overflow-y-auto">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <p className="text-md font-semibold text-muted-foreground">Cliente</p>
+                <p className="text-md font-semibold text-muted-foreground">
+                  Cliente
+                </p>
                 <Button
                   type="button"
                   variant="outline"
@@ -143,7 +151,7 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
           </div>
 
           <div className="px-5.5 py-4 border-t flex flex-col gap-3">
-            {isEditing && order?.status === 'pending' && (
+            {isEditing && order?.status === "pending" && (
               <Button
                 variant="destructive"
                 onClick={() => setConfirmOpen(true)}
@@ -153,7 +161,11 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
               </Button>
             )}
             <div className="flex gap-2.5">
-              <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancelar
               </Button>
               <Button
@@ -174,8 +186,8 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
         title="Remover pedido?"
         description={
           <>
-            O pedido de <b>{order?.client.name}</b> será removido. Essa ação não pode ser
-            desfeita.
+            O pedido de <b>{order?.client.name}</b> será removido. Essa ação não
+            pode ser desfeita.
           </>
         }
         onConfirm={handleDelete}
@@ -188,7 +200,10 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
         onOpenGroups={() => setGroupsDialogOpen(true)}
       />
 
-      <GroupsDialog open={groupsDialogOpen} onOpenChange={setGroupsDialogOpen} />
+      <GroupsDialog
+        open={groupsDialogOpen}
+        onOpenChange={setGroupsDialogOpen}
+      />
     </>
-  )
+  );
 }
