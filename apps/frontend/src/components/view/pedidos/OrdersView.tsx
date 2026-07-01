@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
@@ -13,6 +13,7 @@ import {
   useRevertToPending,
   useRevertToProduced,
 } from '@/hooks/useOrders'
+import { useMenuItems } from '@/hooks/useMenuItems'
 import { useWeek } from '@/context/WeekContext'
 import { Plus } from 'lucide-react'
 import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.schema'
@@ -20,6 +21,12 @@ import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.sche
 export function OrdersView() {
   const { currentWeek } = useWeek()
   const { data: orders = [], isLoading } = useOrders(currentWeek?.id ?? null)
+  const { data: menuItems = [] } = useMenuItems(currentWeek?.id ?? null)
+
+  const menuItemById = useMemo(
+    () => new Map(menuItems.map((m) => [m.id, m])),
+    [menuItems],
+  )
 
   const markProduced = useMarkProduced()
   const markPaid = useMarkPaid()
@@ -30,6 +37,16 @@ export function OrdersView() {
   const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null)
   const [payDialogId, setPayDialogId] = useState<string | null>(null)
   const [unmarkDialogId, setUnmarkDialogId] = useState<string | null>(null)
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+
+  function toggleExpanded(id: string) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   function openCreate() {
     setSelectedOrder(null)
@@ -95,6 +112,9 @@ export function OrdersView() {
       ) : (
         <OrdersTable
           orders={orders}
+          menuItemById={menuItemById}
+          expandedIds={expandedIds}
+          onToggleExpand={toggleExpanded}
           onFeitoToggle={handleFeitoToggle}
           onPagoToggle={handlePagoToggle}
           onEdit={openEdit}

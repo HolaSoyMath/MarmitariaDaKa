@@ -1,5 +1,6 @@
 'use client'
 
+import { Fragment } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -16,17 +17,29 @@ import {
 import { cn } from '@/lib/utils'
 import { getOrderColumns } from '@/types/columnDefs/orderColumns'
 import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.schema'
+import type { MenuItemResponse } from '@marmitaria/schemas/menuItem/menuItemResponse.schema'
 
 interface OrdersTableProps {
   orders: OrderResponse[]
+  menuItemById: Map<string, MenuItemResponse>
+  expandedIds: Set<string>
+  onToggleExpand: (id: string) => void
   onFeitoToggle: (order: OrderResponse) => void
   onPagoToggle: (order: OrderResponse) => void
   onEdit: (order: OrderResponse) => void
 }
 
-export function OrdersTable({ orders, onFeitoToggle, onPagoToggle, onEdit }: OrdersTableProps) {
+export function OrdersTable({
+  orders,
+  menuItemById,
+  expandedIds,
+  onToggleExpand,
+  onFeitoToggle,
+  onPagoToggle,
+  onEdit,
+}: OrdersTableProps) {
   'use no memo'
-  const columns = getOrderColumns({ onFeitoToggle, onPagoToggle, onEdit })
+  const columns = getOrderColumns({ expandedIds, onToggleExpand, onFeitoToggle, onPagoToggle, onEdit })
 
   const table = useReactTable({
     data: orders,
@@ -53,21 +66,54 @@ export function OrdersTable({ orders, onFeitoToggle, onPagoToggle, onEdit }: Ord
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => {
-            const isDone = row.original.status === 'produced' || row.original.status === 'paid'
+            const order = row.original
+            const isDone = order.status === 'produced' || order.status === 'paid'
+            const isExpanded = expandedIds.has(order.id)
             return (
-              <TableRow
-                key={row.id}
-                className={cn(
-                  'transition-colors',
-                  isDone ? 'bg-pix-faint hover:bg-pix-faint' : 'hover:bg-secondary',
+              <Fragment key={row.id}>
+                <TableRow
+                  className={cn(
+                    'transition-colors',
+                    isDone ? 'bg-pix-faint hover:bg-pix-faint' : 'hover:bg-secondary',
+                  )}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="py-3.5">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {isExpanded && (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={row.getVisibleCells().length} className="px-4.5 pt-0 pb-3.5 bg-secondary/40">
+                      <div
+                        className="flex flex-col animate-in fade-in slide-in-from-top-1 duration-200"
+                        style={{ paddingLeft: '58px' }}
+                      >
+                        {order.items.map((item) => {
+                          const menuItem = menuItemById.get(item.menuItemId)
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center gap-3 py-1.5 text-muted-foreground text-sm"
+                            >
+                              <span className="font-heading font-extrabold text-xl min-w-6 text-foreground">
+                                {item.quantity}
+                              </span>
+                              <span>
+                                Marmita{item.quantity !== 1 ? 's' : ''} de{' '}
+                                <b>{menuItem?.recipe.name ?? 'prato'}</b>
+                                {' · '}
+                                {item.priceType.size}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 )}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="px-4.5 py-3.5">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
+              </Fragment>
             )
           })}
         </TableBody>

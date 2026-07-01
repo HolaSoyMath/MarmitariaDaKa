@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/formatters/currency'
 import { formatOrderItems } from '@/formatters/order'
 import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.schema'
+import { ChevronRight } from 'lucide-react'
 
 function OrderCheck({
   checked,
@@ -67,12 +68,16 @@ function OrderValue({ order }: { order: OrderResponse }) {
 }
 
 interface OrderColumnCallbacks {
+  expandedIds: Set<string>
+  onToggleExpand: (id: string) => void
   onFeitoToggle: (order: OrderResponse) => void
   onPagoToggle: (order: OrderResponse) => void
   onEdit: (order: OrderResponse) => void
 }
 
 export function getOrderColumns({
+  expandedIds,
+  onToggleExpand,
   onFeitoToggle,
   onPagoToggle,
   onEdit,
@@ -96,6 +101,27 @@ export function getOrderColumns({
         )
       },
       size: 34,
+    },
+    {
+      id: 'expand',
+      header: '',
+      cell: ({ row }) => {
+        const order = row.original
+        const isExpanded = expandedIds.has(order.id)
+        return (
+          <Button
+            type="button"
+            onClick={() => onToggleExpand(order.id)}
+            variant={"outline"}
+            className={cn(
+              'flex items-center justify-center size-7 rounded-sm font-bold bg-transparent hover:bg-transparent transition-all cursor-pointer duration-300 p-0',
+              isExpanded && 'transition-all duration-300 rotate-90',
+            )}
+          >
+            <ChevronRight />
+          </Button>
+        )
+      },
     },
     {
       id: 'cliente',
