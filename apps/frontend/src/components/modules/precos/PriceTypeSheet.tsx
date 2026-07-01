@@ -1,14 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +10,7 @@ import {
   useDeletePriceType,
 } from "@/hooks/usePriceTypes";
 import type { PriceTypeResponse } from "@marmitaria/schemas/priceType/priceTypeResponse.schema";
+import { SheetBase } from "@/components/ui/SheetBase";
 
 interface Props {
   open: boolean;
@@ -26,7 +19,7 @@ interface Props {
 }
 
 function centsToReais(cents: number) {
-  return (cents / 100).toFixed(2).replace(".", ",");
+  return (cents / 100).toFixed(2);
 }
 
 function reaisToCents(value: string) {
@@ -85,92 +78,77 @@ export function PriceTypeSheet({ open, onOpenChange, priceType }: Props) {
 
   return (
     <>
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="flex flex-col gap-0 p-0">
-          <SheetHeader className="px-6 py-5 border-b">
-            <SheetTitle>
-              {isEditing ? "Editar tipo de preço" : "Novo tipo de preço"}
-            </SheetTitle>
-          </SheetHeader>
+      <SheetBase
+        resetKey={priceType?.id ?? "new"}
+        open={open}
+        onOpenChange={onOpenChange}
+        title={isEditing ? "Editar tipo de preço" : "Novo tipo de preço"}
+        onSave={handleSave}
+        onCancel={() => {}}
+        onDelete={isEditing ? () => setConfirmOpen(true) : undefined}
+        deleteButtonDisabled={deletePriceType.isPending}
+        saveButtonDisabled={!isValid || isSaving}
+      >
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="pt-type">Tipo</Label>
+          <Input
+            id="pt-type"
+            value={form.type}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, type: e.target.value }))
+            }
+            placeholder="ex: Marmita"
+            className="bg-card rounded-sm"
+          />
+        </div>
 
-          <div className="flex flex-col gap-5 px-6 py-6 flex-1">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="pt-type">Tipo</Label>
-              <Input
-                id="pt-type"
-                value={form.type}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, type: e.target.value }))
-                }
-                placeholder="ex: Marmita"
-              />
-            </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="pt-size">Tamanho</Label>
+          <Input
+            id="pt-size"
+            value={form.size}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, size: e.target.value }))
+            }
+            placeholder="ex: G"
+            className="bg-card rounded-sm"
+          />
+        </div>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="pt-size">Tamanho</Label>
-              <Input
-                id="pt-size"
-                value={form.size}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, size: e.target.value }))
-                }
-                placeholder="ex: G"
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex flex-col gap-2 flex-1">
-                <Label htmlFor="pt-pix">Preço Pix (R$)</Label>
-                <Input
-                  id="pt-pix"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.pixPrice}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, pixPrice: e.target.value }))
-                  }
-                  placeholder="0,00"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 flex-1">
-                <Label htmlFor="pt-swile">Preço Swile (R$)</Label>
-                <Input
-                  id="pt-swile"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.swilePrice}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, swilePrice: e.target.value }))
-                  }
-                  placeholder="0,00"
-                />
-              </div>
-            </div>
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-2 flex-1">
+            <Label htmlFor="pt-pix">Preço Pix (R$)</Label>
+            <Input
+              id="pt-pix"
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.pixPrice}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, pixPrice: e.target.value }))
+              }
+              placeholder="0,00"
+              className="bg-card rounded-sm"
+            />
           </div>
 
-          <SheetFooter className="px-6 py-4 border-t flex-row gap-2">
-            {isEditing && (
-              <Button
-                variant="destructive"
-                className="mr-auto"
-                onClick={() => setConfirmOpen(true)}
-                disabled={deletePriceType.isPending}
-              >
-                Remover
-              </Button>
-            )}
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave} disabled={!isValid || isSaving}>
-              Salvar
-            </Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+          <div className="flex flex-col gap-2 flex-1">
+            <Label htmlFor="pt-swile">Preço Swile (R$)</Label>
+            <Input
+              id="pt-swile"
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.swilePrice}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, swilePrice: e.target.value }))
+              }
+              placeholder="0,00"
+              className="bg-card rounded-sm"
+            />
+          </div>
+        </div>
+      </SheetBase>
 
       <ConfirmDialog
         open={confirmOpen}
