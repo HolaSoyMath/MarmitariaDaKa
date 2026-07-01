@@ -55,7 +55,7 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="flex flex-col gap-0 p-0 overflow-y-auto">
+        <SheetContent className="flex flex-col gap-0 p-0 overflow-y-auto bg-card">
           <SheetHeader className="flex-row items-center gap-3 px-5.5 py-5 border-b">
             <SheetTitle className="flex-1 font-heading font-extrabold text-xl">
               {isEditing ? 'Editar pedido' : 'Novo pedido'}
@@ -65,12 +65,12 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
           <div className="flex flex-col gap-4 px-5.5 py-5 flex-1 overflow-y-auto">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <Label className="text-[13px] font-semibold text-muted-foreground">Cliente</Label>
+                <p className="text-md font-semibold text-muted-foreground">Cliente</p>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-auto py-1 text-xs cursor-pointer"
+                  className="h-auto py-1 text-xs cursor-pointer hover:bg-primary"
                   onClick={() => setClientSheetOpen(true)}
                 >
                   <Plus /> Novo
@@ -87,10 +87,10 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
 
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <Label className="text-[13px] font-semibold text-muted-foreground">
+                <p className="text-md font-semibold text-muted-foreground">
                   Itens do pedido
-                </Label>
-                <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                </p>
+                <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
                   semana {currentWeek?.number}
                 </span>
               </div>
@@ -111,9 +111,9 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
 
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 onClick={addRow}
-                className="justify-start text-sm text-muted-foreground hover:text-foreground mt-0.5 cursor-pointer"
+                className="justify-center text-sm text-muted-foreground hover:text-foreground mt-0.5 cursor-pointer bg-transparent hover:bg-accent"
               >
                 <Plus className="size-3.5" />
                 Adicionar item
