@@ -18,7 +18,7 @@ export function ClientOrdersAccordion({
   onProducedToggle,
 }: ClientOrdersAccordionProps) {
   return (
-    <div className="border border-border rounded-lg bg-card overflow-hidden shadow-sm">
+    <div className="border border-border rounded-sm bg-card overflow-hidden">
       {/* Header row */}
       <div
         className="hidden md:grid gap-3 px-5.5 py-3 border-b border-border"

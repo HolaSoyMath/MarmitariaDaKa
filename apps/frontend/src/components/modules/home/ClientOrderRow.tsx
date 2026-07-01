@@ -39,7 +39,7 @@ export function ClientOrderRow({
           onClick={() => onProducedToggle(order)}
           disabled={order.status === 'paid'}
           className={cn(
-            'size-6 rounded-[7px] border-2 transition-all justify-self-center',
+            'size-6 rounded-sm border-2 transition-all justify-self-center',
             isProduced
               ? 'bg-pix border-pix text-white hover:bg-pix/90 hover:text-white'
               : 'bg-card border-border-strong hover:border-pix hover:bg-card',
@@ -91,7 +91,7 @@ export function ClientOrderRow({
           onClick={() => onProducedToggle(order)}
           disabled={order.status === 'paid'}
           className={cn(
-            'size-6 flex-none rounded-[7px] border-2 transition-all',
+            'size-6 flex-none rounded-sm border-2 transition-all',
             isProduced
               ? 'bg-pix border-pix text-white hover:bg-pix/90 hover:text-white'
               : 'bg-card border-border-strong hover:border-pix hover:bg-card',

@@ -8,7 +8,7 @@ interface WeekTotalsCardProps {
 
 export function WeekTotalsCard({ totalQuantity, pendingQuantity, toReceiveCents }: WeekTotalsCardProps) {
   return (
-    <div className="bg-primary text-primary-foreground rounded-lg p-6 flex flex-col justify-between min-h-72.5">
+    <div className="bg-primary text-primary-foreground rounded-sm p-6 flex flex-col justify-between min-h-72.5">
       <span className="font-mono uppercase tracking-widest text-[11px] text-primary-foreground/70">
         Total da semana
       </span>
@@ -21,13 +21,13 @@ export function WeekTotalsCard({ totalQuantity, pendingQuantity, toReceiveCents 
         </div>
       </div>
       <div className="flex gap-2.5">
-        <div className="bg-white/30 rounded-md px-3.25 py-2.25 font-extrabold text-sm flex-1">
+        <div className="bg-white/30 rounded-sm px-3.25 py-2.25 font-extrabold text-sm flex-1">
           <span className="block font-mono text-[9.5px] font-normal uppercase tracking-widest opacity-80 mb-0.5">
             A produzir
           </span>
           {pendingQuantity} marmita{pendingQuantity !== 1 ? 's' : ''}
         </div>
-        <div className="bg-white/30 rounded-md px-3.25 py-2.25 font-extrabold text-sm flex-1">
+        <div className="bg-white/30 rounded-sm px-3.25 py-2.25 font-extrabold text-sm flex-1">
           <span className="block font-mono text-[9.5px] font-normal uppercase tracking-widest opacity-80 mb-0.5">
             A receber
           </span>

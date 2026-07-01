@@ -118,7 +118,7 @@ export function HomeView() {
       {weekLoading || ordersLoading ? (
         <p className="text-sm text-muted-foreground">Carregando...</p>
       ) : orders.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-16 text-center border-2 border-dashed border-border rounded-lg bg-secondary">
+        <div className="flex flex-col items-center gap-3 py-16 text-center bg-card rounded-sm">
           <p className="text-muted-foreground">Nenhum pedido nessa semana ainda.</p>
         </div>
       ) : (

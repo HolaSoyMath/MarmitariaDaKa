@@ -7,7 +7,7 @@ interface DishesCardProps {
 
 export function DishesCard({ dishSlots }: DishesCardProps) {
   return (
-    <div className="border border-border rounded-lg bg-card p-5.5 shadow-sm flex flex-col">
+    <div className="border border-border rounded-sm bg-card p-5.5 flex flex-col">
       <div className="flex items-center justify-between mb-0.5">
         <span className="font-heading font-bold text-[18px]">Por prato</span>
       </div>
