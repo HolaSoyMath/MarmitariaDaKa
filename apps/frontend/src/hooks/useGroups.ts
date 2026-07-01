@@ -46,6 +46,7 @@ export function useUpdateGroup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
       toast.success('Grupo renomeado.')
     },
     onError: (error) => toastError(error, 'Não foi possível renomear o grupo.'),
