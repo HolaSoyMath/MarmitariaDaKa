@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { SearchInput } from '@/components/ui/SearchInput'
 import {
   Table,
   TableBody,
@@ -19,6 +20,7 @@ export function RecipesView() {
   const { data: recipes = [], isLoading } = useRecipes()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [selected, setSelected] = useState<RecipeResponse | null>(null)
+  const [search, setSearch] = useState('')
 
   function openCreate() {
     setSelected(null)
@@ -30,28 +32,40 @@ export function RecipesView() {
     setSheetOpen(true)
   }
 
+  const filteredRecipes = recipes.filter(recipe =>
+    recipe.name.toLowerCase().includes(search.toLowerCase()),
+  )
+
   return (
     <div className="p-7.5 flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Receitas utilizadas no cardápio semanal
-        </p>
-        <Button onClick={openCreate}>
+      <div className="flex items-center justify-between gap-3">
+        <SearchInput
+          placeholder="Buscar receita..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <Button onClick={openCreate} className="rounded-sm">
           <Plus /> Nova receita
         </Button>
       </div>
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando...</p>
-      ) : recipes.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <p className="text-muted-foreground">Nenhuma receita cadastrada ainda.</p>
-          <Button variant="outline" onClick={openCreate}>
-            <Plus /> Cadastrar primeira receita
-          </Button>
+      ) : filteredRecipes.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 py-16 text-center bg-card">
+          <p className="text-muted-foreground">
+            {search
+              ? 'Nenhuma receita encontrada.'
+              : 'Nenhuma receita cadastrada ainda.'}
+          </p>
+          {!search && (
+            <Button variant="outline" onClick={openCreate} className="rounded-sm">
+              <Plus /> Cadastrar primeira receita
+            </Button>
+          )}
         </div>
       ) : (
-        <div className="rounded-lg border">
+        <div className="rounded-sm border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
@@ -62,7 +76,7 @@ export function RecipesView() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recipes.map(recipe => (
+              {filteredRecipes.map(recipe => (
                 <TableRow key={recipe.id}>
                   <TableCell className="font-medium">{recipe.name}</TableCell>
                   <TableCell className="text-muted-foreground">
@@ -74,9 +88,10 @@ export function RecipesView() {
                   </TableCell>
                   <TableCell>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
                       onClick={() => openEdit(recipe)}
+                      className="bg-transparent hover:bg-accent rounded-sm"
                     >
                       Editar
                     </Button>

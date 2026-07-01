@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { SearchInput } from "@/components/ui/SearchInput";
 import {
   Table,
   TableBody,
@@ -24,6 +25,7 @@ export function ClientsView() {
     null,
   );
   const [groupsDialogOpen, setGroupsDialogOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   function openCreate() {
     setSelectedClient(null);
@@ -35,11 +37,18 @@ export function ClientsView() {
     setSheetOpen(true);
   }
 
-  const orderedClientes = [...clients].sort((a, b) => a.name.localeCompare(b.name));
+  const orderedClientes = [...clients]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div className="p-7.5 flex flex-col gap-6">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between gap-3">
+        <SearchInput
+          placeholder="Buscar cliente..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -60,14 +69,16 @@ export function ClientsView() {
       ) : orderedClientes.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-16 text-center bg-card">
           <p className="text-muted-foreground">
-            Nenhum cliente cadastrado ainda.
+            {search ? "Nenhum cliente encontrado." : "Nenhum cliente cadastrado ainda."}
           </p>
-          <Button variant="outline" onClick={openCreate} className="rounded-sm">
-            <Plus /> Cadastrar primeiro cliente
-          </Button>
+          {!search && (
+            <Button variant="outline" onClick={openCreate} className="rounded-sm">
+              <Plus /> Cadastrar primeiro cliente
+            </Button>
+          )}
         </div>
       ) : (
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-sm border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

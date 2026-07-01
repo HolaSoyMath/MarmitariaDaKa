@@ -19,7 +19,7 @@ const NAV_ITEMS = [
   { href: '/',           label: 'Home',               icon: HomeIcon },
   { href: '/pedidos',    label: 'Pedidos',             icon: ClipboardListIcon },
   { href: '/cardapio',   label: 'Cardápio da semana',  icon: CalendarDaysIcon },
-  { href: '/receitas',      label: 'Pratos',              icon: ChefHatIcon },
+  { href: '/receitas',      label: 'Receitas',              icon: ChefHatIcon },
   { href: '/ingredientes', label: 'Ingredientes',        icon: PackageIcon },
   { href: '/clientes',     label: 'Clientes',            icon: UserIcon },
   { href: '/precos',     label: 'Tipos & Preços',      icon: TagIcon },

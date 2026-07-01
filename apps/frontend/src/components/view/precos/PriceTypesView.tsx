@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { SearchInput } from "@/components/ui/SearchInput";
 import {
   Table,
   TableBody,
@@ -26,6 +27,7 @@ export function PriceTypesView() {
   const { data: priceTypes = [], isLoading } = usePriceTypes();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selected, setSelected] = useState<PriceTypeResponse | null>(null);
+  const [search, setSearch] = useState("");
 
   function openCreate() {
     setSelected(null);
@@ -37,9 +39,18 @@ export function PriceTypesView() {
     setSheetOpen(true);
   }
 
+  const filteredPriceTypes = priceTypes.filter((pt) =>
+    `${pt.type} ${pt.size}`.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <div className="p-7.5 flex flex-col gap-6">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-3">
+        <SearchInput
+          placeholder="Buscar tipo de preço..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <Button onClick={openCreate} className="rounded-sm">
           <Plus /> Novo tipo
         </Button>
@@ -47,14 +58,18 @@ export function PriceTypesView() {
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando...</p>
-      ) : priceTypes.length === 0 ? (
+      ) : filteredPriceTypes.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-16 text-center bg-card">
           <p className="text-muted-foreground">
-            Nenhum tipo de preço cadastrado ainda.
+            {search
+              ? "Nenhum tipo de preço encontrado."
+              : "Nenhum tipo de preço cadastrado ainda."}
           </p>
-          <Button variant="outline" onClick={openCreate} className="rounded-sm">
-            <Plus /> Cadastrar primeiro tipo
-          </Button>
+          {!search && (
+            <Button variant="outline" onClick={openCreate} className="rounded-sm">
+              <Plus /> Cadastrar primeiro tipo
+            </Button>
+          )}
         </div>
       ) : (
         <div className="rounded-sm border bg-card">
@@ -69,7 +84,7 @@ export function PriceTypesView() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {priceTypes.map((pt) => (
+              {filteredPriceTypes.map((pt) => (
                 <TableRow key={pt.id}>
                   <TableCell className="font-medium">{pt.type}</TableCell>
                   <TableCell>{pt.size}</TableCell>

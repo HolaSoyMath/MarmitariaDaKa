@@ -105,7 +105,7 @@ export function SearchSelect({
                     value={opt.label}
                     onSelect={() => select(opt.value)}
                     data-checked={opt.value === value}
-                    className="cursor-pointer hover:bg-accent"
+                    className="cursor-pointer hover:bg-white/90"
                   >
                     {opt.label}
                   </CommandItem>

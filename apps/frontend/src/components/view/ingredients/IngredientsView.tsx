@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SearchInput } from "@/components/ui/SearchInput";
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import { useIngredients, useDeleteIngredient } from "@/hooks/useIngredients";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { UNIT_LABELS } from "@/constants/units";
 import type { IngredientResponse } from "@marmitaria/schemas/ingredient/ingredientResponse.schema";
-import { Pencil, Plus, Search, Trash } from "lucide-react";
+import { Pencil, Plus, Trash } from "lucide-react";
 
 export function IngredientsView() {
   const { data: ingredients = [], isLoading } = useIngredients();
@@ -46,18 +46,11 @@ export function IngredientsView() {
   return (
     <div className="p-7.5 flex flex-col gap-6">
       <div className="flex items-center justify-between gap-3">
-        <div className="relative w-full rounded-sm">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            size={16}
-          />
-          <Input
-            placeholder="Buscar ingrediente..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-card rounded-sm"
-          />
-        </div>
+        <SearchInput
+          placeholder="Buscar ingrediente..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <Button onClick={openCreate} className="rounded-sm">
           <Plus /> Novo ingrediente
         </Button>
@@ -79,7 +72,7 @@ export function IngredientsView() {
           )}
         </div>
       ) : (
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-sm border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

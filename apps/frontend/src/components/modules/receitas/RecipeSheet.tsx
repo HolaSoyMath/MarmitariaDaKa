@@ -11,7 +11,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IngredienteSelector } from "@/components/shared/IngredienteSelector";
+import {
+  SearchSelect,
+  type SearchSelectOption,
+} from "@/components/shared/SearchSelect";
 import { IngredientSheet } from "@/components/modules/ingredients/IngredientSheet";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
@@ -19,8 +22,11 @@ import {
   useUpdateRecipe,
   useDeleteRecipe,
 } from "@/hooks/useRecipes";
+import { useIngredients } from "@/hooks/useIngredients";
 import { X, Plus } from "lucide-react";
 import type { RecipeResponse } from "@marmitaria/schemas/recipe/recipeResponse.schema";
+
+const CREATE_NEW_INGREDIENT = "__create__";
 
 interface IngredientRow {
   ingredientId: string;
@@ -45,6 +51,8 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
   );
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [newIngredientOpen, setNewIngredientOpen] = useState(false);
+
+  const { data: ingredients = [] } = useIngredients();
 
   const createRecipe = useCreateRecipe();
   const updateRecipe = useUpdateRecipe();
@@ -124,40 +132,62 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
             <div className="flex flex-col gap-2">
               <Label>Ingredientes</Label>
               <div className="flex flex-col gap-2">
-                {rows.map((row, i) => (
-                  <div key={i} className="flex gap-2 items-center">
-                    <IngredienteSelector
-                      value={row.ingredientId || null}
-                      onChange={(id) => updateRow(i, { ingredientId: id })}
-                      onCreateNew={() => setNewIngredientOpen(true)}
-                      exclude={rows
-                        .filter((_, j) => j !== i)
-                        .map((r) => r.ingredientId)
-                        .filter(Boolean)}
-                      className="flex-1"
-                    />
-                    <Input
-                      type="number"
-                      min="0"
-                      step="any"
-                      value={row.quantity}
-                      onChange={(e) =>
-                        updateRow(i, { quantity: e.target.value })
-                      }
-                      placeholder="Qtd."
-                      className="w-24 h-full rounded-md"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeRow(i)}
-                      disabled={rows.length === 1}
-                    >
-                      <X className="size-4 text-red-500" />
-                    </Button>
-                  </div>
-                ))}
+                {rows.map((row, i) => {
+                  const excludedIds = rows
+                    .filter((_, j) => j !== i)
+                    .map((r) => r.ingredientId)
+                    .filter(Boolean);
+
+                  const options: SearchSelectOption[] = [
+                    { value: CREATE_NEW_INGREDIENT, label: "+ Cadastrar novo item" },
+                    ...ingredients
+                      .filter((ing) => !excludedIds.includes(ing.id))
+                      .map((ing) => ({
+                        value: ing.id,
+                        label: `${ing.name} — ${ing.unit}`,
+                      })),
+                  ];
+
+                  return (
+                    <div key={i} className="flex gap-2 items-center">
+                      <SearchSelect
+                        value={row.ingredientId}
+                        onValueChange={(val) => {
+                          if (val === CREATE_NEW_INGREDIENT) {
+                            setNewIngredientOpen(true);
+                            return;
+                          }
+                          updateRow(i, { ingredientId: val });
+                        }}
+                        options={options}
+                        placeholder="Selecionar ingrediente"
+                        searchPlaceholder="Buscar ingrediente..."
+                        emptyText="Nenhum ingrediente encontrado."
+                        className="flex-1 rounded-sm shadow-none"
+                      />
+                      <Input
+                        type="number"
+                        min="0"
+                        step="any"
+                        value={row.quantity}
+                        onChange={(e) =>
+                          updateRow(i, { quantity: e.target.value })
+                        }
+                        placeholder="Qtd."
+                        className="w-24 h-full rounded-md"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeRow(i)}
+                        disabled={rows.length === 1}
+                      >
+                        <X className="size-4 text-red-500" />
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
               <Button
                 type="button"
