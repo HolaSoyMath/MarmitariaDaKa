@@ -132,7 +132,7 @@ export function PurchaseItemsTab({
 
   return (
     <div>
-      <div className="border border-border rounded-lg bg-card overflow-x-auto mb-4 p-1.5">
+      <div className="border border-border rounded-sm bg-card overflow-x-auto mb-4 p-1.5">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -194,7 +194,7 @@ export function PurchaseItemsTab({
           size="sm"
           onClick={handleAddRow}
           type="button"
-          className="gap-1.5"
+          className="gap-1.5 rounded-sm"
         >
           <Plus className="size-4" />
           Adicionar item
@@ -204,7 +204,7 @@ export function PurchaseItemsTab({
           size="sm"
           onClick={() => setIngredientSheetOpen(true)}
           type="button"
-          className="gap-1.5"
+          className="gap-1.5 rounded-sm"
         >
           <Plus className="size-4" />
           Novo ingrediente
@@ -217,14 +217,14 @@ export function PurchaseItemsTab({
             rows.filter((r) => r.ingredientId && r.quantity && r.totalValue)
               .length === 0
           }
-          type="button"
+          className="gap-1.5 rounded-sm"
         >
           {isSaving ? "Salvando…" : "Salvar compra"}
         </Button>
       </div>
 
       <div className="flex gap-3 mt-4.5 flex-wrap">
-        <div className="border border-border rounded-lg flex flex-col gap-1.5 p-5.5 w-60 bg-card">
+        <div className="border border-border rounded-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
           <span className="text-sm text-muted-foreground">
             Total Ingredientes
           </span>
@@ -232,7 +232,7 @@ export function PurchaseItemsTab({
             {formatCurrency(ingredientTotalCents)}
           </div>
         </div>
-        <div className="border border-border rounded-lg flex flex-col gap-1.5 p-5.5 w-60 bg-card">
+        <div className="border border-border rounded-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
           <span className="text-sm text-muted-foreground">
             Total geral (Ingred. + custo)
           </span>

@@ -53,7 +53,7 @@ export function ComprasView() {
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
       ) : !weekId ? (
-        <div className="flex flex-col items-center gap-3 py-16 text-center border-2 border-dashed border-border rounded-lg bg-secondary">
+        <div className="flex flex-col items-center gap-3 py-16 text-center border-2 border-dashed border-border rounded-sm bg-secondary">
           <p className="text-muted-foreground">Selecione uma semana para ver as compras.</p>
         </div>
       ) : (
