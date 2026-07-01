@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { IngredientSheet } from "@/components/modules/ingredientes/IngredientSheet";
+import { IngredientSheet } from "@/components/modules/ingredients/IngredientSheet";
 import { useIngredients } from "@/hooks/useIngredients";
 import { UNIT_LABELS } from "@/constants/units";
 import type { IngredientResponse } from "@marmitaria/schemas/ingredient/ingredientResponse.schema";
@@ -92,7 +92,7 @@ export function IngredientsView() {
       )}
 
       <IngredientSheet
-        key={selected?.id ?? 'new'}
+        key={selected?.id ?? "new"}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         ingredient={selected ?? undefined}

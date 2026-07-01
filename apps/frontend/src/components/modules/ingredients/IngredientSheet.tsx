@@ -66,7 +66,7 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="flex flex-col gap-0 p-0">
+        <SheetContent className="flex flex-col gap-0 p-0 bg-card">
           <SheetHeader className="px-6 py-5 border-b">
             <SheetTitle>
               {isEditing ? "Editar ingrediente" : "Novo ingrediente"}
@@ -97,6 +97,7 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
                     variant={form.unit === u ? "default" : "outline"}
                     size="sm"
                     onClick={() => setForm((f) => ({ ...f, unit: u }))}
+                    className="hover:bg-accent"
                   >
                     {u}
                   </Button>

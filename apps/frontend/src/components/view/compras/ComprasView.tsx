@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useWeek } from '@/context/WeekContext'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { usePurchase, useUpsertPurchase } from '@/hooks/usePurchases'
@@ -8,7 +8,6 @@ import { useGeneralCosts, useCreateGeneralCost, useUpdateGeneralCost, useDeleteG
 import { useIngredients } from '@/hooks/useIngredients'
 import { PurchaseItemsTab } from '@/components/modules/compras/PurchaseItemsTab'
 import { GeneralCostsTab } from '@/components/modules/compras/GeneralCostsTab'
-import type { DraftPurchaseRow } from '@/types/columnDefs/purchaseItemColumns'
 import type { PurchaseInput } from '@marmitaria/schemas/purchase/purchaseInput.schema'
 
 export function ComprasView() {
@@ -24,15 +23,9 @@ export function ComprasView() {
   const updateCost = useUpdateGeneralCost()
   const deleteCost = useDeleteGeneralCost()
 
-  const [rows, setRows] = useState<DraftPurchaseRow[]>([])
-
   const ingredientTotalCents = useMemo(
-    () =>
-      rows.reduce((sum, r) => {
-        const val = parseFloat(r.totalValue.replace(',', '.'))
-        return sum + (isNaN(val) ? 0 : Math.round(val * 100))
-      }, 0),
-    [rows],
+    () => purchase?.items?.reduce((sum, item) => sum + item.totalValue, 0) ?? 0,
+    [purchase],
   )
 
   function handleSavePurchase(input: PurchaseInput) {
@@ -56,11 +49,6 @@ export function ComprasView() {
 
   return (
     <div className="p-7.5 flex flex-col gap-6">
-      <div className="flex items-baseline gap-3 flex-wrap">
-        <h2 className="font-heading font-bold text-xl whitespace-nowrap tracking-tight">
-          Compras &amp; Custos
-        </h2>
-      </div>
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
@@ -73,13 +61,13 @@ export function ComprasView() {
           <TabsList className="mb-4.5 bg-transparent p-0 h-auto gap-2">
             <TabsTrigger
               value="ingredients"
-              className="px-4.5 py-2.25 rounded-sm border border-border bg-card text-[14.5px] font-semibold text-muted-foreground shadow-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent data-[state=active]:shadow-none cursor-pointer"
+              className="px-4.5 py-2.25 rounded-sm border border-border bg-card text-[14.5px] font-semibold text-muted-foreground shadow-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent data-[state=active]:shadow-none cursor-pointer hover:bg-accent"
             >
               Ingredientes
             </TabsTrigger>
             <TabsTrigger
               value="costs"
-              className="px-4.5 py-2.25 rounded-sm border border-border bg-card text-[14.5px] font-semibold text-muted-foreground shadow-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent data-[state=active]:shadow-none cursor-pointer"
+              className="px-4.5 py-2.25 rounded-sm border border-border bg-card text-[14.5px] font-semibold text-muted-foreground shadow-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent data-[state=active]:shadow-none cursor-pointer hover:bg-accent"
             >
               Custos gerais
             </TabsTrigger>
@@ -88,9 +76,8 @@ export function ComprasView() {
             <PurchaseItemsTab
               purchase={purchase}
               ingredients={ingredients}
+              costs={costs}
               weekId={weekId}
-              rows={rows}
-              onRowsChange={setRows}
               onSave={handleSavePurchase}
               isSaving={upsertPurchase.isPending}
             />

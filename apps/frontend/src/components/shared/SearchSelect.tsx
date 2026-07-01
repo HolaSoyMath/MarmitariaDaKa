@@ -79,7 +79,7 @@ export function SearchSelect({
         className="min-w-(--radix-popover-trigger-width) p-0 overflow-hidden border shadow-2xl"
         align="start"
       >
-        <Command>
+        <Command className="bg-muted">
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
@@ -92,7 +92,7 @@ export function SearchSelect({
                         value={opt.label}
                         onSelect={() => select(opt.value)}
                         data-checked={opt.value === value}
-                        className="cursor-pointer"
+                        className="cursor-pointer hover:bg-accent"
                       >
                         {opt.label}
                       </CommandItem>
@@ -105,7 +105,7 @@ export function SearchSelect({
                     value={opt.label}
                     onSelect={() => select(opt.value)}
                     data-checked={opt.value === value}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-accent"
                   >
                     {opt.label}
                   </CommandItem>

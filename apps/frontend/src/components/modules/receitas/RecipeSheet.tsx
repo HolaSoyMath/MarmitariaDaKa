@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { IngredienteSelector } from "@/components/shared/IngredienteSelector";
-import { IngredientSheet } from "@/components/modules/ingredientes/IngredientSheet";
+import { IngredientSheet } from "@/components/modules/ingredients/IngredientSheet";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   useCreateRecipe,
