@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
-import { getISOWeek, getISOWeekYear } from 'date-fns'
+import { getISOWeek, getISOWeekYear, getISOWeeksInYear } from 'date-fns'
 import { api } from '@/lib/api'
 
 type WeekState = { id: string; number: number; year: number } | null
@@ -10,6 +10,25 @@ interface WeekContextValue {
   currentWeek: WeekState
   setWeek: (number: number, year: number) => Promise<void>
   isLoading: boolean
+  goToPrev: () => void
+  goToNext: () => void
+}
+
+function isoWeeksInYear(year: number): number {
+  return getISOWeeksInYear(new Date(year, 0, 1))
+}
+
+function offsetWeek(n: number, y: number, delta: 1 | -1) {
+  let num = n + delta
+  let year = y
+  if (num < 1) {
+    year--
+    num = isoWeeksInYear(year)
+  } else if (num > isoWeeksInYear(year)) {
+    year++
+    num = 1
+  }
+  return { number: num, year }
 }
 
 const WeekContext = createContext<WeekContextValue | null>(null)
@@ -47,8 +66,20 @@ export function WeekProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
+  const goToPrev = useCallback(() => {
+    if (!currentWeek) return
+    const { number, year } = offsetWeek(currentWeek.number, currentWeek.year, -1)
+    setWeek(number, year)
+  }, [currentWeek, setWeek])
+
+  const goToNext = useCallback(() => {
+    if (!currentWeek) return
+    const { number, year } = offsetWeek(currentWeek.number, currentWeek.year, 1)
+    setWeek(number, year)
+  }, [currentWeek, setWeek])
+
   return (
-    <WeekContext.Provider value={{ currentWeek, setWeek, isLoading }}>
+    <WeekContext.Provider value={{ currentWeek, setWeek, isLoading, goToPrev, goToNext }}>
       {children}
     </WeekContext.Provider>
   )
