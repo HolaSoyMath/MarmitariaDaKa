@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import { orderPixTotal, orderSwileTotal, shortAmount } from './homeUtils'
 import type { OrderResponse } from '@marmitaria/schemas/order/orderResponse.schema'
 import type { MenuItemResponse } from '@marmitaria/schemas/menuItem/menuItemResponse.schema'
+import { ChevronRight } from 'lucide-react'
 
 interface ClientOrderRowProps {
   order: OrderResponse
@@ -50,9 +51,11 @@ export function ClientOrderRow({
           )}
         </Button>
 
-        <button
+        <Button
+          type="button"
+          variant="ghost"
           onClick={() => onToggleExpand(order.id)}
-          className="grid gap-3 items-center py-3.5 text-left cursor-pointer"
+          className="grid h-auto w-full gap-3 items-center py-3.5 px-0 rounded-none text-left justify-start font-normal hover:bg-transparent"
           style={{ gridColumn: '2 / -1', gridTemplateColumns: '26px 1fr 130px 130px' }}
         >
           <span
@@ -61,7 +64,7 @@ export function ClientOrderRow({
               isExpanded && 'rotate-90',
             )}
           >
-            ›
+            <ChevronRight />
           </span>
           <span className="font-bold text-[15px]">
             {order.client.name}
@@ -79,7 +82,7 @@ export function ClientOrderRow({
             R${' '}
             <b className="font-heading font-extrabold text-[18px] ml-1">{shortAmount(swileTotal)}</b>
           </span>
-        </button>
+        </Button>
       </div>
 
       {/* Mobile row */}

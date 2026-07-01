@@ -23,28 +23,28 @@ export function DishesCard({ dishSlots }: DishesCardProps) {
           >
             <span
               className={cn(
-                'font-heading font-extrabold text-[32px] min-w-9 leading-none',
+                'font-heading font-extrabold text-[32px] leading-none',
                 dish ? 'text-mustard-dark' : 'text-ink-faint',
               )}
             >
               {dish ? dish.totalQty : '—'}
             </span>
             <div className="flex-1">
-              <b className="font-bold text-[15.5px]">
+              <p className="font-bold text-10">
                 {dish ? dish.recipeName : `${idx + 1}º prato`}
-              </b>
-              <div className="flex gap-1.5 mt-1.75 flex-wrap">
+              </p>
+              <div className="grid grid-cols-2 gap-1.5 mt-1.75">
                 {dish ? (
                   dish.sizes.map((s) => (
                     <span
                       key={s.size}
-                      className="inline-flex items-center border border-border-strong rounded-full px-2.75 py-0.5 text-xs font-semibold text-muted-foreground whitespace-nowrap bg-muted"
+                      className="flex items-center justify-center border rounded-full px-2.75 py-0.5 text-xs font-semibold text-muted-foreground whitespace-nowrap bg-muted"
                     >
                       {s.size} · {s.qty}
                     </span>
                   ))
                 ) : (
-                  <span className="inline-flex items-center border border-border-strong border-dashed rounded-full px-2.75 py-0.5 text-xs font-semibold text-muted-foreground whitespace-nowrap bg-transparent">
+                  <span className="flex items-center justify-center border  border-dashed rounded-full px-2.75 py-0.5 text-xs font-semibold text-muted-foreground whitespace-nowrap bg-transparent">
                     livre
                   </span>
                 )}

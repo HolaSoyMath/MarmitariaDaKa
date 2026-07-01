@@ -15,7 +15,7 @@ const PAGE_META: Record<string, { title: string; subtitle: string }> = {
   "/financeiro": { title: "Financeiro", subtitle: "Dashboard Financeiro" },
   "/pedidos": { title: "Pedidos", subtitle: "Pedidos Feitos" },
   "/precos": { title: "Preços", subtitle: "Tabela de Preços" },
-  "/": { title: "Home", subtitle: "" },
+  "/": { title: "Home", subtitle: "Principais informações" },
 };
 
 function getPageMeta(pathname: string) {

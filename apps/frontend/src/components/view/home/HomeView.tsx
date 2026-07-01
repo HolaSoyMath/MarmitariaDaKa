@@ -96,10 +96,6 @@ export function HomeView() {
 
   return (
     <div className="p-7.5 flex flex-col gap-6">
-      <div className="flex items-baseline gap-3 flex-wrap">
-        <h2 className="font-heading font-bold text-xl whitespace-nowrap tracking-tight">Essa semana</h2>
-      </div>
-
       <div className="grid grid-cols-1 gap-4.5 items-stretch md:grid-cols-[310px_1fr]">
         <WeekTotalsCard
           totalQuantity={totalQuantity}

@@ -78,7 +78,13 @@ export function OrdersTable({
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-3.5">
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        'py-3.5',
+                        cell.column.id === 'itens' && 'max-w-64 whitespace-normal',
+                      )}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
