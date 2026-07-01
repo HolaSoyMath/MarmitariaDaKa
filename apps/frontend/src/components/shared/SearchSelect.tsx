@@ -11,7 +11,8 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
-import { ChevronsUpDown } from 'lucide-react'
+import { ChevronDown, ChevronsDown, ChevronsUpDown } from 'lucide-react'
+import { Button } from '../ui/button'
 
 export interface SearchSelectOption {
   value: string
@@ -60,21 +61,22 @@ export function SearchSelect({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
+        <Button
           type="button"
           className={cn(
-            'flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-colors cursor-pointer',
-            'hover:bg-accent/50',
+            'flex h-9 w-full items-center justify-between rounded-md border border-input px-3 py-2 text-sm shadow-xs transition-colors cursor-pointer',
+            'hover:bg-accent',
+            'bg-card',
             !selected && 'text-muted-foreground',
             className,
           )}
         >
           <span className="truncate">{selected ? selected.label : placeholder}</span>
-          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-        </button>
+          <ChevronDown className={cn("ml-2 size-4 shrink-0 opacity-50 duration-300", open && "-rotate-180")} />
+        </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="min-w-[var(--radix-popover-trigger-width)] p-0"
+        className="min-w-(--radix-popover-trigger-width) p-0 overflow-hidden border shadow-2xl"
         align="start"
       >
         <Command>
@@ -90,6 +92,7 @@ export function SearchSelect({
                         value={opt.label}
                         onSelect={() => select(opt.value)}
                         data-checked={opt.value === value}
+                        className="cursor-pointer"
                       >
                         {opt.label}
                       </CommandItem>
@@ -102,6 +105,7 @@ export function SearchSelect({
                     value={opt.label}
                     onSelect={() => select(opt.value)}
                     data-checked={opt.value === value}
+                    className="cursor-pointer"
                   >
                     {opt.label}
                   </CommandItem>

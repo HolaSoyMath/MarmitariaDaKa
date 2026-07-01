@@ -74,7 +74,7 @@ export function OrderItemRow({
               type="button"
               variant={row.priceTypeId === pt.id ? 'default' : 'ghost'}
               onClick={() => onUpdate({ priceTypeId: pt.id })}
-              className="rounded-none border-r border-border last:border-r-0 h-auto py-1.5 text-[13px] font-semibold cursor-pointer"
+              className="rounded-none border-r border-border last:border-r-0 h-auto py-1.5 text-md font-semibold cursor-pointer hover:bg-accent"
             >
               {pt.size}
             </Button>
@@ -86,7 +86,7 @@ export function OrderItemRow({
             type="button"
             variant="ghost"
             onClick={() => onUpdate({ quantity: String(Math.max(0, Number(row.quantity) - 1)) })}
-            className="w-8 h-8.5 rounded-none p-0 cursor-pointer"
+            className="w-8 h-8.5 rounded-none p-0 cursor-pointer hover:bg-accent"
           >
             <Minus className="size-3.5" />
           </Button>
@@ -97,7 +97,7 @@ export function OrderItemRow({
             type="button"
             variant="ghost"
             onClick={() => onUpdate({ quantity: String(Number(row.quantity) + 1) })}
-            className="w-8 h-8.5 rounded-none p-0 cursor-pointer"
+            className="w-8 h-8.5 rounded-none p-0 cursor-pointer hover:bg-accent"
           >
             <Plus className="size-3.5" />
           </Button>

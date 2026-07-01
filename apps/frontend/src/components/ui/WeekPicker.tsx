@@ -8,7 +8,7 @@ import {
   startOfISOWeek,
 } from "date-fns";
 import { useWeek } from "@/context/WeekContext";
-import { Button } from "../ui/button";
+import { Button } from "./button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function weekBounds(week: number, year: number): { start: Date; end: Date } {
