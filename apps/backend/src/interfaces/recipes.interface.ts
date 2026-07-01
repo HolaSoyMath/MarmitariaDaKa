@@ -14,5 +14,5 @@ export interface IRecipesRepository {
   create(data: RecipeInput): Promise<RecipeWithIngredients>
   update(id: string, data: RecipeInput): Promise<RecipeWithIngredients>
   softDelete(id: string): Promise<void>
-  hasActiveOrders(id: string): Promise<boolean>
+  hasPendingOrders(id: string): Promise<boolean>
 }

@@ -124,7 +124,7 @@ Aplica-se a: cascade soft delete, criação de Pedido + itens, edição de Recei
 
 **Status de pedido:** a transição é sempre `pending → produced → paid`. `paid` é irreversível. `produced` pode voltar para `pending`.
 
-**Proteção de receita:** antes de editar ou excluir uma `Recipe`, verificar se existe `OrderItem → MenuItem → Recipe` com order de status `pending` ou `produced`. Se existir, rejeitar com erro.
+**Proteção de receita:** antes de editar ou excluir uma `Recipe`, verificar se existe `OrderItem → MenuItem → Recipe` com order de status `pending`. Se existir, rejeitar com erro. Pedidos `produced` ou `paid` não bloqueiam — o preço já está travado em snapshot no `OrderItem`. Mesma regra vale para remover um `MenuItem` do cardápio.
 
 **Purchase única por semana:** cada `Week` tem no máximo uma `Purchase` (`@unique` no `weekId`). A dona edita a lista de itens da purchase existente.
 

@@ -26,7 +26,7 @@ A lista de receitas exibe quando aquela receita foi usada pela última vez no ca
 
 - Nome é único — não podem existir duas receitas com o mesmo nome
 - Pelo menos um tamanho (tipo de preço) é obrigatório — não é possível salvar uma receita sem nenhum tamanho vinculado
-- **Uma receita não pode ser editada ou excluída se tiver pedidos ativos** (status `pendente` ou `produzido`) vinculados a ela no cardápio da semana atual
+- **Uma receita não pode ser editada ou excluída se tiver pedidos pendentes** (status `pendente`) vinculados a ela no cardápio da semana atual — pedidos já `produzido` ou `pago` não bloqueiam, pois o preço já foi travado em snapshot no item do pedido
 - Ao editar os ingredientes de uma receita, a lista é substituída integralmente — não há edição parcial
 - Soft delete na exclusão da receita
 - A composição de ingredientes (lista) usa delete físico ao editar — sem histórico de versões

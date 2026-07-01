@@ -55,11 +55,11 @@ export class MenuItemsRepository implements IMenuItemsRepository {
     return !!r
   }
 
-  async hasActiveOrders(menuItemId: string): Promise<boolean> {
+  async hasPendingOrders(menuItemId: string): Promise<boolean> {
     const count = await prisma.orderItem.count({
       where: {
         menuItemId,
-        order: { status: { in: ['pendente', 'produzido'] }, deletedAt: null },
+        order: { status: 'pending', deletedAt: null },
         deletedAt: null,
       },
     })

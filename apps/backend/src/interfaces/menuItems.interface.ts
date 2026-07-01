@@ -16,5 +16,5 @@ export interface IMenuItemsRepository {
   create(data: MenuItemInput): Promise<MenuItemWithRecipe>
   softDelete(id: string): Promise<void>
   recipeExists(recipeId: string): Promise<boolean>
-  hasActiveOrders(menuItemId: string): Promise<boolean>
+  hasPendingOrders(menuItemId: string): Promise<boolean>
 }

@@ -26,8 +26,8 @@ export class MenuItemsService {
 
   async remove(id: string): Promise<void> {
     await this.getById(id)
-    if (await this.repository.hasActiveOrders(id)) {
-      throw new ConflictError('Prato possui pedidos ativos e não pode ser removido do cardápio')
+    if (await this.repository.hasPendingOrders(id)) {
+      throw new ConflictError('Prato possui pedidos pendentes e não pode ser removido do cardápio')
     }
     await this.repository.softDelete(id)
   }
