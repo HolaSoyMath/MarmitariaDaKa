@@ -66,7 +66,7 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="flex flex-col gap-0 p-0 bg-card">
+        <SheetContent className="flex flex-col gap-0 p-0 bg-background">
           <SheetHeader className="px-6 py-5 border-b">
             <SheetTitle>
               {isEditing ? "Editar ingrediente" : "Novo ingrediente"}
@@ -84,6 +84,7 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
                 }
                 placeholder="ex: Requeijão"
                 onKeyDown={(e) => e.key === "Enter" && handleSave()}
+                className="bg-card rounded-sm"
               />
             </div>
 
@@ -94,10 +95,11 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
                   <Button
                     key={u}
                     type="button"
-                    variant={form.unit === u ? "default" : "outline"}
+                    variant="outline"
                     size="sm"
                     onClick={() => setForm((f) => ({ ...f, unit: u }))}
-                    className="hover:bg-accent"
+                    data-selected={form.unit === u}
+                    className="bg-card hover:bg-accent rounded-sm w-9 data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:hover:bg-primary"
                   >
                     {u}
                   </Button>
@@ -110,19 +112,20 @@ export function IngredientSheet({ open, onOpenChange, ingredient }: Props) {
             {isEditing && (
               <Button
                 variant="destructive"
-                className="mr-auto"
+                className="mr-auto rounded-sm"
                 onClick={() => setConfirmOpen(true)}
                 disabled={deleteIngredient.isPending}
               >
                 Remover
               </Button>
             )}
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            <Button variant="ghost" onClick={() => onOpenChange(false)} className="rounded-sm">
               Cancelar
             </Button>
             <Button
               onClick={handleSave}
               disabled={!form.name.trim() || isSaving}
+              className="rounded-sm"
             >
               Salvar
             </Button>
