@@ -61,13 +61,13 @@ export function ComprasView() {
           <TabsList className="mb-4.5 bg-transparent p-0 h-auto gap-2">
             <TabsTrigger
               value="ingredients"
-              className="px-4.5 py-2.25 rounded-sm border border-border bg-card text-[14.5px] font-semibold text-muted-foreground shadow-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent data-[state=active]:shadow-none cursor-pointer hover:bg-accent"
+              className="px-4.5 py-2.25 rounded-sm border border-border bg-card text-[14.5px] font-semibold text-muted-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent data-[state=active]:shadow-none cursor-pointer hover:bg-accent"
             >
               Ingredientes
             </TabsTrigger>
             <TabsTrigger
               value="costs"
-              className="px-4.5 py-2.25 rounded-sm border border-border bg-card text-[14.5px] font-semibold text-muted-foreground shadow-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent data-[state=active]:shadow-none cursor-pointer hover:bg-accent"
+              className="px-4.5 py-2.25 rounded-sm border border-border bg-card text-[14.5px] font-semibold text-muted-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent data-[state=active]:shadow-none cursor-pointer hover:bg-accent"
             >
               Custos gerais
             </TabsTrigger>

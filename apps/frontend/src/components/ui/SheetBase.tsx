@@ -8,6 +8,7 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Save, Trash, X } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -17,6 +18,7 @@ interface Props {
   onCancel?: () => void;
   onDelete?: () => void;
   saveButtonDisabled?: boolean;
+  deleteButtonDisabled?: boolean;
   resetKey?: string | number;
   children?: React.ReactNode;
 }
@@ -28,7 +30,9 @@ export function SheetBase({
   title,
   onSave,
   onCancel,
+  onDelete,
   saveButtonDisabled = false,
+  deleteButtonDisabled = false,
   resetKey,
 }: Props) {
   return (
@@ -46,6 +50,17 @@ export function SheetBase({
           )}
 
           <SheetFooter className="px-6 py-4 border-t flex-row gap-2 justify-end">
+            {onDelete && (
+              <Button
+                variant="destructive"
+                onClick={onDelete}
+                disabled={deleteButtonDisabled}
+                className="mr-auto rounded-sm"
+              >
+                <Trash className="size-4" />
+                Remover
+              </Button>
+            )}
             {onCancel && (
               <Button
                 variant="ghost"
@@ -55,6 +70,7 @@ export function SheetBase({
                 }}
                 className="rounded-sm"
               >
+                <X className="size-4" />
                 Cancelar
               </Button>
             )}
@@ -64,6 +80,7 @@ export function SheetBase({
                 disabled={saveButtonDisabled}
                 className="rounded-sm"
               >
+                <Save className="size-4" />
                 Salvar
               </Button>
             )}

@@ -53,7 +53,7 @@ export function getPurchaseItemColumns({
             }}
             options={options}
             placeholder="Selecionar..."
-            className="min-w-42.5 text-[14.5px]"
+            className="min-w-42.5 text-[14.5px] rounded-sm shadow-none"
           />
         )
       },

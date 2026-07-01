@@ -76,7 +76,7 @@ export function GeneralCostsTab({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4.5">
-      <div className="border border-border rounded-lg bg-card shadow-sm p-5.5">
+      <div className="border border-border rounded-lg bg-card p-5.5">
         <b className="text-[18px]">Custos gerais da semana</b>
         <p className="text-sm text-muted-foreground mt-0.5 mb-3">lançados na mão · gás é automático</p>
 
@@ -230,7 +230,7 @@ export function GeneralCostsTab({
         )}
       </div>
 
-      <div className="border border-border rounded-lg bg-secondary shadow-sm p-5.5 flex flex-col justify-center gap-2">
+      <div className="border border-border rounded-lg bg-card p-5.5 flex flex-col justify-center gap-2">
         <span className="text-sm text-muted-foreground">Custo de ingredientes</span>
         <div className="font-heading font-extrabold leading-none tracking-tight text-[30px]">
           {formatCurrency(ingredientTotalCents)}
