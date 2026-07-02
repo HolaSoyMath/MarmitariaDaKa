@@ -1,34 +1,76 @@
-﻿import type { IRecipesRepository, RecipeWithIngredients } from '../interfaces/recipes.interface'
+﻿import type {
+  IRecipesRepository,
+  RecipeWithIngredients,
+  RecipeWithCosts,
+} from '../interfaces/recipes.interface'
+import type { IPurchasesRepository } from '../interfaces/purchases.interface'
 import type { RecipeInput } from '@marmitaria/schemas/recipe/recipeInput.schema'
 import { NotFoundError, ConflictError } from '../lib/errors'
 
-export class RecipesService {
-  constructor(private repository: IRecipesRepository) {}
+const RECENT_PURCHASES_LIMIT = 5
 
-  async listAll(): Promise<RecipeWithIngredients[]> {
-    return this.repository.findAll()
+export class RecipesService {
+  constructor(
+    private repository: IRecipesRepository,
+    private purchasesRepository: IPurchasesRepository,
+  ) {}
+
+  private async attachCosts(recipes: RecipeWithIngredients[]): Promise<RecipeWithCosts[]> {
+    const ingredientIds = [...new Set(recipes.flatMap(r => r.ingredients.map(i => i.ingredientId)))]
+    const items = ingredientIds.length
+      ? await this.purchasesRepository.findRecentItemsByIngredientIds(ingredientIds)
+      : []
+
+    const itemsByIngredient = new Map<string, number[]>()
+    for (const item of items) {
+      const values = itemsByIngredient.get(item.ingredientId) ?? []
+      if (values.length < RECENT_PURCHASES_LIMIT) values.push(item.unitValue)
+      itemsByIngredient.set(item.ingredientId, values)
+    }
+
+    const averageByIngredient = new Map<string, number>()
+    for (const [ingredientId, values] of itemsByIngredient) {
+      averageByIngredient.set(ingredientId, Math.round(values.reduce((sum, v) => sum + v, 0) / values.length))
+    }
+
+    return recipes.map(recipe => ({
+      ...recipe,
+      ingredients: recipe.ingredients.map(ri => ({
+        ...ri,
+        averageUnitCost: averageByIngredient.get(ri.ingredientId) ?? null,
+      })),
+    }))
   }
 
-  async getById(id: string): Promise<RecipeWithIngredients> {
+  private async attachCost(recipe: RecipeWithIngredients): Promise<RecipeWithCosts> {
+    const withCosts = await this.attachCosts([recipe])
+    return withCosts[0]!
+  }
+
+  async listAll(): Promise<RecipeWithCosts[]> {
+    return this.attachCosts(await this.repository.findAll())
+  }
+
+  async getById(id: string): Promise<RecipeWithCosts> {
     const recipe = await this.repository.findById(id)
     if (!recipe) throw new NotFoundError('Receita não encontrada')
-    return recipe
+    return this.attachCost(recipe)
   }
 
-  async create(data: RecipeInput): Promise<RecipeWithIngredients> {
+  async create(data: RecipeInput): Promise<RecipeWithCosts> {
     const existing = await this.repository.findByName(data.name)
     if (existing) throw new ConflictError(`Já existe uma receita com o nome "${data.name}".`)
-    return this.repository.create(data)
+    return this.attachCost(await this.repository.create(data))
   }
 
-  async update(id: string, data: RecipeInput): Promise<RecipeWithIngredients> {
+  async update(id: string, data: RecipeInput): Promise<RecipeWithCosts> {
     await this.getById(id)
     if (await this.repository.hasPendingOrders(id)) {
       throw new ConflictError('Receita possui pedidos pendentes e não pode ser editada')
     }
     const existing = await this.repository.findByName(data.name)
     if (existing && existing.id !== id) throw new ConflictError(`Já existe uma receita com o nome "${data.name}".`)
-    return this.repository.update(id, data)
+    return this.attachCost(await this.repository.update(id, data))
   }
 
   async remove(id: string): Promise<void> {
@@ -39,8 +81,8 @@ export class RecipesService {
     await this.repository.softDelete(id)
   }
 
-  async setActive(id: string, active: boolean): Promise<RecipeWithIngredients> {
+  async setActive(id: string, active: boolean): Promise<RecipeWithCosts> {
     await this.getById(id)
-    return this.repository.setActive(id, active)
+    return this.attachCost(await this.repository.setActive(id, active))
   }
 }

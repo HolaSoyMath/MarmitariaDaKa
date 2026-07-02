@@ -1,6 +1,7 @@
 import { prisma } from '../lib/prisma'
 import type { IPurchasesRepository, PurchaseWithItems } from '../interfaces/purchases.interface'
 import type { PurchaseInput } from '@marmitaria/schemas/purchase/purchaseInput.schema'
+import type { PurchaseItem } from '@prisma/client'
 
 const includeItems = {
   items: {
@@ -14,6 +15,13 @@ export class PurchasesRepository implements IPurchasesRepository {
     return prisma.purchase.findFirst({
       where: { weekId, deletedAt: null },
       include: includeItems,
+    })
+  }
+
+  async findRecentItemsByIngredientIds(ingredientIds: string[]): Promise<PurchaseItem[]> {
+    return prisma.purchaseItem.findMany({
+      where: { ingredientId: { in: ingredientIds }, deletedAt: null },
+      orderBy: { createdAt: 'desc' },
     })
   }
 

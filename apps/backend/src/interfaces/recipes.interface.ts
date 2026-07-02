@@ -7,6 +7,17 @@ export type RecipeWithIngredients = Recipe & {
   menuItems: (MenuItem & { week: Week })[]
 }
 
+export type RecipeIngredientWithCost = RecipeIngredient & {
+  ingredient: Ingredient
+  averageUnitCost: number | null
+}
+
+export type RecipeWithCosts = Recipe & {
+  ingredients: RecipeIngredientWithCost[]
+  priceTypes: (RecipePriceType & { priceType: PriceType })[]
+  menuItems: (MenuItem & { week: Week })[]
+}
+
 export interface IRecipesRepository {
   findAll(): Promise<RecipeWithIngredients[]>
   findById(id: string): Promise<RecipeWithIngredients | null>

@@ -8,4 +8,5 @@ export type PurchaseWithItems = Purchase & {
 export interface IPurchasesRepository {
   findByWeek(weekId: string): Promise<PurchaseWithItems | null>
   upsert(data: PurchaseInput, gasValue: number): Promise<PurchaseWithItems>
+  findRecentItemsByIngredientIds(ingredientIds: string[]): Promise<PurchaseItem[]>
 }

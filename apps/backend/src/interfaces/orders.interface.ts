@@ -15,5 +15,5 @@ export interface IOrdersRepository {
   create(data: OrderInput): Promise<OrderWithItems>
   update(id: string, data: OrderInput): Promise<OrderWithItems>
   softDelete(id: string): Promise<void>
-  updateStatus(id: string, status: string, paymentMethod?: string): Promise<OrderWithItems>
+  updateStatus(id: string, status: string, paymentMethod?: string | null): Promise<OrderWithItems>
 }

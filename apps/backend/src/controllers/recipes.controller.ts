@@ -1,5 +1,5 @@
 ﻿import { RecipesService } from '../services/recipes.service'
-import type { RecipeWithIngredients } from '../interfaces/recipes.interface'
+import type { RecipeWithCosts } from '../interfaces/recipes.interface'
 import type { RecipeInput } from '@marmitaria/schemas/recipe/recipeInput.schema'
 import type { RecipeResponse } from '@marmitaria/schemas/recipe/recipeResponse.schema'
 import type { IngredientResponse } from '@marmitaria/schemas/ingredient/ingredientResponse.schema'
@@ -7,13 +7,13 @@ import type { IngredientResponse } from '@marmitaria/schemas/ingredient/ingredie
 export class RecipesController {
   constructor(private service: RecipesService) {}
 
-  private format(recipe: RecipeWithIngredients): RecipeResponse {
+  private format(recipe: RecipeWithCosts): RecipeResponse {
     const lastWeek = recipe.menuItems[0]?.week
-    return {
-      id: recipe.id,
-      name: recipe.name,
-      active: recipe.active,
-      ingredients: recipe.ingredients.map(ri => ({
+    const ingredients = recipe.ingredients.map(ri => {
+      const averageCost = ri.averageUnitCost !== null
+        ? Math.round(ri.averageUnitCost * ri.quantity)
+        : null
+      return {
         ingredientId: ri.ingredientId,
         quantity: ri.quantity,
         ingredient: {
@@ -21,7 +21,24 @@ export class RecipesController {
           name: ri.ingredient.name,
           unit: ri.ingredient.unit as IngredientResponse['unit'],
         },
-      })),
+        averageUnitCost: ri.averageUnitCost,
+        averageCost,
+      }
+    })
+
+    const knownCosts = ingredients
+      .map(i => i.averageCost)
+      .filter((c): c is number => c !== null)
+    const totalAverageCost = knownCosts.length > 0
+      ? knownCosts.reduce((sum, c) => sum + c, 0)
+      : null
+    const hasMissingCost = ingredients.some(i => i.averageCost === null)
+
+    return {
+      id: recipe.id,
+      name: recipe.name,
+      active: recipe.active,
+      ingredients,
       priceTypes: recipe.priceTypes.map(rpt => ({
         id: rpt.priceType.id,
         type: rpt.priceType.type,
@@ -32,6 +49,8 @@ export class RecipesController {
       lastOnMenu: lastWeek
         ? `Semana ${lastWeek.weekNumber}/${lastWeek.year}`
         : null,
+      totalAverageCost,
+      isPartialAverageCost: totalAverageCost !== null && hasMissingCost,
     }
   }
 

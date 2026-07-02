@@ -1,5 +1,6 @@
 ﻿import { Elysia } from 'elysia'
 import { RecipesRepository } from '../repositories/recipes.repository'
+import { PurchasesRepository } from '../repositories/purchases.repository'
 import { RecipesService } from '../services/recipes.service'
 import { RecipesController } from '../controllers/recipes.controller'
 import { recipeInput } from '@marmitaria/schemas/recipe/recipeInput.schema'
@@ -7,7 +8,8 @@ import { recipeActiveInput } from '@marmitaria/schemas/recipe/recipeActiveInput.
 import { NotFoundError, ConflictError } from '../lib/errors'
 
 const repository = new RecipesRepository()
-const service = new RecipesService(repository)
+const purchasesRepository = new PurchasesRepository()
+const service = new RecipesService(repository, purchasesRepository)
 const controller = new RecipesController(service)
 
 export const recipesRoutes = new Elysia({ prefix: '/recipes' })
