@@ -132,6 +132,27 @@ export function PurchaseItemsTab({
 
   return (
     <div>
+      <div className="flex gap-3 mb-4.5 flex-wrap">
+        <div className="border border-border rounded-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
+          <span className="text-sm text-muted-foreground">
+            Total Ingredientes
+          </span>
+          <div className="font-heading font-extrabold leading-none tracking-tight text-[30px]">
+            {formatCurrency(ingredientTotalCents)}
+          </div>
+        </div>
+        <div className="border border-border rounded-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
+          <span className="text-sm text-muted-foreground">
+            Total geral (Ingred. + custo)
+          </span>
+          <div
+            className="font-heading font-extrabold leading-none tracking-tight text-[30px]"
+            style={{ color: "var(--swile)" }}
+          >
+            {formatCurrency(grandTotalCents)}
+          </div>
+        </div>
+      </div>
       <div className="border border-border rounded-sm bg-card overflow-x-auto mb-4 p-1.5">
         <Table>
           <TableHeader>
@@ -221,28 +242,6 @@ export function PurchaseItemsTab({
         >
           {isSaving ? "Salvando…" : "Salvar compra"}
         </Button>
-      </div>
-
-      <div className="flex gap-3 mt-4.5 flex-wrap">
-        <div className="border border-border rounded-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
-          <span className="text-sm text-muted-foreground">
-            Total Ingredientes
-          </span>
-          <div className="font-heading font-extrabold leading-none tracking-tight text-[30px]">
-            {formatCurrency(ingredientTotalCents)}
-          </div>
-        </div>
-        <div className="border border-border rounded-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
-          <span className="text-sm text-muted-foreground">
-            Total geral (Ingred. + custo)
-          </span>
-          <div
-            className="font-heading font-extrabold leading-none tracking-tight text-[30px]"
-            style={{ color: "var(--swile)" }}
-          >
-            {formatCurrency(grandTotalCents)}
-          </div>
-        </div>
       </div>
 
       <IngredientSheet
