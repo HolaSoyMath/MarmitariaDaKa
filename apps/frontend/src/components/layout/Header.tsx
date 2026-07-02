@@ -34,13 +34,13 @@ export function Header() {
   const { title, subtitle } = getPageMeta(pathname);
 
   return (
-    <header className="sticky top-0 z-20 flex items-center gap-3.5 border-b border-border px-7.5 py-4.5 bg-[color-mix(in_oklch,var(--background)_88%,transparent)] backdrop-blur-sm">
+    <header className="sticky top-0 z-20 flex items-center gap-3.5 border-b border-border px-7.5 py-4.5 bg-[#cdac99]">
       <div className="flex flex-col">
         <h1 className="font-heading font-extrabold text-[25px] leading-tight tracking-tight whitespace-nowrap">
           {title}
         </h1>
         {subtitle && (
-          <span className="font-mono text-[11px] uppercase tracking-wider text-ink-faint">
+          <span className="font-mono text-[11px] uppercase tracking-wider">
             {subtitle}
           </span>
         )}
