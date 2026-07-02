@@ -16,12 +16,18 @@ export class OrdersService {
     return order
   }
 
+  private async getStatus(id: string): Promise<{ id: string; status: string }> {
+    const order = await this.repository.findStatusById(id)
+    if (!order) throw new NotFoundError('Pedido não encontrado')
+    return order
+  }
+
   async create(data: OrderInput): Promise<OrderWithItems> {
     return this.repository.create(data)
   }
 
   async update(id: string, data: OrderInput): Promise<OrderWithItems> {
-    const order = await this.getById(id)
+    const order = await this.getStatus(id)
     if (order.status !== 'pending') {
       throw new ConflictError('Pedido não pode ser editado pois não está pendente')
     }
@@ -29,7 +35,7 @@ export class OrdersService {
   }
 
   async remove(id: string): Promise<void> {
-    const order = await this.getById(id)
+    const order = await this.getStatus(id)
     if (order.status !== 'pending') {
       throw new ConflictError('Pedido não pode ser excluído pois não está pendente')
     }
@@ -37,7 +43,7 @@ export class OrdersService {
   }
 
   async markProduced(id: string): Promise<OrderWithItems> {
-    const order = await this.getById(id)
+    const order = await this.getStatus(id)
     if (order.status !== 'pending') {
       throw new ConflictError('Pedido precisa estar pendente para ser marcado como produzido')
     }
@@ -45,7 +51,7 @@ export class OrdersService {
   }
 
   async markPaid(id: string, data: MarkPaidInput): Promise<OrderWithItems> {
-    const order = await this.getById(id)
+    const order = await this.getStatus(id)
     if (order.status !== 'produced') {
       throw new ConflictError('Pedido precisa estar produzido para ser marcado como pago')
     }
@@ -53,7 +59,7 @@ export class OrdersService {
   }
 
   async revertToPending(id: string): Promise<OrderWithItems> {
-    const order = await this.getById(id)
+    const order = await this.getStatus(id)
     if (order.status === 'pending') {
       throw new ConflictError('Pedido já está pendente')
     }
@@ -61,7 +67,7 @@ export class OrdersService {
   }
 
   async revertToProduced(id: string): Promise<OrderWithItems> {
-    const order = await this.getById(id)
+    const order = await this.getStatus(id)
     if (order.status !== 'paid') {
       throw new ConflictError('Pedido não está pago')
     }

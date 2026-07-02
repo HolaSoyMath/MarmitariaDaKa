@@ -29,8 +29,15 @@ export class OrdersRepository implements IOrdersRepository {
     }) as Promise<OrderWithItems | null>
   }
 
+  async findStatusById(id: string): Promise<{ id: string; status: string } | null> {
+    return prisma.order.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true, status: true },
+    })
+  }
+
   async create(data: OrderInput): Promise<OrderWithItems> {
-    return prisma.$transaction(async tx => {
+    const order = await prisma.$transaction(async tx => {
       const order = await tx.order.create({
         data: { weekId: data.weekId, clientId: data.clientId },
       })
@@ -59,15 +66,14 @@ export class OrdersRepository implements IOrdersRepository {
         })
       }
 
-      return tx.order.findFirst({
-        where: { id: order.id },
-        include: includeAll,
-      }) as Promise<OrderWithItems>
+      return order
     })
+
+    return (await this.findById(order.id)) as OrderWithItems
   }
 
   async update(id: string, data: OrderInput): Promise<OrderWithItems> {
-    return prisma.$transaction(async tx => {
+    await prisma.$transaction(async tx => {
       await tx.orderItem.updateMany({
         where: { orderId: id, deletedAt: null },
         data: { deletedAt: new Date() },
@@ -96,12 +102,9 @@ export class OrdersRepository implements IOrdersRepository {
           }),
         })
       }
-
-      return tx.order.findFirst({
-        where: { id },
-        include: includeAll,
-      }) as Promise<OrderWithItems>
     })
+
+    return (await this.findById(id)) as OrderWithItems
   }
 
   async softDelete(id: string): Promise<void> {
@@ -109,10 +112,11 @@ export class OrdersRepository implements IOrdersRepository {
   }
 
   async updateStatus(id: string, status: string, paymentMethod?: string | null): Promise<OrderWithItems> {
-    return prisma.order.update({
+    await prisma.order.update({
       where: { id },
       data: { status, ...(paymentMethod !== undefined && { paymentMethod }) },
-      include: includeAll,
-    }) as Promise<OrderWithItems>
+    })
+
+    return (await this.findById(id)) as OrderWithItems
   }
 }

@@ -12,6 +12,7 @@ export type OrderWithItems = Order & {
 export interface IOrdersRepository {
   findByWeek(weekId: string): Promise<OrderWithItems[]>
   findById(id: string): Promise<OrderWithItems | null>
+  findStatusById(id: string): Promise<{ id: string; status: string } | null>
   create(data: OrderInput): Promise<OrderWithItems>
   update(id: string, data: OrderInput): Promise<OrderWithItems>
   softDelete(id: string): Promise<void>
