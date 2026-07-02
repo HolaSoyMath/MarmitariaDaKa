@@ -107,7 +107,7 @@ export function RecipeRow({
               disabled={isSettingActive}
               className={cn("bg-transparent rounded-sm flex flex-1",
                 recipe.active
-                  ? "text-red-700"
+                  ? "text-destructive"
                   : "text-green-600 hover:text-green-50"
               )}
             >
