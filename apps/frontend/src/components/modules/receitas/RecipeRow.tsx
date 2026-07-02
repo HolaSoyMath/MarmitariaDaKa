@@ -11,7 +11,7 @@ import {
 import { RecipeIngredientsTable } from './RecipeIngredientsTable'
 import { formatCurrency } from '@/formatters/currency'
 import { cn } from '@/lib/utils'
-import { ChevronRight, Info } from 'lucide-react'
+import { ChevronRight, CircleCheck, CircleSlash, Info } from 'lucide-react'
 import type { RecipeResponse } from '@marmitaria/schemas/recipe/recipeResponse.schema'
 
 interface RecipeRowProps {
@@ -105,9 +105,14 @@ export function RecipeRow({
               size="sm"
               onClick={() => onSetActive(recipe)}
               disabled={isSettingActive}
-              className="bg-transparent hover:bg-accent rounded-sm"
+              className={cn("bg-transparent rounded-sm flex flex-1",
+                recipe.active
+                  ? "text-red-700"
+                  : "text-green-600 hover:text-green-50"
+              )}
             >
-              {recipe.active ? 'Desativar' : 'Ativar'}
+              {recipe.active ? <CircleSlash /> : <CircleCheck />}
+              {recipe.active ? "Desativar" : "Ativar"}
             </Button>
           </div>
         </TableCell>
