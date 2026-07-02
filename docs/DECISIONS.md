@@ -21,6 +21,9 @@ Free tier indisponível ao tentar criar conta.
 **Uptime Robot pingando o Render a cada 5 min**
 O Render coloca o serviço para dormir após inatividade no free tier. O ping evita o cold start para a usuária.
 
+**Prisma com `@prisma/adapter-pg` e não `@prisma/adapter-neon`**
+O adapter Neon serverless (HTTP/WebSocket) existe para ambientes edge/serverless sem conexão TCP persistente (ex: Vercel Edge Functions). O backend roda no Render como processo Bun de vida longa, então uma conexão TCP pooled via `pg` é mais rápida por query do que o driver HTTP do Neon. `DATABASE_URL` deve apontar para a connection string *pooled* do Neon (host com sufixo `-pooler`) para não esgotar o limite de conexões do free tier.
+
 ---
 
 ## Stack
