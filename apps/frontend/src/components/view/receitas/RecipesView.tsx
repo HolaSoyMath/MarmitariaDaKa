@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/SearchInput'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +14,9 @@ import {
 } from '@/components/ui/table'
 import { RecipeSheet } from '@/components/modules/receitas/RecipeSheet'
 import { useRecipes, useSetRecipeActive } from '@/hooks/useRecipes'
-import { Eye, EyeOff, Plus } from 'lucide-react'
+import { ChevronRight, Eye, EyeOff, Plus } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { formatUnit } from '@/formatters/unit'
 import type { RecipeResponse } from '@marmitaria/schemas/recipe/recipeResponse.schema'
 
 export function RecipesView() {
@@ -24,6 +26,7 @@ export function RecipesView() {
   const [selected, setSelected] = useState<RecipeResponse | null>(null)
   const [search, setSearch] = useState('')
   const [showInactive, setShowInactive] = useState(false)
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
   function openCreate() {
     setSelected(null)
@@ -33,6 +36,15 @@ export function RecipesView() {
   function openEdit(recipe: RecipeResponse) {
     setSelected(recipe)
     setSheetOpen(true)
+  }
+
+  function toggleExpanded(id: string) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
   }
 
   const filteredRecipes = [...recipes]
@@ -84,6 +96,7 @@ export function RecipesView() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10" />
                 <TableHead>Nome</TableHead>
                 <TableHead>Ingredientes</TableHead>
                 <TableHead>Última vez no cardápio</TableHead>
@@ -91,50 +104,100 @@ export function RecipesView() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredRecipes.map(recipe => (
-                <TableRow key={recipe.id} className={!recipe.active ? 'opacity-50' : undefined}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      {recipe.name}
-                      {!recipe.active && (
-                        <Badge variant="outline" className="rounded-full text-muted-foreground">
-                          Inativa
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {recipe.ingredients.length}{' '}
-                    {recipe.ingredients.length === 1 ? 'ingrediente' : 'ingredientes'}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {recipe.lastOnMenu ?? '—'}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEdit(recipe)}
-                        className="bg-transparent hover:bg-accent rounded-sm"
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setRecipeActive.mutate({ id: recipe.id, active: !recipe.active })
-                        }
-                        disabled={setRecipeActive.isPending}
-                        className="bg-transparent hover:bg-accent rounded-sm"
-                      >
-                        {recipe.active ? 'Desativar' : 'Ativar'}
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredRecipes.map(recipe => {
+                const isExpanded = expandedIds.has(recipe.id)
+                return (
+                  <Fragment key={recipe.id}>
+                    <TableRow className={!recipe.active ? 'opacity-50' : undefined}>
+                      <TableCell>
+                        <Button
+                          type="button"
+                          onClick={() => toggleExpanded(recipe.id)}
+                          variant="ghost"
+                          className="flex items-center justify-center size-7 rounded-sm p-0 hover:bg-transparent"
+                        >
+                          <span
+                            className={cn(
+                              'text-[13px] text-ink-faint transition-transform duration-200 inline-block',
+                              isExpanded && 'rotate-90',
+                            )}
+                          >
+                            <ChevronRight />
+                          </span>
+                        </Button>
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {recipe.name}
+                          {!recipe.active && (
+                            <Badge variant="outline" className="rounded-full text-muted-foreground">
+                              Inativa
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {recipe.ingredients.length}{' '}
+                        {recipe.ingredients.length === 1 ? 'ingrediente' : 'ingredientes'}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {recipe.lastOnMenu ?? '—'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEdit(recipe)}
+                            className="bg-transparent hover:bg-accent rounded-sm"
+                          >
+                            Editar
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              setRecipeActive.mutate({ id: recipe.id, active: !recipe.active })
+                            }
+                            disabled={setRecipeActive.isPending}
+                            className="bg-transparent hover:bg-accent rounded-sm"
+                          >
+                            {recipe.active ? 'Desativar' : 'Ativar'}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    {isExpanded && (
+                      <TableRow className="hover:bg-transparent">
+                        <TableCell colSpan={5} className="px-4.5 pt-0 pb-3.5 bg-secondary/40">
+                          <div
+                            className="flex flex-col animate-in fade-in slide-in-from-top-1 duration-200"
+                            style={{ paddingLeft: '58px' }}
+                          >
+                            {recipe.ingredients.length === 0 ? (
+                              <span className="text-sm text-muted-foreground py-1.5">
+                                Nenhum ingrediente cadastrado.
+                              </span>
+                            ) : (
+                              recipe.ingredients.map((item) => (
+                                <div
+                                  key={item.ingredientId}
+                                  className="flex items-center gap-2 py-1.5 text-sm"
+                                >
+                                  <span className="font-medium">{item.ingredient.name}</span>
+                                  <span className="text-muted-foreground">
+                                    {formatUnit(item.quantity, item.ingredient.unit)}
+                                  </span>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </Fragment>
+                )
+              })}
             </TableBody>
           </Table>
         </div>

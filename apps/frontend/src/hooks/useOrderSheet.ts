@@ -40,7 +40,7 @@ export function useOrderSheet(
       menuItemId: i.menuItemId,
       priceTypeId: i.priceTypeId,
       quantity: String(i.quantity),
-    })) ?? [{ menuItemId: '', priceTypeId: '', quantity: '' }],
+    })) ?? [{ menuItemId: '', priceTypeId: '', quantity: '0' }],
   )
   const { data: clients = [] } = useClients()
   const { data: menuItems = [] } = useMenuItems(currentWeek?.id ?? null)
@@ -53,7 +53,7 @@ export function useOrderSheet(
   const isSaving = createOrder.isPending || updateOrder.isPending
 
   function addRow() {
-    setRows((r) => [...r, { menuItemId: '', priceTypeId: '', quantity: '' }])
+    setRows((r) => [...r, { menuItemId: '', priceTypeId: '', quantity: '0' }])
   }
 
   function removeRow(index: number) {

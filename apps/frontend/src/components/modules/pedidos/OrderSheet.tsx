@@ -69,7 +69,7 @@ export function OrderSheet({ open, onOpenChange, order }: Props) {
         deleteButtonDisabled={deleteOrder.isPending}
         saveButtonDisabled={!isValid() || isSaving}
       >
-        <div className="flex flex-col justify-between h-full">
+        <div className="flex flex-col justify-between h-full gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <p className="text-md font-semibold text-muted-foreground">
