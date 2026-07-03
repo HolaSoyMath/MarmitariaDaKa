@@ -58,6 +58,7 @@
   --color-swile-faint:    var(--swile-faint);
 
   --color-terra:          var(--terra);
+  --color-terra-faint:    var(--terra-faint);
 
   --color-ink-faint:      var(--ink-faint);
   --color-border-strong:  var(--border-strong);
@@ -124,7 +125,8 @@
   --swile:       oklch(0.52 0.140 38);
   --swile-faint: oklch(0.63 0.145 40 / 0.13);
 
-  --terra: oklch(0.63 0.145 40);
+  --terra:       oklch(0.63 0.145 40);
+  --terra-faint: oklch(0.63 0.145 40 / 0.16);
 
   --ink-faint:    oklch(0.66 0.016 60);
   --border-strong: oklch(0.83 0.013 72);
@@ -184,6 +186,8 @@
 
   --swile:       oklch(0.70 0.145 42);
   --swile-faint: oklch(0.63 0.145 40 / 0.20);
+
+  --terra-faint: oklch(0.63 0.145 40 / 0.20);
 }
 
 @layer base {

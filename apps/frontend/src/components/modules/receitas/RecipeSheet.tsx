@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  SearchSelect,
-  type SearchSelectOption,
-} from "@/components/shared/SearchSelect";
+import { type SearchSelectOption } from "@/components/shared/SearchSelect";
 import { IngredientSheet } from "@/components/modules/ingredients/IngredientSheet";
+import { RecipeIngredientRow } from "@/components/modules/receitas/RecipeIngredientRow";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { SheetBase } from "@/components/ui/SheetBase";
 import {
@@ -19,7 +17,8 @@ import {
 } from "@/hooks/useRecipes";
 import { useIngredients } from "@/hooks/useIngredients";
 import { usePriceTypes } from "@/hooks/usePriceTypes";
-import { X, Plus } from "lucide-react";
+import { formatCurrency } from "@/formatters/currency";
+import { Plus } from "lucide-react";
 import type { RecipeResponse } from "@marmitaria/schemas/recipe/recipeResponse.schema";
 
 const CREATE_NEW_INGREDIENT = "__create__";
@@ -50,6 +49,9 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
   );
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [newIngredientOpen, setNewIngredientOpen] = useState(false);
+  const [costByIngredient, setCostByIngredient] = useState<
+    Record<string, number | null>
+  >({});
 
   const { data: ingredients = [] } = useIngredients();
   const { data: priceTypes = [] } = usePriceTypes();
@@ -59,6 +61,23 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
   const deleteRecipe = useDeleteRecipe();
 
   const isSaving = createRecipe.isPending || updateRecipe.isPending;
+
+  const handleEstimatedCostChange = useCallback(
+    (ingredientId: string, costCents: number | null) => {
+      if (!ingredientId) return;
+      setCostByIngredient((prev) => ({ ...prev, [ingredientId]: costCents }));
+    },
+    [],
+  );
+
+  const totalCostCents = useMemo(
+    () =>
+      rows.reduce(
+        (sum, row) => sum + (costByIngredient[row.ingredientId] ?? 0),
+        0,
+      ),
+    [rows, costByIngredient],
+  );
 
   function addRow() {
     setRows((r) => [...r, { ingredientId: "", quantity: "" }]);
@@ -124,123 +143,110 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
         deleteButtonDisabled={deleteRecipe.isPending}
         saveButtonDisabled={!isValid() || isSaving}
       >
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="recipe-name">Nome</Label>
-          <Input
-            id="recipe-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="ex: Frango grelhado"
-            onKeyDown={(e) => e.key === "Enter" && handleSave()}
-            className="bg-card rounded-sm"
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label>Tamanhos</Label>
-          {priceTypes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhum tipo de preço cadastrado.{" "}
-              <Link href="/precos" className="underline">
-                Cadastre um tamanho primeiro
-              </Link>
-              .
-            </p>
-          ) : (
-            <div className="flex gap-2 flex-wrap">
-              {priceTypes.map((pt) => (
-                <Button
-                  key={pt.id}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  data-selected={priceTypeIds.includes(pt.id)}
-                  onClick={() =>
-                    setPriceTypeIds((ids) =>
-                      ids.includes(pt.id)
-                        ? ids.filter((id) => id !== pt.id)
-                        : [...ids, pt.id],
-                    )
-                  }
-                  className="bg-card hover:bg-accent rounded-sm data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:hover:bg-primary"
-                >
-                  {pt.type} {pt.size}
-                </Button>
-              ))}
+        <div className="flex flex-col justify-between h-full">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="recipe-name">Nome</Label>
+              <Input
+                id="recipe-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="ex: Frango grelhado"
+                onKeyDown={(e) => e.key === "Enter" && handleSave()}
+                className="bg-card rounded-sm"
+              />
             </div>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label>Ingredientes</Label>
-          <div className="flex flex-col gap-2">
-            {rows.map((row, i) => {
-              const excludedIds = rows
-                .filter((_, j) => j !== i)
-                .map((r) => r.ingredientId)
-                .filter(Boolean);
-
-              const options: SearchSelectOption[] = [
-                { value: CREATE_NEW_INGREDIENT, label: "+ Cadastrar novo item" },
-                ...ingredients
-                  .filter((ing) => !excludedIds.includes(ing.id))
-                  .map((ing) => ({
-                    value: ing.id,
-                    label: `${ing.name} — ${ing.unit}`,
-                  })),
-              ];
-
-              return (
-                <div key={i} className="flex gap-2 items-center">
-                  <SearchSelect
-                    value={row.ingredientId}
-                    onValueChange={(val) => {
-                      if (val === CREATE_NEW_INGREDIENT) {
-                        setNewIngredientOpen(true);
-                        return;
+            <div className="flex flex-col gap-2">
+              <Label>Tamanhos</Label>
+              {priceTypes.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Nenhum tipo de preço cadastrado.{" "}
+                  <Link href="/precos" className="underline">
+                    Cadastre um tamanho primeiro
+                  </Link>
+                  .
+                </p>
+              ) : (
+                <div className="flex gap-2 flex-wrap">
+                  {priceTypes.map((pt) => (
+                    <Button
+                      key={pt.id}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      data-selected={priceTypeIds.includes(pt.id)}
+                      onClick={() =>
+                        setPriceTypeIds((ids) =>
+                          ids.includes(pt.id)
+                            ? ids.filter((id) => id !== pt.id)
+                            : [...ids, pt.id],
+                        )
                       }
-                      updateRow(i, { ingredientId: val });
-                    }}
-                    options={options}
-                    placeholder="Selecionar ingrediente"
-                    searchPlaceholder="Buscar ingrediente..."
-                    emptyText="Nenhum ingrediente encontrado."
-                    className="flex-1 rounded-sm shadow-none"
-                  />
-                  <Input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={row.quantity}
-                    onChange={(e) =>
-                      updateRow(i, { quantity: e.target.value })
-                    }
-                    placeholder="Qtd."
-                    className="w-24 h-full bg-card rounded-sm"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeRow(i)}
-                    disabled={rows.length === 1}
-                    className="rounded-sm"
-                  >
-                    <X className="size-4 text-red-500" />
-                  </Button>
+                      className="bg-card hover:bg-accent rounded-sm data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:hover:bg-primary"
+                    >
+                      {pt.type} {pt.size}
+                    </Button>
+                  ))}
                 </div>
-              );
-            })}
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label>Ingredientes</Label>
+              <div className="flex flex-col gap-2">
+                {rows.map((row, i) => {
+                  const excludedIds = rows
+                    .filter((_, j) => j !== i)
+                    .map((r) => r.ingredientId)
+                    .filter(Boolean);
+                  const options: SearchSelectOption[] = [
+                    { value: CREATE_NEW_INGREDIENT, label: "+ Cadastrar novo item" },
+                    ...ingredients
+                      .filter((ing) => !excludedIds.includes(ing.id))
+                      .map((ing) => ({
+                        value: ing.id,
+                        label: `${ing.name} — ${ing.unit}`,
+                      })),
+                  ];
+                  return (
+                    <RecipeIngredientRow
+                      key={i}
+                      ingredientId={row.ingredientId}
+                      quantity={row.quantity}
+                      options={options}
+                      onIngredientChange={(val) => {
+                        if (val === CREATE_NEW_INGREDIENT) {
+                          setNewIngredientOpen(true);
+                          return;
+                        }
+                        updateRow(i, { ingredientId: val });
+                      }}
+                      onQuantityChange={(quantity) => updateRow(i, { quantity })}
+                      onRemove={() => removeRow(i)}
+                      removeDisabled={rows.length === 1}
+                      onEstimatedCostChange={handleEstimatedCostChange}
+                    />
+                  );
+                })}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="border-dashed w-fit bg-card hover:bg-accent rounded-sm"
+                onClick={addRow}
+              >
+                <Plus className="size-4 mr-1" /> Adicionar ingrediente
+              </Button>
+            </div>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="border-dashed w-fit bg-card hover:bg-accent rounded-sm"
-            onClick={addRow}
-          >
-            <Plus className="size-4 mr-1" /> Adicionar ingrediente
-          </Button>
+          <div className="rounded-sm p-2.5 text-center bg-terra-faint">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-terra/70">
+              Custo Aproximado
+            </div>
+            <div className="font-heading font-extrabold text-2xl leading-tight text-terra">
+              {totalCostCents > 0 ? formatCurrency(totalCostCents) : "-"}
+            </div>
+          </div>
         </div>
       </SheetBase>
 
