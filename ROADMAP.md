@@ -94,7 +94,7 @@ Mapa de progresso do desenvolvimento. Para instruções de como implementar cada
 - [ ] Pedidos — lista com status, drawer novo pedido, modal cliente inline, empty state
 - [ ] Home — cards de totais, grade de pratos, lista de clientes, accordion, checkbox produzido, dropdown pago
 - [x] Compras & Custos — abas, IngredienteSelector, valor unitário calculado, custos inline, gás read-only, painel consolidado
-- [ ] Financeiro — toggle modos, gráfico barras, pratos com drill-down, Pix vs Swile
+- [x] Financeiro — toggle modos, gráfico barras, pratos com drill-down, Pix vs Swile, comparação com período anterior, semana recorde, projeção do mês, ranking de ingredientes/clientes/grupos, "prato que não sai", sazonalidade, resumo em linguagem natural
 
 ---
 

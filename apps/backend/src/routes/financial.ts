@@ -24,14 +24,65 @@ function parsePeriod(query: Record<string, string>): FinancialPeriod | null {
   return result.success ? result.data : null
 }
 
-export const financialRoutes = new Elysia({ prefix: '/financial' }).get(
-  '/',
-  ({ query, set }) => {
+// Alguns endpoints (rankings) aceitam período opcional — sem 'type' na query, consideram todo o histórico
+function parseOptionalPeriod(query: Record<string, string>): { period?: FinancialPeriod; invalid: boolean } {
+  if (!query.type) return { invalid: false }
+  const period = parsePeriod(query)
+  return period ? { period, invalid: false } : { invalid: true }
+}
+
+const INVALID_PERIOD_MESSAGE = { message: 'Parâmetros de período inválidos. Use type=week|month|period com os campos correspondentes.' }
+
+export const financialRoutes = new Elysia({ prefix: '/financial' })
+  .get('/', ({ query, set }) => {
     const period = parsePeriod(query as Record<string, string>)
     if (!period) {
       set.status = 400
-      return { message: 'Parâmetros de período inválidos. Use type=week|month|period com os campos correspondentes.' }
+      return INVALID_PERIOD_MESSAGE
     }
     return service.getReport(period)
-  }
-)
+  })
+  .get('/timeseries', ({ query, set }) => {
+    const period = parsePeriod(query as Record<string, string>)
+    if (!period) {
+      set.status = 400
+      return INVALID_PERIOD_MESSAGE
+    }
+    return service.getTimeseries(period)
+  })
+  .get('/comparison', ({ query, set }) => {
+    const period = parsePeriod(query as Record<string, string>)
+    if (!period) {
+      set.status = 400
+      return INVALID_PERIOD_MESSAGE
+    }
+    return service.getComparison(period)
+  })
+  .get('/record-week', () => service.getRecordWeek())
+  .get('/ingredient-costs', ({ query }) => service.getIngredientCosts(query.ingredientId as string | undefined))
+  .get('/dish-last-sold', () => service.getDishLastSold())
+  .get('/client-ranking', ({ query, set }) => {
+    const { period, invalid } = parseOptionalPeriod(query as Record<string, string>)
+    if (invalid) {
+      set.status = 400
+      return INVALID_PERIOD_MESSAGE
+    }
+    return service.getClientRanking(period)
+  })
+  .get('/group-ranking', ({ query, set }) => {
+    const { period, invalid } = parseOptionalPeriod(query as Record<string, string>)
+    if (invalid) {
+      set.status = 400
+      return INVALID_PERIOD_MESSAGE
+    }
+    return service.getGroupRanking(period)
+  })
+  .get('/seasonality', ({ query, set }) => {
+    const granularity = query.granularity as string
+    if (granularity !== 'week' && granularity !== 'month' && granularity !== 'year') {
+      set.status = 400
+      return { message: 'Parâmetro granularity inválido. Use week|month|year.' }
+    }
+    const referenceNumber = query.number ? Number(query.number) : undefined
+    return service.getSeasonality(granularity, referenceNumber)
+  })
