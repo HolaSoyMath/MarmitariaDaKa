@@ -33,10 +33,9 @@ export function useUpsertPurchase() {
       const res = await api.post<PurchaseResponse>('/purchases', data)
       return res.data
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData([...QUERY_KEY, variables.weekId], data)
       queryClient.invalidateQueries({ queryKey: ['general-costs'] })
-      toast.success('Compra salva.')
     },
     onError: (error) => toastError(error, 'Não foi possível salvar a compra.'),
   })

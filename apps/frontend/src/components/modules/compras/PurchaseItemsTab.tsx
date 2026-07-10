@@ -1,11 +1,7 @@
 "use client";
 
-import { useEffect, useCallback, useMemo, useState } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+import { useEffect, useCallback, useMemo, useRef, useState } from "react";
+import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import {
   Table,
   TableHeader,
@@ -21,6 +17,8 @@ import {
   type DraftPurchaseRow,
 } from "@/types/columnDefs/purchaseItemColumns";
 import { IngredientSheet } from "@/components/modules/ingredients/IngredientSheet";
+import { PurchaseRow } from "@/components/modules/compras/PurchaseRow";
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import type { PurchaseResponse } from "@marmitaria/schemas/purchase/purchaseResponse.schema";
 import type { PurchaseInput } from "@marmitaria/schemas/purchase/purchaseInput.schema";
 import type { IngredientResponse } from "@marmitaria/schemas/ingredient/ingredientResponse.schema";
@@ -47,8 +45,15 @@ export function PurchaseItemsTab({
 }: PurchaseItemsTabProps) {
   const [rows, setRows] = useState<DraftPurchaseRow[]>([]);
 
+  const hydratedWeekRef = useRef<string | null>(null);
+  const skipNextAutoSaveRef = useRef(false);
+  const lastSavedPayloadRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (purchase === undefined) return;
+    if (hydratedWeekRef.current === weekId) return;
+    hydratedWeekRef.current = weekId;
+    skipNextAutoSaveRef.current = true;
     setRows(
       purchase
         ? purchase.items.map((item) => ({
@@ -60,7 +65,7 @@ export function PurchaseItemsTab({
           }))
         : [],
     );
-  }, [purchase]);
+  }, [purchase, weekId]);
 
   const handleChangeRow = useCallback(
     (index: number, field: keyof DraftPurchaseRow, value: string) => {
@@ -90,21 +95,38 @@ export function PurchaseItemsTab({
 
   const [ingredientSheetOpen, setIngredientSheetOpen] = useState(false);
 
-  const handleSave = () => {
-    const items = rows
-      .filter((r) => r.ingredientId && r.quantity && r.totalValue)
-      .map((r) => ({
-        ingredientId: r.ingredientId,
-        quantity: parseFloat(r.quantity.replace(",", ".")),
-        totalValue: Math.round(
-          parseFloat(r.totalValue.replace(",", ".")) * 100,
-        ),
-        location: r.location || undefined,
-      }));
+  const validItems = useMemo(
+    () =>
+      rows
+        .filter((r) => r.ingredientId && r.quantity && r.totalValue)
+        .map((r) => ({
+          ingredientId: r.ingredientId,
+          quantity: parseFloat(r.quantity.replace(",", ".")),
+          totalValue: Math.round(
+            parseFloat(r.totalValue.replace(",", ".")) * 100,
+          ),
+          location: r.location || undefined,
+        })),
+    [rows],
+  );
 
-    if (items.length === 0) return;
-    onSave({ weekId, items });
-  };
+  const debouncedSave = useDebouncedCallback(
+    (items: PurchaseInput["items"]) => onSave({ weekId, items }),
+    1000,
+  );
+
+  useEffect(() => {
+    if (skipNextAutoSaveRef.current) {
+      skipNextAutoSaveRef.current = false;
+      lastSavedPayloadRef.current = JSON.stringify(validItems);
+      return;
+    }
+    if (validItems.length === 0) return;
+    const payload = JSON.stringify(validItems);
+    if (payload === lastSavedPayloadRef.current) return;
+    lastSavedPayloadRef.current = payload;
+    debouncedSave(validItems);
+  }, [validItems, debouncedSave]);
 
   const columns = useMemo(
     () =>
@@ -189,21 +211,9 @@ export function PurchaseItemsTab({
                 </TableCell>
               </TableRow>
             ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="hover:bg-secondary transition-colors"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-3 py-2.5">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table
+                .getRowModel()
+                .rows.map((row) => <PurchaseRow key={row.id} row={row} />)
             )}
           </TableBody>
         </Table>
@@ -230,18 +240,11 @@ export function PurchaseItemsTab({
           <Plus className="size-4" />
           Novo ingrediente
         </Button>
-        <Button
-          size="sm"
-          onClick={handleSave}
-          disabled={
-            isSaving ||
-            rows.filter((r) => r.ingredientId && r.quantity && r.totalValue)
-              .length === 0
-          }
-          className="gap-1.5 rounded-sm"
-        >
-          {isSaving ? "Salvando…" : "Salvar compra"}
-        </Button>
+        {validItems.length > 0 && (
+          <span className="text-sm text-muted-foreground ml-auto">
+            {isSaving ? "Salvando…" : "Salvo"}
+          </span>
+        )}
       </div>
 
       <IngredientSheet
