@@ -37,6 +37,8 @@ export function useUpsertPurchase() {
     onSuccess: (data, variables) => {
       queryClient.setQueryData([...QUERY_KEY, variables.weekId], data)
       queryClient.invalidateQueries({ queryKey: ['general-costs'] })
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      queryClient.invalidateQueries({ queryKey: ['menuItems'] })
     },
     onError: (error) => toastError(error, 'Não foi possível salvar a compra.'),
   })
