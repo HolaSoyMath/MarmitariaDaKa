@@ -68,9 +68,14 @@ export function RecipeRow({
             )}
           </div>
         </TableCell>
-        <TableCell className="text-muted-foreground">
-          {recipe.priceTypes.length}{' '}
-          {recipe.priceTypes.length === 1 ? 'tamanho' : 'tamanhos'}
+        <TableCell>
+          <div className="flex items-center gap-1 flex-wrap">
+            {recipe.priceTypes.map((pt) => (
+              <Badge key={pt.id} variant="secondary" className="rounded-full font-semibold">
+                {pt.type}
+              </Badge>
+            ))}
+          </div>
         </TableCell>
         <TableCell className="text-muted-foreground">
           {recipe.lastOnMenu ?? '—'}

@@ -95,7 +95,7 @@ export function RecipesView() {
               <TableRow>
                 <TableHead className="w-10" />
                 <TableHead className="min-w-32">Nome</TableHead>
-                <TableHead className="min-w-32">Ingredientes</TableHead>
+                <TableHead className="min-w-32">Tamanho</TableHead>
                 <TableHead className="min-w-44 whitespace-normal">Última vez no cardápio</TableHead>
                 <TableHead className="min-w-36">Custo médio</TableHead>
                 <TableHead className="min-w-44" />
