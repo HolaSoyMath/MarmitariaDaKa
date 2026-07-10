@@ -25,6 +25,15 @@ export class PurchasesRepository implements IPurchasesRepository {
     })
   }
 
+  async findLatestByIngredientIds(ingredientIds: string[]): Promise<PurchaseItem[]> {
+    if (ingredientIds.length === 0) return []
+    return prisma.purchaseItem.findMany({
+      where: { ingredientId: { in: ingredientIds }, deletedAt: null },
+      orderBy: [{ ingredientId: 'asc' }, { createdAt: 'desc' }],
+      distinct: ['ingredientId'],
+    })
+  }
+
   async upsert(data: PurchaseInput, gasValue: number): Promise<PurchaseWithItems> {
     return prisma.$transaction(async tx => {
       let purchase = await tx.purchase.findFirst({

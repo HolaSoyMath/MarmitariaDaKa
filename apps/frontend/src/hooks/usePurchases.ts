@@ -4,6 +4,7 @@ import axios from 'axios'
 import { api } from '@/lib/api'
 import type { PurchaseResponse } from '@marmitaria/schemas/purchase/purchaseResponse.schema'
 import type { PurchaseInput } from '@marmitaria/schemas/purchase/purchaseInput.schema'
+import type { PurchaseLastPriceResponse } from '@marmitaria/schemas/purchase/purchaseLastPrice.schema'
 
 function toastError(error: unknown, fallback = 'Erro inesperado.') {
   const message = axios.isAxiosError(error) ? error.response?.data?.message : null
@@ -38,5 +39,16 @@ export function useUpsertPurchase() {
       queryClient.invalidateQueries({ queryKey: ['general-costs'] })
     },
     onError: (error) => toastError(error, 'Não foi possível salvar a compra.'),
+  })
+}
+
+export function useLastPurchasePrices() {
+  return useMutation({
+    mutationFn: async (ingredientIds: string[]) => {
+      const { data } = await api.get<PurchaseLastPriceResponse[]>('/purchases/last-prices', {
+        params: { ingredientIds: ingredientIds.join(',') },
+      })
+      return data
+    },
   })
 }

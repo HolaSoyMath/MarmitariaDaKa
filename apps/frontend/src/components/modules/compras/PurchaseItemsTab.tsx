@@ -18,7 +18,10 @@ import {
 } from "@/types/columnDefs/purchaseItemColumns";
 import { IngredientSheet } from "@/components/modules/ingredients/IngredientSheet";
 import { PurchaseRow } from "@/components/modules/compras/PurchaseRow";
+import { MultiSearchSelect } from "@/components/shared/MultiSearchSelect";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
+import { useRecipes } from "@/hooks/useRecipes";
+import { useLastPurchasePrices } from "@/hooks/usePurchases";
 import type { PurchaseResponse } from "@marmitaria/schemas/purchase/purchaseResponse.schema";
 import type { PurchaseInput } from "@marmitaria/schemas/purchase/purchaseInput.schema";
 import type { IngredientResponse } from "@marmitaria/schemas/ingredient/ingredientResponse.schema";
@@ -44,16 +47,20 @@ export function PurchaseItemsTab({
   isSaving,
 }: PurchaseItemsTabProps) {
   const [rows, setRows] = useState<DraftPurchaseRow[]>([]);
+  const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
 
   const hydratedWeekRef = useRef<string | null>(null);
   const skipNextAutoSaveRef = useRef(false);
   const lastSavedPayloadRef = useRef<string | null>(null);
+  const loadedRecipeIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (purchase === undefined) return;
     if (hydratedWeekRef.current === weekId) return;
     hydratedWeekRef.current = weekId;
     skipNextAutoSaveRef.current = true;
+    setSelectedRecipeIds([]);
+    loadedRecipeIdsRef.current = new Set();
     setRows(
       purchase
         ? purchase.items.map((item) => ({
@@ -66,6 +73,9 @@ export function PurchaseItemsTab({
         : [],
     );
   }, [purchase, weekId]);
+
+  const { data: recipes = [] } = useRecipes();
+  const lastPrices = useLastPurchasePrices();
 
   const handleChangeRow = useCallback(
     (index: number, field: keyof DraftPurchaseRow, value: string) => {
@@ -92,6 +102,51 @@ export function PurchaseItemsTab({
       },
     ]);
   };
+
+  const handleRecipeSelectionChange = useCallback(
+    (values: string[]) => {
+      const newRecipeIds = values.filter((id) => !loadedRecipeIdsRef.current.has(id));
+      newRecipeIds.forEach((id) => loadedRecipeIdsRef.current.add(id));
+      setSelectedRecipeIds(values);
+
+      if (newRecipeIds.length === 0) return;
+
+      const existingIngredientIds = new Set(rows.map((r) => r.ingredientId));
+      const newIngredientIds: string[] = [];
+      newRecipeIds.forEach((recipeId) => {
+        const recipe = recipes.find((r) => r.id === recipeId);
+        recipe?.ingredients.forEach((ri) => {
+          if (!existingIngredientIds.has(ri.ingredientId)) {
+            existingIngredientIds.add(ri.ingredientId);
+            newIngredientIds.push(ri.ingredientId);
+          }
+        });
+      });
+
+      if (newIngredientIds.length === 0) return;
+
+      lastPrices.mutate(newIngredientIds, {
+        onSuccess: (data) => {
+          const lastByIngredient = new Map(data.map((d) => [d.ingredientId, d]));
+          const newRows: DraftPurchaseRow[] = newIngredientIds.map((ingredientId) => {
+            const ingredient = ingredients.find((i) => i.id === ingredientId);
+            const last = lastByIngredient.get(ingredientId);
+            return {
+              ingredientId,
+              unit: (ingredient?.unit as IngredientUnit) ?? "",
+              quantity: last ? String(last.quantity) : "",
+              totalValue: last
+                ? (last.totalValue / 100).toFixed(2).replace(".", ",")
+                : "",
+              location: last?.location ?? undefined,
+            };
+          });
+          setRows((prev) => [...prev, ...newRows]);
+        },
+      });
+    },
+    [rows, recipes, ingredients, lastPrices],
+  );
 
   const [ingredientSheetOpen, setIngredientSheetOpen] = useState(false);
 
@@ -152,8 +207,23 @@ export function PurchaseItemsTab({
   const grandTotalCents =
     ingredientTotalCents + costs.reduce((sum, c) => sum + c.value, 0);
 
+  const recipeOptions = useMemo(
+    () => recipes.map((r) => ({ value: r.id, label: r.name })),
+    [recipes],
+  );
+
   return (
     <div>
+      <div className="mb-4 max-w-sm">
+        <MultiSearchSelect
+          value={selectedRecipeIds}
+          onValueChange={handleRecipeSelectionChange}
+          options={recipeOptions}
+          placeholder="Selecionar receitas..."
+          searchPlaceholder="Pesquisar receita..."
+          className="rounded-sm"
+        />
+      </div>
       <div className="flex gap-3 mb-4.5 flex-wrap">
         <div className="border border-border rounded-sm flex flex-col gap-1.5 p-5.5 w-60 bg-card">
           <span className="text-sm text-muted-foreground">

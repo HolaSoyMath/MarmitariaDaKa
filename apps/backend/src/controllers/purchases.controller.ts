@@ -1,6 +1,7 @@
 import type { PurchasesService } from '../services/purchases.service'
 import type { PurchaseInput } from '@marmitaria/schemas/purchase/purchaseInput.schema'
 import type { PurchaseResponse } from '@marmitaria/schemas/purchase/purchaseResponse.schema'
+import type { PurchaseLastPriceResponse } from '@marmitaria/schemas/purchase/purchaseLastPrice.schema'
 import type { PurchaseWithItems } from '../interfaces/purchases.interface'
 import type { IngredientUnit } from '@marmitaria/schemas/enums'
 
@@ -37,5 +38,15 @@ export class PurchasesController {
   async upsert(data: PurchaseInput): Promise<PurchaseResponse> {
     const purchase = await this.service.upsert(data)
     return this.format(purchase)
+  }
+
+  async getLastPrices(ingredientIds: string[]): Promise<PurchaseLastPriceResponse[]> {
+    const items = await this.service.getLastPrices(ingredientIds)
+    return items.map(item => ({
+      ingredientId: item.ingredientId,
+      quantity: item.quantity,
+      totalValue: item.totalValue,
+      location: item.location,
+    }))
   }
 }
