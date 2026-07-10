@@ -16,6 +16,10 @@ export class IngredientsService {
     return ingredient
   }
 
+  async search(query: string): Promise<Ingredient[]> {
+    return this.repository.search(query)
+  }
+
   async create(data: IngredientInput): Promise<Ingredient> {
     const existing = await this.repository.findByName(data.name)
     if (existing) throw new ConflictError(`Já existe um ingrediente com o nome "${data.name}".`)

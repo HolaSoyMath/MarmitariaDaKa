@@ -16,6 +16,18 @@ export class IngredientsRepository implements IIngredientsRepository {
     return prisma.ingredient.findFirst({ where: { name, deletedAt: null } })
   }
 
+  async search(query: string): Promise<Ingredient[]> {
+    const terms = query.trim().split(/\s+/).filter(Boolean)
+    if (terms.length === 0) return []
+    return prisma.ingredient.findMany({
+      where: {
+        deletedAt: null,
+        OR: terms.map(term => ({ name: { contains: term, mode: 'insensitive' } })),
+      },
+      orderBy: { name: 'asc' },
+    })
+  }
+
   async create(data: IngredientInput): Promise<Ingredient> {
     return prisma.ingredient.create({ data: { name: data.name, unit: data.unit } })
   }

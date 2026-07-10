@@ -18,6 +18,11 @@ export class IngredientsController {
     return this.format(await this.service.getById(id))
   }
 
+  async search(query: string): Promise<IngredientResponse[]> {
+    const ingredients = await this.service.search(query)
+    return ingredients.map(i => this.format(i))
+  }
+
   async create(data: IngredientInput): Promise<IngredientResponse> {
     return this.format(await this.service.create(data))
   }
