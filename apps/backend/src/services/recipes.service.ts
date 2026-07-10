@@ -16,7 +16,9 @@ export class RecipesService {
   ) {}
 
   private async attachCosts(recipes: RecipeWithIngredients[]): Promise<RecipeWithCosts[]> {
-    const ingredientIds = [...new Set(recipes.flatMap(r => r.ingredients.map(i => i.ingredientId)))]
+    const ingredientIds = [
+      ...new Set(recipes.flatMap(r => r.priceTypes.flatMap(pt => pt.ingredients.map(i => i.ingredientId)))),
+    ]
     const items = ingredientIds.length
       ? await this.purchasesRepository.findRecentItemsByIngredientIds(ingredientIds)
       : []
@@ -35,9 +37,12 @@ export class RecipesService {
 
     return recipes.map(recipe => ({
       ...recipe,
-      ingredients: recipe.ingredients.map(ri => ({
-        ...ri,
-        averageUnitCost: averageByIngredient.get(ri.ingredientId) ?? null,
+      priceTypes: recipe.priceTypes.map(pt => ({
+        ...pt,
+        ingredients: pt.ingredients.map(ri => ({
+          ...ri,
+          averageUnitCost: averageByIngredient.get(ri.ingredientId) ?? null,
+        })),
       })),
     }))
   }

@@ -31,6 +31,13 @@ export function RecipeRow({
   onSetActive,
   isSettingActive,
 }: RecipeRowProps) {
+  const costs = recipe.priceTypes
+    .map((pt) => pt.totalAverageCost)
+    .filter((c): c is number => c != null)
+  const hasPartialCost = recipe.priceTypes.some((pt) => pt.isPartialAverageCost)
+  const minCost = costs.length > 0 ? Math.min(...costs) : null
+  const maxCost = costs.length > 0 ? Math.max(...costs) : null
+
   return (
     <Fragment>
       <TableRow className={!recipe.active ? 'opacity-50' : undefined}>
@@ -62,32 +69,38 @@ export function RecipeRow({
           </div>
         </TableCell>
         <TableCell className="text-muted-foreground">
-          {recipe.ingredients.length}{' '}
-          {recipe.ingredients.length === 1 ? 'ingrediente' : 'ingredientes'}
+          {recipe.priceTypes.length}{' '}
+          {recipe.priceTypes.length === 1 ? 'tamanho' : 'tamanhos'}
         </TableCell>
         <TableCell className="text-muted-foreground">
           {recipe.lastOnMenu ?? '—'}
         </TableCell>
         <TableCell>
-          {recipe.totalAverageCost == null ? (
+          {minCost == null ? (
             <span className="text-muted-foreground">—</span>
-          ) : recipe.isPartialAverageCost ? (
+          ) : hasPartialCost ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="flex items-center gap-1 text-yellow-600 cursor-help">
-                    {formatCurrency(recipe.totalAverageCost)}
+                    {minCost === maxCost
+                      ? formatCurrency(minCost)
+                      : `${formatCurrency(minCost)} – ${formatCurrency(maxCost!)}`}
                     <Info className="size-3.5" />
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  Esse custo médio não é oficial — há ingredientes desta receita sem histórico de
-                  compra cadastrado.
+                  Esse custo médio não é oficial — há ingredientes de algum tamanho desta
+                  receita sem histórico de compra cadastrado.
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           ) : (
-            <span>{formatCurrency(recipe.totalAverageCost)}</span>
+            <span>
+              {minCost === maxCost
+                ? formatCurrency(minCost)
+                : `${formatCurrency(minCost)} – ${formatCurrency(maxCost!)}`}
+            </span>
           )}
         </TableCell>
         <TableCell>
@@ -117,7 +130,7 @@ export function RecipeRow({
           </div>
         </TableCell>
       </TableRow>
-      {isExpanded && <RecipeIngredientsTable ingredients={recipe.ingredients} />}
+      {isExpanded && <RecipeIngredientsTable priceTypes={recipe.priceTypes} />}
     </Fragment>
   )
 }

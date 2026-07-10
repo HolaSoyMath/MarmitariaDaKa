@@ -16,12 +16,14 @@ export function MenuItemCard({ item, onRemove }: MenuItemCardProps) {
   const { recipe } = item
   const [sizesDialogOpen, setSizesDialogOpen] = useState(false)
 
-  const ingredientPreview = recipe.ingredients
+  const firstSizeIngredients = recipe.priceTypes[0]?.ingredients ?? []
+
+  const ingredientPreview = firstSizeIngredients
     .slice(0, 3)
     .map(({ quantity, ingredient }) => `${ingredient.name} ${quantity}${ingredient.unit}`)
     .join(' · ')
 
-  const hasMore = recipe.ingredients.length > 3
+  const hasMore = firstSizeIngredients.length > 3
 
   return (
     <div className="rounded-sm border bg-card p-5 flex flex-col gap-3">

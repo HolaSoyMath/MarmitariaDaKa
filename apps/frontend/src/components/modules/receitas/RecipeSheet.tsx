@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { type SearchSelectOption } from "@/components/shared/SearchSelect";
 import { IngredientSheet } from "@/components/modules/ingredients/IngredientSheet";
 import { RecipeIngredientRow } from "@/components/modules/receitas/RecipeIngredientRow";
@@ -34,23 +35,37 @@ interface Props {
   recipe?: RecipeResponse;
 }
 
+function emptyRow(): IngredientRow {
+  return { ingredientId: "", quantity: "" };
+}
+
 export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
   const isEditing = !!recipe;
 
   const [name, setName] = useState(recipe?.name ?? "");
-  const [rows, setRows] = useState<IngredientRow[]>(
-    recipe?.ingredients.map((i) => ({
-      ingredientId: i.ingredientId,
-      quantity: String(i.quantity),
-    })) ?? [{ ingredientId: "", quantity: "" }],
-  );
   const [priceTypeIds, setPriceTypeIds] = useState<string[]>(
     recipe?.priceTypes.map((pt) => pt.id) ?? [],
   );
+  const [rowsByPriceType, setRowsByPriceType] = useState<
+    Record<string, IngredientRow[]>
+  >(() =>
+    Object.fromEntries(
+      (recipe?.priceTypes ?? []).map((pt) => [
+        pt.id,
+        pt.ingredients.map((i) => ({
+          ingredientId: i.ingredientId,
+          quantity: String(i.quantity),
+        })),
+      ]),
+    ),
+  );
+  const [activeTab, setActiveTab] = useState<string>(
+    recipe?.priceTypes[0]?.id ?? "",
+  );
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [newIngredientOpen, setNewIngredientOpen] = useState(false);
-  const [costByIngredient, setCostByIngredient] = useState<
-    Record<string, number | null>
+  const [costByPriceType, setCostByPriceType] = useState<
+    Record<string, Record<string, number | null>>
   >({});
 
   const { data: ingredients = [] } = useIngredients();
@@ -63,38 +78,91 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
   const isSaving = createRecipe.isPending || updateRecipe.isPending;
 
   const handleEstimatedCostChange = useCallback(
-    (ingredientId: string, costCents: number | null) => {
+    (priceTypeId: string, ingredientId: string, costCents: number | null) => {
       if (!ingredientId) return;
-      setCostByIngredient((prev) => ({ ...prev, [ingredientId]: costCents }));
+      setCostByPriceType((prev) => ({
+        ...prev,
+        [priceTypeId]: { ...prev[priceTypeId], [ingredientId]: costCents },
+      }));
     },
     [],
   );
 
-  const totalCostCents = useMemo(
-    () =>
-      rows.reduce(
-        (sum, row) => sum + (costByIngredient[row.ingredientId] ?? 0),
-        0,
-      ),
-    [rows, costByIngredient],
-  );
+  // Stable per-size callback identity — RecipeIngredientRow depends on this reference
+  // inside a useEffect, so an inline arrow here would recreate it every render and loop.
+  const costChangeHandlers = useMemo(() => {
+    const handlers: Record<string, (ingredientId: string, cost: number | null) => void> = {};
+    priceTypeIds.forEach((id) => {
+      handlers[id] = (ingredientId, cost) => handleEstimatedCostChange(id, ingredientId, cost);
+    });
+    return handlers;
+  }, [priceTypeIds, handleEstimatedCostChange]);
 
-  function addRow() {
-    setRows((r) => [...r, { ingredientId: "", quantity: "" }]);
+  function rowsFor(ptId: string): IngredientRow[] {
+    return rowsByPriceType[ptId] ?? [emptyRow()];
   }
 
-  function removeRow(index: number) {
-    setRows((r) => r.filter((_, i) => i !== index));
-  }
-
-  function updateRow(index: number, patch: Partial<IngredientRow>) {
-    setRows((r) =>
-      r.map((row, i) => (i === index ? { ...row, ...patch } : row)),
+  function totalCostFor(ptId: string): number {
+    const costs = costByPriceType[ptId] ?? {};
+    return rowsFor(ptId).reduce(
+      (sum, row) => sum + (costs[row.ingredientId] ?? 0),
+      0,
     );
   }
 
-  function buildIngredients() {
-    return rows
+  function toggleSize(id: string) {
+    setPriceTypeIds((ids) => {
+      if (ids.includes(id)) {
+        const next = ids.filter((i) => i !== id);
+        setRowsByPriceType((prev) => {
+          const rest = { ...prev };
+          delete rest[id];
+          return rest;
+        });
+        setActiveTab((current) => (current === id ? next[0] ?? "" : current));
+        return next;
+      }
+
+      setRowsByPriceType((prev) => {
+        if (prev[id]) return prev;
+        const sourceId = ids[0];
+        const sourceRows = sourceId ? prev[sourceId] : undefined;
+        return {
+          ...prev,
+          [id]:
+            sourceRows && sourceRows.length > 0
+              ? sourceRows.map((r) => ({ ...r }))
+              : [emptyRow()],
+        };
+      });
+      setActiveTab(id);
+      return [...ids, id];
+    });
+  }
+
+  function addRow(ptId: string) {
+    setRowsByPriceType((prev) => ({
+      ...prev,
+      [ptId]: [...rowsFor(ptId), emptyRow()],
+    }));
+  }
+
+  function removeRow(ptId: string, index: number) {
+    setRowsByPriceType((prev) => ({
+      ...prev,
+      [ptId]: rowsFor(ptId).filter((_, i) => i !== index),
+    }));
+  }
+
+  function updateRow(ptId: string, index: number, patch: Partial<IngredientRow>) {
+    setRowsByPriceType((prev) => ({
+      ...prev,
+      [ptId]: rowsFor(ptId).map((row, i) => (i === index ? { ...row, ...patch } : row)),
+    }));
+  }
+
+  function buildIngredientsFor(ptId: string) {
+    return rowsFor(ptId)
       .filter((r) => r.ingredientId && Number(r.quantity) > 0)
       .map((r) => ({
         ingredientId: r.ingredientId,
@@ -104,16 +172,18 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
 
   function isValid() {
     const trimmed = name.trim();
-    const ingredients = buildIngredients();
-    return trimmed.length > 0 && ingredients.length > 0 && priceTypeIds.length > 0;
+    if (trimmed.length === 0 || priceTypeIds.length === 0) return false;
+    return priceTypeIds.every((id) => buildIngredientsFor(id).length > 0);
   }
 
   async function handleSave() {
     if (!isValid()) return;
     const payload = {
       name: name.trim(),
-      ingredients: buildIngredients(),
-      priceTypeIds,
+      sizes: priceTypeIds.map((id) => ({
+        priceTypeId: id,
+        ingredients: buildIngredientsFor(id),
+      })),
     };
     if (isEditing) {
       await updateRecipe.mutateAsync({ id: recipe.id, data: payload });
@@ -130,6 +200,15 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
     onOpenChange(false);
   }
 
+  const selectedPriceTypes = useMemo(
+    () => priceTypeIds.map((id) => priceTypes.find((pt) => pt.id === id)).filter(
+      (pt): pt is (typeof priceTypes)[number] => !!pt,
+    ),
+    [priceTypeIds, priceTypes],
+  );
+
+  const activePriceType = selectedPriceTypes.find((pt) => pt.id === activeTab);
+
   return (
     <>
       <SheetBase
@@ -144,7 +223,7 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
         saveButtonDisabled={!isValid() || isSaving}
       >
         <div className="flex flex-col justify-between h-full">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 flex-1 min-h-0 mb-2">
             <div className="flex flex-col gap-2">
               <Label htmlFor="recipe-name">Nome</Label>
               <Input
@@ -175,13 +254,7 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
                       variant="outline"
                       size="sm"
                       data-selected={priceTypeIds.includes(pt.id)}
-                      onClick={() =>
-                        setPriceTypeIds((ids) =>
-                          ids.includes(pt.id)
-                            ? ids.filter((id) => id !== pt.id)
-                            : [...ids, pt.id],
-                        )
-                      }
+                      onClick={() => toggleSize(pt.id)}
                       className="bg-card hover:bg-accent rounded-sm data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:hover:bg-primary"
                     >
                       {pt.type} {pt.size}
@@ -190,63 +263,99 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label>Ingredientes</Label>
-              <div className="flex flex-col gap-2">
-                {rows.map((row, i) => {
-                  const excludedIds = rows
-                    .filter((_, j) => j !== i)
-                    .map((r) => r.ingredientId)
-                    .filter(Boolean);
-                  const options: SearchSelectOption[] = [
-                    { value: CREATE_NEW_INGREDIENT, label: "+ Cadastrar novo item" },
-                    ...ingredients
-                      .filter((ing) => !excludedIds.includes(ing.id))
-                      .map((ing) => ({
-                        value: ing.id,
-                        label: `${ing.name} — ${ing.unit}`,
-                      })),
-                  ];
-                  return (
-                    <RecipeIngredientRow
-                      key={i}
-                      ingredientId={row.ingredientId}
-                      quantity={row.quantity}
-                      options={options}
-                      onIngredientChange={(val) => {
-                        if (val === CREATE_NEW_INGREDIENT) {
-                          setNewIngredientOpen(true);
-                          return;
-                        }
-                        updateRow(i, { ingredientId: val });
-                      }}
-                      onQuantityChange={(quantity) => updateRow(i, { quantity })}
-                      onRemove={() => removeRow(i)}
-                      removeDisabled={rows.length === 1}
-                      onEstimatedCostChange={handleEstimatedCostChange}
-                    />
-                  );
-                })}
+            {selectedPriceTypes.length > 0 && (
+              <div className="flex flex-col gap-2 flex-1 min-h-0">
+                <Label>Ingredientes</Label>
+                <Tabs
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                  className="flex-1 min-h-0"
+                >
+                  <TabsList>
+                    {selectedPriceTypes.map((pt) => (
+                      <TabsTrigger
+                        key={pt.id}
+                        value={pt.id}
+                        className="cursor-pointer data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary"
+                      >
+                        {pt.type} {pt.size}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {selectedPriceTypes.map((pt) => {
+                    const rows = rowsFor(pt.id);
+                    return (
+                      <TabsContent
+                        key={pt.id}
+                        value={pt.id}
+                        className="flex flex-col gap-3 overflow-y-auto"
+                      >
+                        <div className="flex flex-col gap-2">
+                          {rows.map((row, i) => {
+                            const excludedIds = rows
+                              .filter((_, j) => j !== i)
+                              .map((r) => r.ingredientId)
+                              .filter(Boolean);
+                            const options: SearchSelectOption[] = [
+                              { value: CREATE_NEW_INGREDIENT, label: "+ Cadastrar novo item" },
+                              ...ingredients
+                                .filter((ing) => !excludedIds.includes(ing.id))
+                                .map((ing) => ({
+                                  value: ing.id,
+                                  label: `${ing.name} — ${ing.unit}`,
+                                })),
+                            ];
+                            return (
+                              <RecipeIngredientRow
+                                key={i}
+                                ingredientId={row.ingredientId}
+                                quantity={row.quantity}
+                                options={options}
+                                onIngredientChange={(val) => {
+                                  if (val === CREATE_NEW_INGREDIENT) {
+                                    setNewIngredientOpen(true);
+                                    return;
+                                  }
+                                  updateRow(pt.id, i, { ingredientId: val });
+                                }}
+                                onQuantityChange={(quantity) =>
+                                  updateRow(pt.id, i, { quantity })
+                                }
+                                onRemove={() => removeRow(pt.id, i)}
+                                removeDisabled={rows.length === 1}
+                                onEstimatedCostChange={costChangeHandlers[pt.id]}
+                              />
+                            );
+                          })}
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="border-dashed w-fit bg-card hover:bg-accent rounded-sm"
+                          onClick={() => addRow(pt.id)}
+                        >
+                          <Plus className="size-4 mr-1" /> Adicionar ingrediente
+                        </Button>
+                      </TabsContent>
+                    );
+                  })}
+                </Tabs>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="border-dashed w-fit bg-card hover:bg-accent rounded-sm"
-                onClick={addRow}
-              >
-                <Plus className="size-4 mr-1" /> Adicionar ingrediente
-              </Button>
-            </div>
+            )}
           </div>
-          <div className="rounded-sm p-2.5 text-center bg-terra-faint">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-terra/70">
-              Custo Aproximado
+          {activePriceType && (
+            <div className="rounded-sm p-2.5 text-center bg-terra-faint">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-terra/70">
+                Custo Aproximado — {activePriceType.type} {activePriceType.size}
+              </div>
+              <div className="font-heading font-extrabold text-2xl leading-tight text-terra">
+                {totalCostFor(activePriceType.id) > 0
+                  ? formatCurrency(totalCostFor(activePriceType.id))
+                  : "-"}
+              </div>
             </div>
-            <div className="font-heading font-extrabold text-2xl leading-tight text-terra">
-              {totalCostCents > 0 ? formatCurrency(totalCostCents) : "-"}
-            </div>
-          </div>
+          )}
         </div>
       </SheetBase>
 

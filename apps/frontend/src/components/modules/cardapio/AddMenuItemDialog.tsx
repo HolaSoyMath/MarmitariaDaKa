@@ -83,14 +83,15 @@ export function AddMenuItemDialog({ open, onOpenChange, weekId, existingRecipeId
             filtered.map((recipe) => {
               const alreadyAdded = existingRecipeIds.includes(recipe.id)
               const isExpanded = expandedRecipeId === recipe.id
+              const ingredientCount = recipe.priceTypes[0]?.ingredients.length ?? 0
               return (
                 <div key={recipe.id} className="flex flex-col px-6 py-3 border-b last:border-b-0 gap-3">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       <span className="font-medium text-sm">{recipe.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {recipe.ingredients.length}{' '}
-                        {recipe.ingredients.length === 1 ? 'ingrediente' : 'ingredientes'}
+                        {ingredientCount}{' '}
+                        {ingredientCount === 1 ? 'ingrediente' : 'ingredientes'}
                       </span>
                     </div>
                     {alreadyAdded ? (

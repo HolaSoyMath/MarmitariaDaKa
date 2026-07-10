@@ -115,7 +115,7 @@ export function PurchaseItemsTab({
       const newIngredientIds: string[] = [];
       newRecipeIds.forEach((recipeId) => {
         const recipe = recipes.find((r) => r.id === recipeId);
-        recipe?.ingredients.forEach((ri) => {
+        recipe?.priceTypes.flatMap((pt) => pt.ingredients).forEach((ri) => {
           if (!existingIngredientIds.has(ri.ingredientId)) {
             existingIngredientIds.add(ri.ingredientId);
             newIngredientIds.push(ri.ingredientId);

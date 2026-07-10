@@ -1,12 +1,9 @@
-﻿import type { MenuItem, Recipe, RecipeIngredient, Ingredient, RecipePriceType, MenuItemPriceType, PriceType, Week } from '@prisma/client'
+﻿import type { MenuItem, MenuItemPriceType, PriceType } from '@prisma/client'
 import type { MenuItemInput } from '@marmitaria/schemas/menuItem/menuItemInput.schema'
+import type { RecipeWithIngredients } from './recipes.interface'
 
 export type MenuItemWithRecipe = MenuItem & {
-  recipe: Recipe & {
-    ingredients: (RecipeIngredient & { ingredient: Ingredient })[]
-    priceTypes: (RecipePriceType & { priceType: PriceType })[]
-    menuItems: (MenuItem & { week: Week })[]
-  }
+  recipe: RecipeWithIngredients
   priceTypes: (MenuItemPriceType & { priceType: PriceType })[]
 }
 

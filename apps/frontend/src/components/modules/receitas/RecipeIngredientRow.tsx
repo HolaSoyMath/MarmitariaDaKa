@@ -67,7 +67,7 @@ export function RecipeIngredientRow({
           placeholder="Selecionar ingrediente"
           searchPlaceholder="Buscar ingrediente..."
           emptyText="Nenhum ingrediente encontrado."
-          className="flex-1 rounded-sm shadow-none"
+          className="flex-1 min-w-0 rounded-sm shadow-none"
         />
         <Input
           type="number"
@@ -76,7 +76,7 @@ export function RecipeIngredientRow({
           value={quantity}
           onChange={(e) => onQuantityChange(e.target.value)}
           placeholder="Qtd."
-          className="w-24 h-full bg-card rounded-sm"
+          className="w-24 shrink-0 h-full bg-card rounded-sm"
         />
         <Button
           type="button"
@@ -84,7 +84,7 @@ export function RecipeIngredientRow({
           size="icon"
           onClick={onRemove}
           disabled={removeDisabled}
-          className="rounded-sm"
+          className="rounded-sm shrink-0"
         >
           <X className="size-4 text-red-500" />
         </Button>

@@ -17,21 +17,21 @@ export class MenuItemsController {
         id: item.recipe.id,
         name: item.recipe.name,
         active: item.recipe.active,
-        ingredients: item.recipe.ingredients.map(ri => ({
-          ingredientId: ri.ingredientId,
-          quantity: ri.quantity,
-          ingredient: {
-            id: ri.ingredient.id,
-            name: ri.ingredient.name,
-            unit: ri.ingredient.unit as IngredientResponse['unit'],
-          },
-        })),
         priceTypes: item.recipe.priceTypes.map(rpt => ({
           id: rpt.priceType.id,
           type: rpt.priceType.type,
           size: rpt.priceType.size,
           pixPrice: rpt.priceType.pixPrice,
           swilePrice: rpt.priceType.swilePrice,
+          ingredients: rpt.ingredients.map(ri => ({
+            ingredientId: ri.ingredientId,
+            quantity: ri.quantity,
+            ingredient: {
+              id: ri.ingredient.id,
+              name: ri.ingredient.name,
+              unit: ri.ingredient.unit as IngredientResponse['unit'],
+            },
+          })),
         })),
         lastOnMenu: lastWeek
           ? `Semana ${lastWeek.weekNumber}/${lastWeek.year}`

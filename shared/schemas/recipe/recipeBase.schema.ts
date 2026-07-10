@@ -1,7 +1,6 @@
 import { z } from 'zod'
 
 export const recipeIngredientBase = z.object({
-  recipeId: z.string().uuid(),
   ingredientId: z.string().uuid(),
   quantity: z.number().positive(),
 })
@@ -13,5 +12,10 @@ export const recipeBase = z.object({
   deletedAt: z.date().nullable(),
 })
 
+export const recipeSizeBase = z.object({
+  priceTypeId: z.string().uuid(),
+})
+
 export type RecipeBase = z.infer<typeof recipeBase>
 export type RecipeIngredientBase = z.infer<typeof recipeIngredientBase>
+export type RecipeSizeBase = z.infer<typeof recipeSizeBase>
