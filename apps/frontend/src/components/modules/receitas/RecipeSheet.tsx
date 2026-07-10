@@ -104,10 +104,12 @@ export function RecipeSheet({ open, onOpenChange, recipe }: Props) {
 
   function totalCostFor(ptId: string): number {
     const costs = costByPriceType[ptId] ?? {};
-    return rowsFor(ptId).reduce(
+    const ingredientsTotal = rowsFor(ptId).reduce(
       (sum, row) => sum + (costs[row.ingredientId] ?? 0),
       0,
     );
+    const additionalCost = priceTypes.find((pt) => pt.id === ptId)?.additionalCost ?? 0;
+    return ingredientsTotal + additionalCost;
   }
 
   function toggleSize(id: string) {

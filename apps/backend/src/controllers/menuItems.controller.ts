@@ -19,6 +19,7 @@ export class MenuItemsController {
         size: mpt.priceType.size,
         pixPrice: mpt.priceType.pixPrice,
         swilePrice: mpt.priceType.swilePrice,
+        additionalCost: mpt.priceType.additionalCost,
       })),
     }
   }

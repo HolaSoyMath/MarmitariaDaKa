@@ -26,10 +26,11 @@ export function formatRecipeWithCosts(recipe: RecipeWithCosts): RecipeResponse {
     const knownCosts = ingredients
       .map(i => i.averageCost)
       .filter((c): c is number => c !== null)
-    const totalAverageCost = knownCosts.length > 0
-      ? knownCosts.reduce((sum, c) => sum + c, 0)
-      : null
+    const ingredientsCost = knownCosts.reduce((sum, c) => sum + c, 0)
     const hasMissingCost = ingredients.some(i => i.averageCost === null)
+    const totalAverageCost = knownCosts.length > 0 || rpt.priceType.additionalCost > 0
+      ? ingredientsCost + rpt.priceType.additionalCost
+      : null
 
     return {
       id: rpt.priceType.id,
@@ -37,6 +38,7 @@ export function formatRecipeWithCosts(recipe: RecipeWithCosts): RecipeResponse {
       size: rpt.priceType.size,
       pixPrice: rpt.priceType.pixPrice,
       swilePrice: rpt.priceType.swilePrice,
+      additionalCost: rpt.priceType.additionalCost,
       ingredients,
       totalAverageCost,
       isPartialAverageCost: totalAverageCost !== null && hasMissingCost,

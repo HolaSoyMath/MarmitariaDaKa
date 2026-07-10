@@ -19,7 +19,11 @@ Receitas são o pré-requisito para montar o cardápio — sem receita cadastrad
 
 ## Custo médio preso à semana
 
-Na listagem de Receitas, o "Custo médio" de cada tamanho é calculado com base na média das últimas compras daquele ingrediente **até a semana selecionada no week picker global** (inclusive) — nunca usando compras de semanas posteriores. Isso significa que, se a dona olhar o custo de um prato numa semana passada, registrar depois uma compra numa semana futura com preço diferente, e voltar a olhar aquela semana passada, o valor **não muda** — só muda o custo a partir da semana em que a compra nova foi registrada.
+O "Custo médio" de cada tamanho é a soma de dois componentes: o custo dos ingredientes (média das últimas compras) **mais o Custo adicional** cadastrado em [[TiposPrecos|Tipos e Preços]] para aquele tamanho (pote, fita, adesivo etc). O Custo adicional é um valor fixo definido em Preços — não vem de compras, então não tem histórico nem trava de semana; entra sempre pelo valor atual configurado no tipo de preço.
+
+Na listagem de Receitas, o custo dos ingredientes é calculado com base na média das últimas compras daquele ingrediente **até a semana selecionada no week picker global** (inclusive) — nunca usando compras de semanas posteriores. Isso significa que, se a dona olhar o custo de um prato numa semana passada, registrar depois uma compra numa semana futura com preço diferente, e voltar a olhar aquela semana passada, o valor **não muda** — só muda o custo a partir da semana em que a compra nova foi registrada. O Custo adicional soma normalmente por cima desse valor.
+
+Se nenhum ingrediente do tamanho tiver histórico de compra, o "Custo médio" ainda aparece — igual ao Custo adicional — e fica marcado como parcial (⚠), já que falta o custo dos ingredientes.
 
 No formulário de criar/editar receita (aba "Ingredientes"), o "Custo Aproximado" continua sendo uma estimativa **ao vivo**, sem essa trava de semana — usa sempre o histórico de compras mais recente disponível, porque faz sentido ver o valor mais atual possível enquanto se está montando a receita.
 
