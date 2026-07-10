@@ -122,7 +122,7 @@ Aplica-se a: cascade soft delete, criação de Pedido + itens, edição de Recei
 
 **Snapshot de unitValue:** ao salvar `PurchaseItem`, calcular `unitValue = totalValue / quantity` e persistir. Nunca recalcular depois.
 
-**Status de pedido:** a transição é sempre `pending → produced → paid`. `paid` é irreversível. `produced` pode voltar para `pending`.
+**Status de pedido:** a transição é sempre `pending → produced → paid`. Reversões são permitidas: `produced` pode voltar para `pending`, e `paid` pode voltar tanto para `produced` (`revert-to-produced`, limpando o método de pagamento) quanto direto para `pending` (`revert-to-pending`).
 
 **Proteção de receita:** antes de editar ou excluir uma `Recipe`, verificar se existe `OrderItem → MenuItem → Recipe` com order de status `pending`. Se existir, rejeitar com erro. Pedidos `produced` ou `paid` não bloqueiam — o preço já está travado em snapshot no `OrderItem`. Mesma regra vale para remover um `MenuItem` do cardápio.
 
