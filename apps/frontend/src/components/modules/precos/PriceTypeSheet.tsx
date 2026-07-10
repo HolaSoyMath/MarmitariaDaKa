@@ -9,6 +9,7 @@ import {
   useUpdatePriceType,
   useDeletePriceType,
 } from "@/hooks/usePriceTypes";
+import { maskCentsInput } from "@/formatters/currency";
 import type { PriceTypeResponse } from "@marmitaria/schemas/priceType/priceTypeResponse.schema";
 import { SheetBase } from "@/components/ui/SheetBase";
 
@@ -20,6 +21,10 @@ interface Props {
 
 function centsToReais(cents: number) {
   return (cents / 100).toFixed(2);
+}
+
+function centsToReaisComma(cents: number) {
+  return (cents / 100).toFixed(2).replace(".", ",");
 }
 
 function reaisToCents(value: string) {
@@ -34,6 +39,7 @@ export function PriceTypeSheet({ open, onOpenChange, priceType }: Props) {
     size: priceType?.size ?? "",
     pixPrice: priceType ? centsToReais(priceType.pixPrice) : "",
     swilePrice: priceType ? centsToReais(priceType.swilePrice) : "",
+    additionalCost: priceType ? centsToReaisComma(priceType.additionalCost) : "",
   });
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -45,13 +51,16 @@ export function PriceTypeSheet({ open, onOpenChange, priceType }: Props) {
 
   const pixCents = reaisToCents(form.pixPrice || "0");
   const swileCents = reaisToCents(form.swilePrice || "0");
+  const additionalCents = reaisToCents(form.additionalCost || "0");
   const isValid =
     form.type.trim().length > 0 &&
     form.size.trim().length > 0 &&
     !isNaN(pixCents) &&
     pixCents >= 0 &&
     !isNaN(swileCents) &&
-    swileCents >= 0;
+    swileCents >= 0 &&
+    !isNaN(additionalCents) &&
+    additionalCents >= 0;
 
   async function handleSave() {
     if (!isValid) return;
@@ -60,6 +69,7 @@ export function PriceTypeSheet({ open, onOpenChange, priceType }: Props) {
       size: form.size.trim(),
       pixPrice: pixCents,
       swilePrice: swileCents,
+      additionalCost: additionalCents,
     };
     if (isEditing) {
       await updatePriceType.mutateAsync({ id: priceType.id, data: payload });
@@ -147,6 +157,30 @@ export function PriceTypeSheet({ open, onOpenChange, priceType }: Props) {
               className="bg-card rounded-sm"
             />
           </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="pt-additional">Custo adicional (R$)</Label>
+          <span className="inline-flex items-center border border-input rounded-sm bg-card">
+            <span className="text-muted-foreground text-[13px] pl-3">R$</span>
+            <Input
+              id="pt-additional"
+              type="text"
+              inputMode="decimal"
+              value={form.additionalCost}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  additionalCost: maskCentsInput(e.target.value),
+                }))
+              }
+              placeholder="0,00"
+              className="border-0 shadow-none bg-transparent pl-1.5 focus-visible:ring-0"
+            />
+          </span>
+          <p className="text-xs text-muted-foreground">
+            Pote, fita, adesivo e outros custos fixos desse tamanho — soma no custo médio da receita.
+          </p>
         </div>
       </SheetBase>
 

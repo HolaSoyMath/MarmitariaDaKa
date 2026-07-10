@@ -7,7 +7,14 @@ export class PriceTypesController {
   constructor(private service: PriceTypesService) {}
 
   private format(pt: PriceType): PriceTypeResponse {
-    return { id: pt.id, type: pt.type, size: pt.size, pixPrice: pt.pixPrice, swilePrice: pt.swilePrice }
+    return {
+      id: pt.id,
+      type: pt.type,
+      size: pt.size,
+      pixPrice: pt.pixPrice,
+      swilePrice: pt.swilePrice,
+      additionalCost: pt.additionalCost,
+    }
   }
 
   async listAll(): Promise<PriceTypeResponse[]> {

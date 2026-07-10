@@ -24,10 +24,10 @@ pendente → produzido → pago
 
 - `pendente → produzido` — dona marca quando a marmita está pronta
 - `produzido → pago` — dona marca quando recebe o pagamento, informando Pix ou Swile
-- `produzido → pendente` — reversão permitida (erro ao marcar antes de produzir)
-- `pago → pendente` — reversão permitida com confirmação (modal "Tem certeza?"); limpa o método de pagamento
+- `produzido → pendente` — reversão permitida, sem confirmação (erro ao marcar antes de produzir)
+- `pago → produzido` — reversão permitida com confirmação ("Desmarcar pagamento?"); limpa o método de pagamento. Para voltar a `pendente` a partir de `pago`, é preciso primeiro desmarcar o pagamento (`pago → produzido`) e depois desmarcar a produção (`produzido → pendente`)
 
-**Ações de mudar status ocorrem exclusivamente na Home** — a tela de Pedidos é somente leitura para status.
+**As ações de marcar como produzido, marcar como pago e reverter status estão disponíveis tanto na Home quanto na tela de Pedidos** — as duas telas oferecem os mesmos controles.
 
 ---
 
@@ -57,3 +57,4 @@ Os dois valores (Pix e Swile) são sempre exibidos, independente do método que 
 - [[Cardapio]] — itens do pedido são selecionados do cardápio da semana
 - [[TiposPrecos]] — preço de cada item é copiado como snapshot no momento do pedido
 - [[Semana]] — pedido é vinculado à semana selecionada no week picker
+- [[Home]] — painel operacional que compartilha o controle de marcar/desmarcar produzido

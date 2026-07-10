@@ -16,6 +16,20 @@ export function useIngredients() {
   })
 }
 
+export function useIngredientSearch(query: string) {
+  const q = query.trim()
+  return useQuery({
+    queryKey: ['ingredients', 'search', q],
+    queryFn: async () => {
+      const { data } = await api.get<IngredientResponse[]>('/ingredients/search', {
+        params: { q },
+      })
+      return data
+    },
+    enabled: q.length >= 2,
+  })
+}
+
 export function useCreateIngredient() {
   const queryClient = useQueryClient()
   return useMutation({

@@ -1,9 +1,13 @@
 ﻿import type { Recipe, RecipeIngredient, Ingredient, MenuItem, Week, RecipePriceType, PriceType } from '@prisma/client'
 import type { RecipeInput } from '@marmitaria/schemas/recipe/recipeInput.schema'
 
-export type RecipeWithIngredients = Recipe & {
+export type RecipeSizeWithIngredients = RecipePriceType & {
+  priceType: PriceType
   ingredients: (RecipeIngredient & { ingredient: Ingredient })[]
-  priceTypes: (RecipePriceType & { priceType: PriceType })[]
+}
+
+export type RecipeWithIngredients = Recipe & {
+  priceTypes: RecipeSizeWithIngredients[]
   menuItems: (MenuItem & { week: Week })[]
 }
 
@@ -12,9 +16,13 @@ export type RecipeIngredientWithCost = RecipeIngredient & {
   averageUnitCost: number | null
 }
 
-export type RecipeWithCosts = Recipe & {
+export type RecipeSizeWithCost = RecipePriceType & {
+  priceType: PriceType
   ingredients: RecipeIngredientWithCost[]
-  priceTypes: (RecipePriceType & { priceType: PriceType })[]
+}
+
+export type RecipeWithCosts = Recipe & {
+  priceTypes: RecipeSizeWithCost[]
   menuItems: (MenuItem & { week: Week })[]
 }
 

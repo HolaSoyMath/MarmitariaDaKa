@@ -3,6 +3,7 @@ import { IngredientsRepository } from '../repositories/ingredients.repository'
 import { IngredientsService } from '../services/ingredients.service'
 import { IngredientsController } from '../controllers/ingredients.controller'
 import { ingredientInput } from '@marmitaria/schemas/ingredient/ingredientInput.schema'
+import { ingredientSearchQuery } from '@marmitaria/schemas/ingredient/ingredientSearchQuery.schema'
 import { NotFoundError, ConflictError } from '../lib/errors'
 
 const repository = new IngredientsRepository()
@@ -21,6 +22,14 @@ export const ingredientsRoutes = new Elysia({ prefix: '/ingredients' })
     }
   })
   .get('/', () => controller.listAll())
+  .get('/search', ({ query, set }) => {
+    const parsed = ingredientSearchQuery.safeParse(query)
+    if (!parsed.success) {
+      set.status = 400
+      return { message: 'Parâmetro q é obrigatório.' }
+    }
+    return controller.search(parsed.data.q)
+  })
   .get('/:id', ({ params: { id } }) => controller.getById(id))
   .post('/', ({ body }) => controller.create(ingredientInput.parse(body)))
   .patch('/:id', ({ params: { id }, body }) => controller.update(id, ingredientInput.parse(body)))

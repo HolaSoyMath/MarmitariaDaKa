@@ -13,11 +13,13 @@ import {
 import { RecipeSheet } from '@/components/modules/receitas/RecipeSheet'
 import { RecipeRow } from '@/components/modules/receitas/RecipeRow'
 import { useRecipes, useSetRecipeActive } from '@/hooks/useRecipes'
+import { useWeek } from '@/context/WeekContext'
 import { Eye, EyeOff, Plus } from 'lucide-react'
 import type { RecipeResponse } from '@marmitaria/schemas/recipe/recipeResponse.schema'
 
 export function RecipesView() {
-  const { data: recipes = [], isLoading } = useRecipes()
+  const { currentWeek } = useWeek()
+  const { data: recipes = [], isLoading } = useRecipes(currentWeek?.id ?? null)
   const setRecipeActive = useSetRecipeActive()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [selected, setSelected] = useState<RecipeResponse | null>(null)
@@ -95,7 +97,7 @@ export function RecipesView() {
               <TableRow>
                 <TableHead className="w-10" />
                 <TableHead className="min-w-32">Nome</TableHead>
-                <TableHead className="min-w-32">Ingredientes</TableHead>
+                <TableHead className="min-w-32">Tamanho</TableHead>
                 <TableHead className="min-w-44 whitespace-normal">Última vez no cardápio</TableHead>
                 <TableHead className="min-w-36">Custo médio</TableHead>
                 <TableHead className="min-w-44" />

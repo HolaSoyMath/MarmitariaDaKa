@@ -7,6 +7,7 @@ export const priceTypeResponse = priceTypeBase.pick({
   size: true,
   pixPrice: true,
   swilePrice: true,
+  additionalCost: true,
 })
 
 export type PriceTypeResponse = z.infer<typeof priceTypeResponse>

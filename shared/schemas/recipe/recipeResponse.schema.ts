@@ -11,14 +11,17 @@ const recipeIngredientResponse = recipeIngredientBase
     averageCost: z.number().int().nullable().optional(),
   })
 
+const recipeSizeResponse = priceTypeResponse.extend({
+  ingredients: z.array(recipeIngredientResponse),
+  totalAverageCost: z.number().int().nullable().optional(),
+  isPartialAverageCost: z.boolean().optional(),
+})
+
 export const recipeResponse = recipeBase
   .pick({ id: true, name: true, active: true })
   .extend({
-    ingredients: z.array(recipeIngredientResponse),
-    priceTypes: z.array(priceTypeResponse),
+    priceTypes: z.array(recipeSizeResponse),
     lastOnMenu: z.string().nullable(),
-    totalAverageCost: z.number().int().nullable().optional(),
-    isPartialAverageCost: z.boolean().optional(),
   })
 
 export type RecipeResponse = z.infer<typeof recipeResponse>

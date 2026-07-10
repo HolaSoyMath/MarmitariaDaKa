@@ -27,4 +27,8 @@ export const purchasesRoutes = new Elysia({ prefix: '/purchases' })
     }
     return controller.getByWeek(query.weekId)
   })
+  .get('/last-prices', ({ query }) => {
+    const ingredientIds = query.ingredientIds ? query.ingredientIds.split(',').filter(Boolean) : []
+    return controller.getLastPrices(ingredientIds)
+  })
   .post('/', ({ body }) => controller.upsert(purchaseInput.parse(body)))

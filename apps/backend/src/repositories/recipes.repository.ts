@@ -1,10 +1,13 @@
-﻿import { prisma } from '../lib/prisma'
+import { prisma } from '../lib/prisma'
 import type { IRecipesRepository, RecipeWithIngredients } from '../interfaces/recipes.interface'
 import type { RecipeInput } from '@marmitaria/schemas/recipe/recipeInput.schema'
 
-const includeIngredients = { include: { ingredient: true } }
-
-const includePriceTypes = { include: { priceType: true } }
+const includePriceTypes = {
+  include: {
+    priceType: true,
+    ingredients: { include: { ingredient: true } },
+  },
+}
 
 const includeMenuItems = {
   where: { deletedAt: null as null },
@@ -14,9 +17,20 @@ const includeMenuItems = {
 }
 
 const includeAll = {
-  ingredients: includeIngredients,
   priceTypes: includePriceTypes,
   menuItems: includeMenuItems,
+}
+
+function buildSizesCreate(sizes: RecipeInput['sizes']) {
+  return sizes.map(size => ({
+    priceTypeId: size.priceTypeId,
+    ingredients: {
+      create: size.ingredients.map(i => ({
+        ingredientId: i.ingredientId,
+        quantity: i.quantity,
+      })),
+    },
+  }))
 }
 
 export class RecipesRepository implements IRecipesRepository {
@@ -45,14 +59,8 @@ export class RecipesRepository implements IRecipesRepository {
     return prisma.recipe.create({
       data: {
         name: data.name,
-        ingredients: {
-          create: data.ingredients.map(i => ({
-            ingredientId: i.ingredientId,
-            quantity: i.quantity,
-          })),
-        },
         priceTypes: {
-          create: data.priceTypeIds.map(priceTypeId => ({ priceTypeId })),
+          create: buildSizesCreate(data.sizes),
         },
       },
       include: includeAll,
@@ -61,20 +69,13 @@ export class RecipesRepository implements IRecipesRepository {
 
   async update(id: string, data: RecipeInput): Promise<RecipeWithIngredients> {
     return prisma.$transaction(async tx => {
-      await tx.recipeIngredient.deleteMany({ where: { recipeId: id } })
       await tx.recipePriceType.deleteMany({ where: { recipeId: id } })
       return tx.recipe.update({
         where: { id },
         data: {
           name: data.name,
-          ingredients: {
-            create: data.ingredients.map(i => ({
-              ingredientId: i.ingredientId,
-              quantity: i.quantity,
-            })),
-          },
           priceTypes: {
-            create: data.priceTypeIds.map(priceTypeId => ({ priceTypeId })),
+            create: buildSizesCreate(data.sizes),
           },
         },
         include: includeAll,

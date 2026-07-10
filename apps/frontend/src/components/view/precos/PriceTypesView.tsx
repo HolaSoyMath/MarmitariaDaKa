@@ -80,6 +80,7 @@ export function PriceTypesView() {
                 <TableHead>Tamanho</TableHead>
                 <TableHead>Pix</TableHead>
                 <TableHead>Swile</TableHead>
+                <TableHead>Custo adicional</TableHead>
                 <TableHead className="w-25" />
               </TableRow>
             </TableHeader>
@@ -90,6 +91,7 @@ export function PriceTypesView() {
                   <TableCell>{pt.size}</TableCell>
                   <TableCell>{formatBRL(pt.pixPrice)}</TableCell>
                   <TableCell>{formatBRL(pt.swilePrice)}</TableCell>
+                  <TableCell>{formatBRL(pt.additionalCost)}</TableCell>
                   <TableCell>
                     <Button
                       variant="outline"

@@ -33,6 +33,7 @@ export class OrdersController {
           size: item.priceType.size,
           pixPrice: item.priceType.pixPrice,
           swilePrice: item.priceType.swilePrice,
+          additionalCost: item.priceType.additionalCost,
         },
       })),
     }
