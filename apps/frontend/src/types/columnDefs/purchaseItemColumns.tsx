@@ -1,11 +1,12 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { UNIT_DECIMALS } from '@/constants/units'
+import { maskCentsInput } from '@/formatters/currency'
 import type { IngredientResponse } from '@marmitaria/schemas/ingredient/ingredientResponse.schema'
 import type { IngredientUnit } from '@/constants/units'
 import { SearchSelect } from '@/components/shared/SearchSelect'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { X } from 'lucide-react'
+import { Trash } from 'lucide-react'
 
 export type DraftPurchaseRow = {
   ingredientId: string
@@ -104,7 +105,7 @@ export function getPurchaseItemColumns({
               inputMode="decimal"
               value={row.original.totalValue}
               placeholder="0,00"
-              onChange={(e) => onChangeRow(idx, 'totalValue', e.target.value)}
+              onChange={(e) => onChangeRow(idx, 'totalValue', maskCentsInput(e.target.value))}
               className="w-22 border-0 shadow-none py-2 pl-1.5 pr-3 bg-transparent font-[inherit] text-[14.5px] text-foreground focus-visible:ring-0"
             />
           </span>
@@ -139,7 +140,7 @@ export function getPurchaseItemColumns({
           onClick={() => onRemoveRow(row.index)}
           className="size-7.5 border border-input rounded-lg text-muted-foreground hover:border-destructive hover:text-destructive hover:bg-destructive/10"
         >
-          <X className="size-4" />
+          <Trash className="size-4" />
         </Button>
       ),
       size: 44,
