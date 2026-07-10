@@ -1,5 +1,7 @@
 ﻿import { Elysia } from 'elysia'
 import { MenuItemsRepository } from '../repositories/menuItems.repository'
+import { PurchasesRepository } from '../repositories/purchases.repository'
+import { RecipeCostService } from '../services/recipeCost.service'
 import { MenuItemsService } from '../services/menuItems.service'
 import { MenuItemsController } from '../controllers/menuItems.controller'
 import { menuItemInput } from '@marmitaria/schemas/menuItem/menuItemInput.schema'
@@ -7,7 +9,9 @@ import { menuItemUpdatePriceTypesInput } from '@marmitaria/schemas/menuItem/menu
 import { NotFoundError, ConflictError } from '../lib/errors'
 
 const repository = new MenuItemsRepository()
-const service = new MenuItemsService(repository)
+const purchasesRepository = new PurchasesRepository()
+const recipeCostService = new RecipeCostService(purchasesRepository)
+const service = new MenuItemsService(repository, recipeCostService)
 const controller = new MenuItemsController(service)
 
 export const menuItemsRoutes = new Elysia({ prefix: '/menu-items' })

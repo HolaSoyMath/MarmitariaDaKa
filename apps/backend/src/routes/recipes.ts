@@ -1,6 +1,8 @@
-﻿import { Elysia } from 'elysia'
+import { Elysia } from 'elysia'
 import { RecipesRepository } from '../repositories/recipes.repository'
 import { PurchasesRepository } from '../repositories/purchases.repository'
+import { WeeksRepository } from '../repositories/weeks.repository'
+import { RecipeCostService } from '../services/recipeCost.service'
 import { RecipesService } from '../services/recipes.service'
 import { RecipesController } from '../controllers/recipes.controller'
 import { recipeInput } from '@marmitaria/schemas/recipe/recipeInput.schema'
@@ -9,7 +11,9 @@ import { NotFoundError, ConflictError } from '../lib/errors'
 
 const repository = new RecipesRepository()
 const purchasesRepository = new PurchasesRepository()
-const service = new RecipesService(repository, purchasesRepository)
+const weeksRepository = new WeeksRepository()
+const recipeCostService = new RecipeCostService(purchasesRepository)
+const service = new RecipesService(repository, recipeCostService, weeksRepository)
 const controller = new RecipesController(service)
 
 export const recipesRoutes = new Elysia({ prefix: '/recipes' })
@@ -23,8 +27,8 @@ export const recipesRoutes = new Elysia({ prefix: '/recipes' })
       return { message: error.message }
     }
   })
-  .get('/', () => controller.listAll())
-  .get('/:id', ({ params: { id } }) => controller.getById(id))
+  .get('/', ({ query }) => controller.listAll(query.weekId as string | undefined))
+  .get('/:id', ({ params: { id }, query }) => controller.getById(id, query.weekId as string | undefined))
   .post('/', ({ body }) => controller.create(recipeInput.parse(body)))
   .patch('/:id', ({ params: { id }, body }) => controller.update(id, recipeInput.parse(body)))
   .patch('/:id/active', ({ params: { id }, body }) =>

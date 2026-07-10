@@ -3,6 +3,7 @@ import type { IMenuItemsRepository, MenuItemWithRecipe } from '../interfaces/men
 import type { MenuItemInput } from '@marmitaria/schemas/menuItem/menuItemInput.schema'
 
 const includeAll = {
+  week: true,
   recipe: {
     include: {
       priceTypes: {

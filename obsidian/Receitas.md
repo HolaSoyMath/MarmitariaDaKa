@@ -17,6 +17,16 @@ Receitas são o pré-requisito para montar o cardápio — sem receita cadastrad
 
 ---
 
+## Custo médio preso à semana
+
+Na listagem de Receitas, o "Custo médio" de cada tamanho é calculado com base na média das últimas compras daquele ingrediente **até a semana selecionada no week picker global** (inclusive) — nunca usando compras de semanas posteriores. Isso significa que, se a dona olhar o custo de um prato numa semana passada, registrar depois uma compra numa semana futura com preço diferente, e voltar a olhar aquela semana passada, o valor **não muda** — só muda o custo a partir da semana em que a compra nova foi registrada.
+
+No formulário de criar/editar receita (aba "Ingredientes"), o "Custo Aproximado" continua sendo uma estimativa **ao vivo**, sem essa trava de semana — usa sempre o histórico de compras mais recente disponível, porque faz sentido ver o valor mais atual possível enquanto se está montando a receita.
+
+No [[Cardapio|Cardápio da semana]], cada prato mostra seu "Custo médio" preso à própria semana do cardápio (a mesma regra, usando a semana daquele cardápio como referência).
+
+---
+
 ## Última vez no cardápio
 
 A lista de receitas exibe quando aquela receita foi usada pela última vez no cardápio semanal. Se nunca foi usada, exibe "nunca usada". Ajuda a dona a lembrar quais pratos já fez recentemente.

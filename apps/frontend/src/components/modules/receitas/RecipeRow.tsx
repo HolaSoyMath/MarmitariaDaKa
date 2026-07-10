@@ -2,16 +2,10 @@ import { Fragment } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TableCell, TableRow } from '@/components/ui/table'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { CostRangeLabel } from '@/components/shared/CostRangeLabel'
 import { RecipeIngredientsTable } from './RecipeIngredientsTable'
-import { formatCurrency } from '@/formatters/currency'
 import { cn } from '@/lib/utils'
-import { ChevronRight, CircleCheck, CircleSlash, Info } from 'lucide-react'
+import { ChevronRight, CircleCheck, CircleSlash } from 'lucide-react'
 import type { RecipeResponse } from '@marmitaria/schemas/recipe/recipeResponse.schema'
 
 interface RecipeRowProps {
@@ -31,13 +25,6 @@ export function RecipeRow({
   onSetActive,
   isSettingActive,
 }: RecipeRowProps) {
-  const costs = recipe.priceTypes
-    .map((pt) => pt.totalAverageCost)
-    .filter((c): c is number => c != null)
-  const hasPartialCost = recipe.priceTypes.some((pt) => pt.isPartialAverageCost)
-  const minCost = costs.length > 0 ? Math.min(...costs) : null
-  const maxCost = costs.length > 0 ? Math.max(...costs) : null
-
   return (
     <Fragment>
       <TableRow className={!recipe.active ? 'opacity-50' : undefined}>
@@ -81,32 +68,10 @@ export function RecipeRow({
           {recipe.lastOnMenu ?? '—'}
         </TableCell>
         <TableCell>
-          {minCost == null ? (
-            <span className="text-muted-foreground">—</span>
-          ) : hasPartialCost ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="flex items-center gap-1 text-yellow-600 cursor-help">
-                    {minCost === maxCost
-                      ? formatCurrency(minCost)
-                      : `${formatCurrency(minCost)} – ${formatCurrency(maxCost!)}`}
-                    <Info className="size-3.5" />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  Esse custo médio não é oficial — há ingredientes de algum tamanho desta
-                  receita sem histórico de compra cadastrado.
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <span>
-              {minCost === maxCost
-                ? formatCurrency(minCost)
-                : `${formatCurrency(minCost)} – ${formatCurrency(maxCost!)}`}
-            </span>
-          )}
+          <CostRangeLabel
+            sizes={recipe.priceTypes}
+            partialMessage="Esse custo médio não é oficial — há ingredientes de algum tamanho desta receita sem histórico de compra cadastrado."
+          />
         </TableCell>
         <TableCell>
           <div className="flex gap-1">
