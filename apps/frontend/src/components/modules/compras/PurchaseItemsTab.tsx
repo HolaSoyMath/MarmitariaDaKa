@@ -29,6 +29,17 @@ import type { GeneralCostResponse } from "@marmitaria/schemas/generalCost/genera
 import type { IngredientUnit } from "@/constants/units";
 import { Plus } from "lucide-react";
 
+function toValidItems(rows: DraftPurchaseRow[]): PurchaseInput["items"] {
+  return rows
+    .filter((r) => r.ingredientId && r.quantity && r.totalValue)
+    .map((r) => ({
+      ingredientId: r.ingredientId,
+      quantity: parseFloat(r.quantity.replace(",", ".")),
+      totalValue: Math.round(parseFloat(r.totalValue.replace(",", ".")) * 100),
+      location: r.location || undefined,
+    }));
+}
+
 interface PurchaseItemsTabProps {
   purchase: PurchaseResponse | null | undefined;
   ingredients: IngredientResponse[];
@@ -50,7 +61,6 @@ export function PurchaseItemsTab({
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
 
   const hydratedWeekRef = useRef<string | null>(null);
-  const skipNextAutoSaveRef = useRef(false);
   const lastSavedPayloadRef = useRef<string | null>(null);
   const loadedRecipeIdsRef = useRef<Set<string>>(new Set());
 
@@ -58,20 +68,19 @@ export function PurchaseItemsTab({
     if (purchase === undefined) return;
     if (hydratedWeekRef.current === weekId) return;
     hydratedWeekRef.current = weekId;
-    skipNextAutoSaveRef.current = true;
     setSelectedRecipeIds([]);
     loadedRecipeIdsRef.current = new Set();
-    setRows(
-      purchase
-        ? purchase.items.map((item) => ({
-            ingredientId: item.ingredientId,
-            unit: item.ingredient.unit as IngredientUnit,
-            quantity: String(item.quantity),
-            totalValue: (item.totalValue / 100).toFixed(2).replace(".", ","),
-            location: item.location ?? undefined,
-          }))
-        : [],
-    );
+    const newRows: DraftPurchaseRow[] = purchase
+      ? purchase.items.map((item) => ({
+          ingredientId: item.ingredientId,
+          unit: item.ingredient.unit as IngredientUnit,
+          quantity: String(item.quantity),
+          totalValue: (item.totalValue / 100).toFixed(2).replace(".", ","),
+          location: item.location ?? undefined,
+        }))
+      : [];
+    setRows(newRows);
+    lastSavedPayloadRef.current = JSON.stringify(toValidItems(newRows));
   }, [purchase, weekId]);
 
   const { data: recipes = [] } = useRecipes();
@@ -150,20 +159,7 @@ export function PurchaseItemsTab({
 
   const [ingredientSheetOpen, setIngredientSheetOpen] = useState(false);
 
-  const validItems = useMemo(
-    () =>
-      rows
-        .filter((r) => r.ingredientId && r.quantity && r.totalValue)
-        .map((r) => ({
-          ingredientId: r.ingredientId,
-          quantity: parseFloat(r.quantity.replace(",", ".")),
-          totalValue: Math.round(
-            parseFloat(r.totalValue.replace(",", ".")) * 100,
-          ),
-          location: r.location || undefined,
-        })),
-    [rows],
-  );
+  const validItems = useMemo(() => toValidItems(rows), [rows]);
 
   const debouncedSave = useDebouncedCallback(
     (items: PurchaseInput["items"]) => onSave({ weekId, items }),
@@ -171,16 +167,17 @@ export function PurchaseItemsTab({
   );
 
   useEffect(() => {
-    if (skipNextAutoSaveRef.current) {
-      skipNextAutoSaveRef.current = false;
-      lastSavedPayloadRef.current = JSON.stringify(validItems);
-      return;
-    }
-    if (validItems.length === 0) return;
+    if (hydratedWeekRef.current !== weekId) return;
     const payload = JSON.stringify(validItems);
     if (payload === lastSavedPayloadRef.current) return;
     lastSavedPayloadRef.current = payload;
     debouncedSave(validItems);
+    // weekId is intentionally excluded: it flips one render before `rows`/`validItems`
+    // catch up to the new week (hydration sets state asynchronously), so depending on it
+    // here would fire this effect with the previous week's items paired with the new
+    // weekId. Every hydration always produces a fresh `rows` array, so `validItems` is
+    // guaranteed to change afterwards and re-run this effect with a consistent pairing.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validItems, debouncedSave]);
 
   const columns = useMemo(

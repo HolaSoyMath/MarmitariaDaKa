@@ -7,6 +7,6 @@ const purchaseItemInput = purchaseItemBase
 
 export const purchaseInput = purchaseBase
   .pick({ weekId: true })
-  .extend({ items: z.array(purchaseItemInput).min(1) })
+  .extend({ items: z.array(purchaseItemInput) })
 
 export type PurchaseInput = z.infer<typeof purchaseInput>
