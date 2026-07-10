@@ -3,10 +3,15 @@ import type { IMenuItemsRepository, MenuItemWithRecipe } from '../interfaces/men
 import type { MenuItemInput } from '@marmitaria/schemas/menuItem/menuItemInput.schema'
 
 const includeAll = {
+  week: true,
   recipe: {
     include: {
-      ingredients: { include: { ingredient: true } },
-      priceTypes: { include: { priceType: true } },
+      priceTypes: {
+        include: {
+          priceType: true,
+          ingredients: { include: { ingredient: true } },
+        },
+      },
       menuItems: {
         where: { deletedAt: null as null },
         include: { week: true },

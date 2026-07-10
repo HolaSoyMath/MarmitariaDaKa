@@ -38,34 +38,34 @@ model Ingredient {
 }
 
 model Recipe {
-  id          String             @id @default(uuid())
-  name        String
-  active      Boolean            @default(true)
-  ingredients RecipeIngredient[]
-  priceTypes  RecipePriceType[]
-  menuItems   MenuItem[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  deletedAt   DateTime?
+  id         String            @id @default(uuid())
+  name       String
+  active     Boolean           @default(true)
+  priceTypes RecipePriceType[]
+  menuItems  MenuItem[]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  deletedAt  DateTime?
 }
 
 model RecipeIngredient {
-  id           String     @id @default(uuid())
-  recipeId     String
-  ingredientId String
-  quantity     Float
-  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  id                 String          @id @default(uuid())
+  recipePriceTypeId  String
+  ingredientId       String
+  quantity           Float
+  recipePriceType    RecipePriceType @relation(fields: [recipePriceTypeId], references: [id], onDelete: Cascade)
+  ingredient         Ingredient      @relation(fields: [ingredientId], references: [id])
 
-  @@unique([recipeId, ingredientId])
+  @@unique([recipePriceTypeId, ingredientId])
 }
 
 model RecipePriceType {
-  id          String    @id @default(uuid())
+  id          String             @id @default(uuid())
   recipeId    String
   priceTypeId String
-  recipe      Recipe    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  priceType   PriceType @relation(fields: [priceTypeId], references: [id])
+  recipe      Recipe             @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  priceType   PriceType          @relation(fields: [priceTypeId], references: [id])
+  ingredients RecipeIngredient[]
 
   @@unique([recipeId, priceTypeId])
 }

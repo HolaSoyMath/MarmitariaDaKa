@@ -12,11 +12,11 @@ function toastError(error: unknown, fallback = 'Erro inesperado.') {
 
 const QUERY_KEY = ['recipes'] as const
 
-export function useRecipes() {
+export function useRecipes(weekId?: string | null) {
   return useQuery({
-    queryKey: QUERY_KEY,
+    queryKey: [...QUERY_KEY, weekId],
     queryFn: async () => {
-      const { data } = await api.get<RecipeResponse[]>('/recipes')
+      const { data } = await api.get<RecipeResponse[]>('/recipes', { params: { weekId } })
       return data
     },
   })

@@ -2,16 +2,10 @@ import { Fragment } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TableCell, TableRow } from '@/components/ui/table'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { CostRangeLabel } from '@/components/shared/CostRangeLabel'
 import { RecipeIngredientsTable } from './RecipeIngredientsTable'
-import { formatCurrency } from '@/formatters/currency'
 import { cn } from '@/lib/utils'
-import { ChevronRight, CircleCheck, CircleSlash, Info } from 'lucide-react'
+import { ChevronRight, CircleCheck, CircleSlash } from 'lucide-react'
 import type { RecipeResponse } from '@marmitaria/schemas/recipe/recipeResponse.schema'
 
 interface RecipeRowProps {
@@ -61,34 +55,23 @@ export function RecipeRow({
             )}
           </div>
         </TableCell>
-        <TableCell className="text-muted-foreground">
-          {recipe.ingredients.length}{' '}
-          {recipe.ingredients.length === 1 ? 'ingrediente' : 'ingredientes'}
+        <TableCell>
+          <div className="flex items-center gap-1 flex-wrap">
+            {recipe.priceTypes.map((pt) => (
+              <Badge key={pt.id} variant="secondary" className="rounded-full font-semibold">
+                {pt.type}
+              </Badge>
+            ))}
+          </div>
         </TableCell>
         <TableCell className="text-muted-foreground">
           {recipe.lastOnMenu ?? '—'}
         </TableCell>
         <TableCell>
-          {recipe.totalAverageCost == null ? (
-            <span className="text-muted-foreground">—</span>
-          ) : recipe.isPartialAverageCost ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="flex items-center gap-1 text-yellow-600 cursor-help">
-                    {formatCurrency(recipe.totalAverageCost)}
-                    <Info className="size-3.5" />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  Esse custo médio não é oficial — há ingredientes desta receita sem histórico de
-                  compra cadastrado.
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <span>{formatCurrency(recipe.totalAverageCost)}</span>
-          )}
+          <CostRangeLabel
+            sizes={recipe.priceTypes}
+            partialMessage="Esse custo médio não é oficial — há ingredientes de algum tamanho desta receita sem histórico de compra cadastrado."
+          />
         </TableCell>
         <TableCell>
           <div className="flex gap-1">
@@ -117,7 +100,7 @@ export function RecipeRow({
           </div>
         </TableCell>
       </TableRow>
-      {isExpanded && <RecipeIngredientsTable ingredients={recipe.ingredients} />}
+      {isExpanded && <RecipeIngredientsTable priceTypes={recipe.priceTypes} />}
     </Fragment>
   )
 }

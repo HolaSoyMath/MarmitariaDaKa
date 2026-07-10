@@ -66,17 +66,23 @@ O sistema SHALL exibir, para cada receita, em qual semana ela foi usada pela úl
 - **THEN** o sistema indica que ela nunca foi usada
 
 ### Requirement: Estimativa de custo médio por ingrediente e por receita
-O sistema SHALL estimar o custo de cada ingrediente de uma receita com base na média do valor unitário das últimas compras registradas daquele ingrediente (até 5 compras mais recentes), e SHALL somar essas estimativas para exibir um custo médio total da receita, sinalizando quando a estimativa é parcial por falta de histórico de algum ingrediente.
+O sistema SHALL estimar o custo de cada ingrediente de uma receita, por tamanho, com base na média do valor unitário das últimas compras registradas daquele ingrediente até uma semana de referência (inclusive, até 5 compras mais recentes anteriores ou da própria semana), e SHALL somar essas estimativas para exibir um custo médio total daquele tamanho, sinalizando quando a estimativa é parcial por falta de histórico de algum ingrediente.
+
+A semana de referência é: a semana selecionada no week picker global, na tela de Receitas; a própria semana do prato, no Cardápio da semana. Compras registradas em semanas posteriores à semana de referência nunca entram na média — isso evita que uma compra feita numa semana futura altere retroativamente o custo já exibido para uma semana passada.
 
 #### Scenario: Custo estimado com histórico completo
-- **WHEN** todos os ingredientes de uma receita possuem histórico de compras
-- **THEN** o sistema exibe o custo médio de cada ingrediente (valor unitário médio × quantidade) e o custo total médio da receita, sem indicação de estimativa parcial
+- **WHEN** todos os ingredientes de um tamanho de receita possuem histórico de compras até a semana de referência
+- **THEN** o sistema exibe o custo médio de cada ingrediente (valor unitário médio × quantidade) e o custo total médio daquele tamanho, sem indicação de estimativa parcial
 
 #### Scenario: Custo estimado parcial por falta de histórico
-- **WHEN** ao menos um ingrediente da receita nunca foi comprado
+- **WHEN** ao menos um ingrediente do tamanho nunca foi comprado até a semana de referência
 - **THEN** o sistema exibe o custo total médio calculado apenas com os ingredientes que têm histórico, sinalizando que a estimativa é parcial
+
+#### Scenario: Compra em semana futura não altera custo de semana passada
+- **WHEN** uma compra de um ingrediente é registrada numa semana posterior à semana de referência selecionada
+- **THEN** o custo médio exibido para a semana de referência não muda, pois a compra futura fica fora da janela de "últimas compras até aquela semana"
 
 #### Scenario: Estimativa ao vivo durante edição
 - **WHEN** a dona está criando ou editando uma receita e seleciona um ingrediente com quantidade preenchida
-- **THEN** o sistema exibe, para aquela linha, o custo estimado com base na média das últimas 5 compras daquele ingrediente, ou indica que não há histórico de compra ainda
+- **THEN** o sistema exibe, para aquela linha, o custo estimado com base na média das últimas 5 compras daquele ingrediente (sem corte por semana — usa o histórico mais recente disponível), ou indica que não há histórico de compra ainda
 

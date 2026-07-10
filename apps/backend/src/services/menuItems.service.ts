@@ -1,34 +1,47 @@
-﻿import type { IMenuItemsRepository, MenuItemWithRecipe } from '../interfaces/menuItems.interface'
+import type { IMenuItemsRepository, MenuItemWithRecipe, MenuItemWithRecipeCost } from '../interfaces/menuItems.interface'
+import type { RecipeCostService } from './recipeCost.service'
 import type { MenuItemInput } from '@marmitaria/schemas/menuItem/menuItemInput.schema'
 import { NotFoundError, ConflictError } from '../lib/errors'
 
 export class MenuItemsService {
-  constructor(private repository: IMenuItemsRepository) {}
+  constructor(
+    private repository: IMenuItemsRepository,
+    private recipeCostService: RecipeCostService,
+  ) {}
 
-  async listByWeek(weekId: string): Promise<MenuItemWithRecipe[]> {
-    return this.repository.findByWeek(weekId)
+  private async attachRecipeCost(item: MenuItemWithRecipe): Promise<MenuItemWithRecipeCost> {
+    const recipe = await this.recipeCostService.attachCost(item.recipe, {
+      year: item.week.year,
+      weekNumber: item.week.weekNumber,
+    })
+    return { ...item, recipe }
   }
 
-  async getById(id: string): Promise<MenuItemWithRecipe> {
+  async listByWeek(weekId: string): Promise<MenuItemWithRecipeCost[]> {
+    const items = await this.repository.findByWeek(weekId)
+    return Promise.all(items.map(item => this.attachRecipeCost(item)))
+  }
+
+  async getById(id: string): Promise<MenuItemWithRecipeCost> {
     const item = await this.repository.findById(id)
     if (!item) throw new NotFoundError('Item do cardápio não encontrado')
-    return item
+    return this.attachRecipeCost(item)
   }
 
-  async add(data: MenuItemInput): Promise<MenuItemWithRecipe> {
+  async add(data: MenuItemInput): Promise<MenuItemWithRecipeCost> {
     if (!(await this.repository.recipeExists(data.recipeId))) {
       throw new NotFoundError('Receita não encontrada')
     }
     const existing = await this.repository.findByWeekAndRecipe(data.weekId, data.recipeId)
     if (existing) throw new ConflictError('Receita já está no cardápio desta semana')
     await this.assertValidPriceTypeIds(data.recipeId, data.priceTypeIds)
-    return this.repository.create(data)
+    return this.attachRecipeCost(await this.repository.create(data))
   }
 
-  async updatePriceTypes(id: string, priceTypeIds: string[]): Promise<MenuItemWithRecipe> {
+  async updatePriceTypes(id: string, priceTypeIds: string[]): Promise<MenuItemWithRecipeCost> {
     const item = await this.getById(id)
     await this.assertValidPriceTypeIds(item.recipeId, priceTypeIds)
-    return this.repository.updatePriceTypes(id, priceTypeIds)
+    return this.attachRecipeCost(await this.repository.updatePriceTypes(id, priceTypeIds))
   }
 
   async remove(id: string): Promise<void> {

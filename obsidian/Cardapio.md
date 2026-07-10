@@ -12,6 +12,7 @@ O cardápio define quais pratos estarão disponíveis para pedido em uma semana 
 - Cada receita aparece **no máximo uma vez** por semana — sem repetição
 - **Tamanhos por semana** — ao adicionar um prato ao cardápio, a dona escolhe quais dos tamanhos cadastrados na receita estarão disponíveis naquela semana (pode ser todos, ou só alguns, ex: só o de 550G). Essa escolha pode ser editada depois, direto no card do prato já no cardápio
 - O card do prato no cardápio mostra somente os tamanhos escolhidos para aquela semana — não todos os tamanhos cadastrados na receita, nem todos os tipos de preço do sistema
+- O card do prato exibe também o **Custo médio** (valor único ou faixa, quando os tamanhos escolhidos custam diferente entre si) — calculado com a mesma regra de [[Receitas|Receitas]] (média das últimas compras de cada ingrediente até a semana daquele cardápio, inclusive), então o valor de uma semana passada não muda quando uma compra é registrada numa semana futura
 - O cardápio é por semana — semanas diferentes podem ter cardápios completamente distintos, inclusive com tamanhos diferentes para o mesmo prato
 - Remover um prato do cardápio só é possível se não houver pedidos pendentes com aquele prato (`pendente`) — pedidos já `produzido` ou `pago` não bloqueiam
 - A grade de pratos do cardápio é sempre ordenada em ordem alfabética pelo nome da receita
