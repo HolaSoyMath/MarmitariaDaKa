@@ -116,10 +116,9 @@ await prisma.[entidade].update({
 ```bash
 # Localmente (dev)
 bunx prisma migrate dev --name descricao
-
-# Em produção (Render)
-bunx prisma migrate deploy
 ```
+
+Em produção, `bunx prisma migrate deploy` roda automaticamente antes do servidor subir (`start` script em `apps/backend/package.json`) — basta commitar a migration e mergear na main, o próprio boot do serviço no Render aplica no banco de produção.
 
 Nunca editar migrations já aplicadas. Sempre criar nova migration para corrigir.
 
