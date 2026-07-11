@@ -17,7 +17,7 @@ if (!process.env.PORT) throw new Error('Variável de ambiente PORT não definida
 const port = Number(process.env.PORT)
 
 const app = new Elysia()
-  .use(cors({ origin: [/localhost/, /\.vercel\.app$/] }))
+  .use(cors({ origin: [/localhost/, /\.vercel\.app$/, /\.studiomath\.com\.br$/] }))
   .get('/health', () => ({ status: 'ok', timestamp: new Date().toISOString() }))
   .use(groupsRoutes)
   .use(clientsRoutes)
