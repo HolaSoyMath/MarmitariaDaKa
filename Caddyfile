@@ -1,0 +1,3 @@
+api.marmitaria.studiomath.com.br {
+  reverse_proxy backend: 3000
+}
