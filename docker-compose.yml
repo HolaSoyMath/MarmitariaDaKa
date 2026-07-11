@@ -1,5 +1,5 @@
 services:
-  backend:
+  marmitaria-backend:
     container_name: marmitaria-backend
     build:
       context: .
