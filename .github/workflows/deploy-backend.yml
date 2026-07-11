@@ -20,6 +20,7 @@ jobs:
           username: root
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
+            set -e
             cd ~/MarmitariaDaKa
             git pull
             docker compose up -d --build
