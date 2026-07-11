@@ -18,7 +18,7 @@ const port = Number(process.env.PORT)
 
 const app = new Elysia()
   .use(cors({ origin: [/localhost/, /\.vercel\.app$/, /\.studiomath\.com\.br$/] }))
-  .get('/health', () => ({ status: 'API funcionando!', timestamp: new Date().toISOString() }))
+  .get('/health', () => ({ status: 'API nova funcionando!', timestamp: new Date().toISOString() }))
   .use(groupsRoutes)
   .use(clientsRoutes)
   .use(ingredientsRoutes)
